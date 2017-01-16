@@ -545,7 +545,7 @@ UI.RuntimeControl = new (function() {
 	this.autonomySelectionChanged = function() {
 		var selection_box = document.getElementById("selection_rc_autonomy");
 		var value = parseInt(selection_box.options[selection_box.selectedIndex].value);
-		this.updateAutonomySelectionBoxColor();
+		that.updateAutonomySelectionBoxColor();
 		if (RC.Controller.isConnected()) {
 			RC.PubSub.sendAutonomyLevel(value);
 		}
