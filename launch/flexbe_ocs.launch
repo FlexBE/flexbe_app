@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<arg name="offline" default="false" />
+
+<arg name="offline_arg" value="--offline" if="$(arg offline)" />
+<arg name="offline_arg" value="" unless="$(arg offline)" />
+
+<node name="behavior_mirror" pkg="flexbe_mirror" type="behavior_mirror_sm" output="screen" />
+
+<node name="flexbe_app" pkg="flexbe_app" type="run_app" args="$(arg offline_arg)" output="screen"  />
+
+<node name="behavior_launcher" pkg="flexbe_widget" type="be_launcher" output="screen" />
+
+</launch>

@@ -1,0 +1,312 @@
+.sidepanel {
+	position: absolute;
+	top: 80px;
+	right: -360px;
+	width: 350px;
+	height: calc(100% - 90px);
+	background-color: white;
+	border-left: 1px solid black;
+	padding: 5px 0px;
+	box-shadow: 0px 8px 15px #222;
+	transition: all 0.5s ease;
+	z-index: 51;
+	overflow: auto;
+	overflow-x: hidden;
+}
+
+.sidepanel_category {
+	margin: 15px 5px;
+}
+
+.sidepanel_table {
+	width: 100%;
+}
+
+.sidepanel_title_text {
+	padding: 2px;
+	margin: 0px 3px;
+	font-weight: bold;
+	font-size: 13pt;
+}
+
+.inline_title_text_edit {
+	border: 1px solid rgba(0, 0, 0, 0);
+	background-color: rgba(0, 0, 0, 0);
+	padding: 2px;
+	margin: 0px 3px;
+	font-weight: bold;
+	width: 335px;
+	font-size: 13pt;
+}
+.inline_title_text_edit:hover, .inline_title_text_edit:focus {
+	border-bottom: 1px dotted rgba(0, 0, 0, 0);
+	background-color: rgba(200, 200, 200, 0.1);
+	box-shadow: 1px 1px 5px #555;
+}
+
+.inline_text_edit_readonly {
+	font-family: monospace;
+	font-size: 9pt;
+	border: 1px solid rgba(0, 0, 0, 0);
+	background-color: rgba(0, 0, 0, 0);
+	padding: 2px;
+	margin: 0px 18px 0px 0px;
+	width: 100%;
+}
+
+.inline_text_edit {
+	font-family: monospace;
+	font-size: 9pt;
+	border: 1px solid rgba(0, 0, 0, 0);
+	border-bottom: 1px dotted rgba(0, 0, 0, 0.4);
+	background-color: rgba(0, 0, 0, 0);
+	padding: 2px;
+	margin: 0px 18px 0px 0px;
+	width: 100%;
+}
+.inline_text_edit:hover, .inline_text_edit:focus {
+	border-bottom: 1px dotted rgba(0, 0, 0, 0);
+	background-color: rgba(200, 200, 200, 0.1);
+	box-shadow: 1px 1px 5px #555;
+}
+
+.select_box {
+	font-family: monospace;
+	font-size: 9pt;
+	border: 1px solid rgba(0, 0, 0, 0);
+	border-bottom: 1px dotted rgba(0, 0, 0, 0.4);
+	background-color: rgba(0, 0, 0, 0);
+	padding: 2px;
+	margin: 0px 18px 0px 0px;
+	width: 100%;
+}
+.select_box:hover, .select_box:focus {
+	border-bottom: 1px dotted rgba(0, 0, 0, 0);
+	background-color: rgba(200, 200, 200, 0.1);
+	box-shadow: 1px 1px 5px #555;
+}
+
+#panel_class_select {
+	width: 345px;
+	height: calc(100% - 180px);
+	padding: 0;
+	margin: 0;
+	margin-top: -15px;
+	overflow: auto;
+}
+.panel_class_select_class {
+	width: 315px;
+	padding: 5px;
+	margin: 0;
+	margin-bottom: 3px;
+	background: linear-gradient(#ffc 0%, #eeb 100%);
+	border: 1px solid black;
+	cursor: pointer;
+	transition: all 0.5s ease;
+}
+.panel_class_select_class:hover {
+	background: linear-gradient(#ffe 0%, #ffc 100%);
+}
+
+#panel_select_behavior_selection {
+	position: relative;
+	width: 345px;
+	height: calc(100% - 110px);
+	padding: 0;
+	margin: 0;
+	margin-top: 5px;
+	overflow: auto;
+}
+.panel_select_behavior_selection_behavior {
+	width: 315px;
+	padding: 5px;
+	margin: 0;
+	margin-bottom: 3px;
+	background: linear-gradient(#fef 0%, #ecd 100%);
+	border: 1px solid black;
+	cursor: pointer;
+	transition: all 0.5s ease;
+}
+.panel_select_behavior_selection_behavior:hover {
+	background: linear-gradient(#fef 0%, #fde 100%);
+}
+
+.tag {
+	display: inline-block;
+	padding: 2px 4px;
+	border: 1px solid gray;
+	border-radius: 2px;
+	background-color: #eee;
+	font-size: 8pt;
+	font-family: monospace;
+	cursor: pointer;
+	margin-right: 2px;
+}
+.tag:hover {
+	border: 1px solid black;
+	background-color: #ddd;
+}
+
+.sidepanel_tooltip {
+	display: block;
+	position: absolute;
+	z-index:95;
+	width: 250px;
+	border: 1px solid black;
+	background-color: #ffd;
+	padding: 5px;
+	box-shadow: 2px 2px 6px #555;
+	transition: all 0.5s ease;
+}
+.sidepanel_autocomplete {
+	display: block;
+	position: absolute;
+	z-index:95;
+	background-color: #fff;
+	border: 1px solid gray;
+	border-top: none;
+	padding: 2px;
+	box-shadow: 1px 1px 5px #555;
+}
+
+#tool_overlay {
+	display: none;
+	opacity: 0;
+	position: absolute;
+	/*background-color: rgba(0, 0, 0, 0.7);
+	border-radius: 10px;*/
+	height: 0px;
+	width: 0px;
+	top: 200px;
+	left: 300px;
+	z-index: 100;
+	padding: 0;
+	transition: all 0.2s ease;
+}
+
+.tool_overlay_button {
+	display: block;
+	width: 60px;
+	height: 30px;
+	padding: 30px 15px;
+	font-size: 16pt;
+	color: white;
+	font-style: italic;
+	font-weight: bold;
+	text-align: center;
+	vertical-align: middle;
+	border-radius: 50%;
+	background-color: rgba(0, 0, 0, 0.7);
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+.tool_overlay_button:hover, .tool_overlay_button:focus {
+	background-color: rgba(0, 0, 0, 0.9);
+}
+
+#command_overlay {
+	position: absolute;
+	display: none;
+	opacity: 0;
+	left: calc(50% - 265px);
+	bottom: 0px;
+	width: 500px;
+	height: 28px;
+	margin: 0;
+	padding: 15px;
+	border-radius: 15px;
+	background-color: rgba(0, 0, 0, 0.8);
+	transition: all 0.5s ease;
+}
+
+#command_overlay_suggestions {
+	position: absolute;
+	display: none;
+	opacity: 0;
+	left: calc(50% - 265px);
+	bottom: 80px;
+	width: 500px;
+	margin: 0;
+	padding: 15px;
+	border-radius: 15px;
+	background-color: rgba(0, 0, 0, 0.8);
+	transition: all 0.5s ease;
+	max-height: 300px;
+	overflow: auto;
+}
+
+.command_overlay_suggestion {
+	color: white;
+	font-size: 11pt;
+	font-family: monospace;
+	margin: 3px 0;
+	padding: 3px;
+	border: 1px solid rgba(0, 0, 0, 0);
+}
+
+#tool_input_command {
+	font-size: 11pt;
+	font-family: monospace;
+	color: white;
+	font-style: italic;
+	border: 1px solid gray;
+	width: calc(100% - 6px);
+	background-color: rgba(255, 255, 255, 0.05);
+	border-radius: 4px;
+	padding: 4px 2px;
+}
+
+#history_overlay {
+	position: absolute;
+	left: -295px;
+	top: calc(100% - 380px);
+	width: 250px;
+	height: 350px;
+	padding: 15px 15px 30px 30px;
+	background-color: rgba(0, 0, 0, 0.8);
+	border: none;
+	border-radius: 15px;
+	transition: all 0.5s ease;
+	z-index: 90;
+	color: white;
+}
+
+#history_info {
+	padding-bottom: 20px;
+}
+
+#history_list {
+	width: 100%;
+	border-top: 1px dashed white;
+	margin: 10px 0;
+	overflow: auto;
+	height: 265px;
+}
+.history_element {
+	border-bottom: 1px dashed white;
+	padding: 5px 3px;
+}
+.history_element:hover, .history_element:focus {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+#note_editor {
+	position: absolute;
+	display: none;
+	top: 40%;
+	left: calc(50% - 125px);
+	border: none;
+	border-left: 3px solid black;
+	background-color: #ccc;
+	padding: 5px;
+	width: 250px;
+}
+
+#note_editor textarea {
+	font-family: monospace;
+	font-size: 10px;
+	resize: vertical;
+	background-color: rgba(255, 255, 255, 0.7);
+	width: calc(100% - 5px);
+}

@@ -1,0 +1,227 @@
+body, html {
+	margin: 0;
+	height: 100%;
+	width:100%;
+	/*background-image: url('../img/background.jpg');
+	background-size: cover;*/
+	background-color: #eee;
+	overflow: hidden;
+	position:fixed;
+    font-family: Ubuntu, Arial, sans-serif;
+    font-size: 86.5%;
+    user-select: none;
+    cursor: default;
+}
+
+.toolbar {
+	position: fixed;
+	height: 79px;
+	width: 100%;
+	background: linear-gradient(#f2f2f2, #e5e5e5);
+	border-bottom: 1px solid black;
+	vertical-align: middle;
+	box-shadow: 2px 2px 15px #999;
+	z-index: 50;
+}
+
+.tool_category {
+	display: inline-block;
+	padding: 4px 10px;
+	vertical-align: top;
+	height: 75px;
+}
+
+.category_button {
+	display: inline-block;
+	background: none;
+	color: #555;
+	margin: 0px;
+	padding: 8px;
+	width: 75px;
+	max-width: 75px;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+}
+.category_button:hover {
+	background: rgba(255,255,255,0.3);
+}
+.category_button_active {
+	display: inline-block;
+	background: rgba(255,255,255,0.5);
+	color: #000;
+	margin: 0px;
+	padding: 8px;
+	width: 75px;
+	max-width: 75px;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+}
+#editor_title {
+	height: 80px;
+	padding: 0px;
+	margin: 0px;
+}
+
+#title_button_panel {
+	padding-left: 15px;
+}
+
+.tool_button {
+	display: inline-block;
+	border: none;
+	background: none;
+	color: #000;
+	margin: 0px;
+	padding: 3px;
+	height: 18px;
+	vertical-align: middle;
+}
+
+.tool_button:hover {
+	background-color: rgba(100, 100, 100, 0.1);
+	color: #333;
+}
+
+#label_editor_title {
+	display: inline-block;
+	padding: 2px 1px 6px 5px;
+	color: #ddd;
+	font-style: italic;
+	font-size: 13pt;
+	text-shadow: -1px -1px 0px #bbb, 1px 1px 0px #fff;
+	width: 150px;
+}
+#label_runtime_status {
+	display: inline-block;
+	padding: 2px;
+	padding-left: 15px;
+	color: #aaa;
+	font-style: italic;
+	font-size: 12pt;
+}
+#panel_runtime_status {
+	display: inline-block;
+	padding: 2px;
+	padding-left: 15px;
+	color: #aaa;
+	font-style: italic;
+	font-size: 12pt;
+}
+
+#runtime_status_txt {
+	line-height: 0.8em;
+}
+
+#terminal {
+	position: absolute;
+	top: 80px;
+	left: 0px;
+	height: 0;
+	width: 100%;
+	transition: all 0.5s ease;
+	font-family: monospace;
+	font-size: 10px;
+	background-color: rgba(0, 0, 0, 0.8);
+	/*border-bottom: 1px solid black;*/
+	padding: 0px;
+	/*box-shadow: 0px 6px 8px rgba(20, 20, 20, 0.4);*/
+	overflow: auto;
+	line-height: 1.2em;
+	z-index: 52;
+}
+
+.emptypage {
+
+}
+
+#flexbe_about {
+	position: absolute;
+	top: 7px;
+	right: 0px;
+	width: 90px;
+	height: 70px;
+	/*background-color: #fdc;
+	border: 2px solid #f65;
+	box-shadow: 1px 1px 5px #633;
+	color: #944;*/
+	padding: 0px;
+	transition: all 0.2s ease;
+	z-index: 100;
+	overflow: hidden;
+	text-align: right;
+	line-height: 1.2em;
+	font-size: 7pt;
+	color: #888;
+	vertical-align: top;
+}
+
+#flexbe_about:hover {
+	color: #000;
+	cursor: help;
+}
+
+
+#feed_area {
+	position: absolute;
+	top: 80px;
+	right: 0px;
+	width: 270px;
+	padding: 0px;
+	z-index: 99;
+	color: #888;
+}
+.feed_message {
+	width: 250px;
+	padding: 4px;
+	margin: 5px;
+	border: 1px solid black;
+	background-color: #fff;
+	box-shadow: 1px 1px 5px #633;
+	font-size: 9pt;
+	text-align: justify;
+	line-height: 1.5em;
+}
+.feed_message h2 {
+	font-size: 9pt;
+	font-weight: bold;
+	color: #000;
+	margin: 0;
+}
+.feed_message p {
+	padding: 2px 0px;
+	margin: 0px;
+	font-size: 9pt;
+	text-align: justify;
+	line-height: 1.5em;
+}
+
+#devlogo {
+	position: absolute;
+	top: 6px;
+	right: 10px;
+	width: 190px;
+	height: 50px;
+	background: url("../img/team_vigir_logo.png");
+	background-size: contain;
+	background-position: right top;
+	background-repeat: no-repeat;
+	padding: 4px;
+	z-index: 100;
+	overflow: hidden;
+}
+
+#devcredit {
+	position: absolute;
+	top: 61px;
+	right: 10px;
+	width: 190px;
+	height: 10px;
+	padding: 4px;
+	z-index: 100;
+	overflow: hidden;
+	font-size: 7pt;
+	color: #888;
+	text-align: right;
+}

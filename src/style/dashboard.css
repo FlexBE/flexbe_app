@@ -1,0 +1,116 @@
+#dashboard {
+	position: absolute;
+	top: 80px;
+	left: 0;
+	height: calc(100% - 100px);
+	width: 100%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	transition: all 0.5s ease;
+	overflow: auto;
+}
+
+.box {
+	display: inline-block;
+	background-color: #fff;
+	width: calc(33% - 30px);
+	margin: 10px;
+	/*border: 1px solid black;*/
+	box-shadow: 2px 2px 15px #333;
+	padding: 5px;
+	vertical-align: top;
+	line-height: 1.4em;
+	text-align: justify;
+}
+
+#dashboard h1 {
+	font-size: 12pt;
+	padding: 0 0 10px 0;
+	margin: 0;
+	text-align: center;
+}
+
+.input_field {
+	width: 100%;
+	font-family: arial;
+}
+.input_text {
+	width: calc(100% - 2px);
+	font-family: arial;
+	resize: vertical;
+}
+
+.box_table {
+	margin: 0px;
+	margin-top: 4px;
+	padding: 0px;
+	width: 100%;
+}
+
+.img_button {
+	display: inline-block;
+	background: none;
+}
+.img_button:hover {
+	background: rgba(100, 100, 100, 0.1);
+}
+
+/******************************************************/
+/* External - taken from http://davidwalsh.name/css-flip */
+
+
+/* entire container, keeps perspective */
+.flipper {
+	display: inline-block;
+	margin: 10px;
+	width: calc(33% - 20px);
+	vertical-align: top;
+}
+
+/* flip the pane when hovered */
+.flipper.flip .box {
+	transform: rotateY(180deg);
+	box-shadow: -2px 2px 15px #333;
+	background: none;
+}
+
+.front, .back {
+	width: 100%;
+	height: 100%;
+}
+
+/* flip speed goes here */
+.flipper .box {
+	transition: 0.8s;
+	transform-style: preserve-3d;
+	width: calc(100% - 10px);
+	margin: 0;
+	z-index: 1;
+
+	position: relative;
+}
+
+/* hide back of pane during swap */
+.back {
+	backface-visibility: hidden;
+	z-index: 4;
+	transform: rotateY(180deg);
+	width: calc(100% - 10px);
+	height: calc(100% - 10px);
+	background-color: #fff;
+
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	padding: 5px;
+}
+
+/* front pane, placed above back */
+.front {
+	backface-visibility: hidden;
+	z-index: 3;
+	/* for firefox 31 */
+	transform: rotateY(0deg);
+}
+
+/******************************************************/

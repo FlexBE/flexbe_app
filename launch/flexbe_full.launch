@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<include file="$(find flexbe_app)/launch/flexbe_ocs.launch" >
+    <arg name="offline" value="false"/>
+</include>
+
+<include file="$(find flexbe_onboard)/launch/behavior_onboard.launch" />
+
+</launch>

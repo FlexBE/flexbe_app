@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="ext/raphael.js"></script>
+	<script src="ext/mousetrap.min.js"></script>
+	<script src="ext/d3.min.js"></script>
+	<script src="ext/json_parse_raw.js"></script>
+	<script src="ext/yaml.min.js"></script>
+
+	<script src="events.js"></script>
+	<script src="main.js"></script>
+	<script src="prototype.js"></script>
+	<script src="_helper/activitytracer.js"></script>
+	<script src="_helper/autocomplete.js"></script>
+	<script src="_helper/checking.js"></script>
+	<script src="_helper/command_lib.js"></script>
+	<script src="_helper/tools.js"></script>
+	<script src="_helper/varsolver.js"></script>
+	<script src="io/io.js"></script>
+	<script src="io/io_behaviorloader.js"></script>
+	<script src="io/io_behaviorpacker.js"></script>
+	<script src="io/io_behaviorsaver.js"></script>
+	<script src="io/io_codegenerator.js"></script>
+	<script src="io/io_codeparser.js"></script>
+	<script src="io/io_filesystem.js"></script>
+	<script src="io/io_manifestgenerator.js"></script>
+	<script src="io/io_manifestparser.js"></script>
+	<script src="io/io_modelgenerator.js"></script>
+	<script src="io/io_packagegenerator.js"></script>
+	<script src="io/io_packageparser.js"></script>
+	<script src="io/io_stateparser.js"></script>
+	<script src="_model/behavior.js"></script>
+	<script src="_model/state.js"></script>
+	<script src="_model/behaviorstate.js"></script>
+	<script src="_model/note.js"></script>
+	<script src="_model/statemachine.js"></script>
+	<script src="_model/transition.js"></script>
+	<script src="drawable/drawable.js"></script>
+	<script src="drawable/drawable_behaviorstate.js"></script>
+	<script src="drawable/drawable_containerpath.js"></script>
+	<script src="drawable/drawable_helper.js"></script>
+	<script src="drawable/drawable_note.js"></script>
+	<script src="drawable/drawable_outcome.js"></script>
+	<script src="drawable/drawable_state.js"></script>
+	<script src="drawable/drawable_statemachine.js"></script>
+	<script src="drawable/drawable_transition.js"></script>
+	<script src="rc/rc.js"></script>
+	<script src="rc/rc_controller.js"></script>
+	<script src="rc/rc_pubsub.js"></script>
+	<script src="rc/rc_ros.js"></script>
+	<script src="rc/rc_sync.js"></script>
+	<script src="ros/ros.js"></script>
+	<script src="ros/ros_actionclient.js"></script>
+	<script src="ros/ros_publisher.js"></script>
+	<script src="ros/ros_subscriber.js"></script>
+	<script src="ui/ui.js"></script>
+	<script src="ui/ui_dashboard.js"></script>
+	<script src="ui/ui_feed.js"></script>
+	<script src="ui/ui_menu.js"></script>
+	<script src="ui/ui_runtimecontrol.js"></script>
+	<script src="ui/ui_settings.js"></script>
+	<script src="ui/ui_statemachine.js"></script>
+	<script src="ui/ui_tools.js"></script>
+	<script src="ui/panels/ui_panels.js"></script>
+	<script src="ui/panels/ui_panels_addstate.js"></script>
+	<script src="ui/panels/ui_panels_selectbehavior.js"></script>
+	<script src="ui/panels/ui_panels_stateproperties.js"></script>
+	<script src="ui/panels/ui_panels_terminal.js"></script>
+	<script src="ws/ws.js"></script>
+	<script src="ws/ws_behaviorlib.js"></script>
+	<script src="ws/ws_behaviorstatedefinition.js"></script>
+	<script src="ws/ws_documentation.js"></script>
+	<script src="ws/ws_statedefinition.js"></script>
+	<script src="ws/ws_statemachinedefinition.js"></script>
+	<script src="ws/ws_statelib.js"></script>
+
+	<script src="_testing/scripts.js"></script>
+	<script src="_testing/test.js"></script>
+
+	<link rel="stylesheet" href="style/main.css" type="text/css" />
+	<link rel="stylesheet" href="style/dashboard.css" type="text/css" />
+	<link rel="stylesheet" href="style/statemachine.css" type="text/css" />
+	<link rel="stylesheet" href="style/runtimecontrol.css" type="text/css" />
+	<link rel="stylesheet" href="style/settings.css" type="text/css" />
+	<link rel="stylesheet" href="style/popup.css" type="text/css" />
+
+</head>
+<body>
+
+	<div class="toolbar">
+		<table cellpadding="0" cellspacing="0"><tr><td>
+			<div id="editor_title">
+				<table cellpadding="0" cellspacing="0"><tr><td>
+					<div id="label_editor_title">Flex<b>BE&nbsp;&nbsp;App</b></div>
+				</td></tr><tr><td>
+					<div id="label_runtime_status">Onboard Status:</div>
+				</td></tr><tr><td>
+					<div id="panel_runtime_status">
+						<table cellpadding="0" cellspacing="0"><tr><td>
+							<img id="runtime_status_img" src="img/cross.png" />
+						</td><td valign="middle" style="padding-left:5px;" id="runtime_status_txt">
+							disconnected
+						</td></tr></table>
+					</div>
+				</td></tr></table>
+			</div>
+		</td><td>
+			<div class="category_button_active" id="button_to_db"><img src="img/db_active.png" width="32" height="32" /> Behavior Dashboard</div>
+			<div class="category_button" id="button_to_sm"><img src="img/sm.png" width="32" height="32" /> Statemachine Editor</div>
+			<div class="category_button" id="button_to_rc"><img src="img/rc.png" width="32" height="32" /> Runtime Control</div>
+			<div class="category_button" id="button_to_se"><img src="img/se.png" width="32" height="32" /> Configuration</div>
+		</td><td id="title_button_panel">
+
+		</td></tr></table>	
+	</div>
+
+	<div id="flexbe_about" title="About FlexBE">
+		<table cellpadding="0" cellspacing="0" border="0" style="position:absolute; right:0px">
+			<tr><td align="center" colspan="2">
+				<img src="img/logo_borderless.png" style="height:50px; margin-right:3px">
+			</td></tr><tr><td>
+				Version: <font id="flexbe_version_label">0.0.0</font>
+			</td><td>
+				<img id="flexbe_version_status" src="img/version_offline.png" title="Checking latest release...">
+			</td></tr>
+		</table>
+	</div>
+	<div id="feed_area">
+		<div id="msg_notify_update" class="feed_message" style="display:none; background-color: #FFC">
+			<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+				<tr><td style="width:20px">
+					<img src="img/warning.png">
+				</td><td style="vertical-align: middle">
+					<h2>New release available!</h2>
+				</td><td style="width:20px">
+					<img id="msg_notify_update_close" src="img/close.png">
+				</td></tr>
+				<tr><td colspan="3" style="padding:2px; padding-top:5px;">
+					Update the flexbe_app repository to get the new version.
+				</td></tr>
+			</table>
+		</div>
+		<div id="msg_about" class="feed_message" style="display:none">
+			<table cellpadding="0" cellspacing="0" border="0" style="width:100%">
+				<tr><td style="width:20px">
+					<img src="img/information.png">
+				</td><td style="vertical-align: middle">
+					<h2>About FlexBE</h2>
+				</td><td style="width:20px">
+					<img id="msg_about_close" src="img/close.png">
+				</td></tr>
+				<tr><td colspan="3" style="padding:2px; padding-top:5px;">
+					More Infos: <a href="http://flexbe.github.io" target="_blank">flexbe.github.io</a><br />
+					Developer: Philipp Schillinger<br />
+					Development supported by:<br />
+					<img src="img/team_vigir_logo.png" style="height:30px" />&nbsp;&nbsp;&nbsp;
+					<img src="img/argonauts_logo.png" style="height:30px" />
+					<br />
+					<a href="https://github.com/flexbe/flexbe_app/issues" target="_blank">Report a Bug!</a><br />
+				</td></tr>
+			</table>
+		</div>
+	</div>
+
+	<div id="properties_autocomplete" class="sidepanel_autocomplete" style="display: none;" idx="0"></div>
+
+	<div id="dashboard"> 
+
+		<div class="box">
+			<h1>Overview</h1>
+			<table style="width: 100%; padding-right: 5px">
+				<tr>
+					<td>Package</td>
+					<td><select id="select_behavior_package" style="width:100%"></select></td>
+				</tr>
+				<tr>
+					<td>Name</td>
+					<td><input id="input_behavior_name" class="input_field" type="text" /></td>
+				</tr>
+				<tr>
+					<td valign="top">Description</td>
+					<td><textarea id="input_behavior_description" class="input_text" rows="5"></textarea></td>
+				</tr>
+				<tr>
+					<td>Tags</td>
+					<td><input id="input_behavior_tags" class="input_field" type="text" /></td>
+				</tr>
+				<tr>
+					<td>Author</td>
+					<td><input id="input_behavior_author" class="input_field" type="text" /></td>
+				</tr>
+				<tr>
+					<td>Date</td>
+					<td><input id="input_behavior_date" class="input_field" type="text" /></td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="box">
+			<h1>Private Configuration</h1>
+			<font style="color: gray">Variables enable easy configuration of constant internal values which are used multiple times. They are read-only and cannot be used in private functions.</font>
+			<table class="box_table" id="db_variable_table"></table>
+			<table class="box_table"><tr><td>
+				<input id="input_db_variable_key_add" type="text" class="input_field" />
+			</td><td>
+				&nbsp;&nbsp;=&nbsp; 
+			</td><td width="60%">
+				<input id="input_db_variable_value_add" type="text" class="input_field" />
+			</td><td>
+				<input id="button_db_variable_add" type="button" value="Add" />
+			</td></tr></table>
+			
+		</div>
+
+		<div class="box">
+			<h1>State Machine Userdata</h1>
+			<font style="color: gray">The userdata of a state machine can be used to pass any data from one state to another. Userdata values may be changed by states during runtime. Make sure you define default values for all userdata keys.</font>
+			<table class="box_table" id="db_userdata_table"></table>
+			<table class="box_table"><tr><td>
+				<input id="input_db_userdata_key_add" type="text" class="input_field" />
+			</td><td>
+				&nbsp;&nbsp;=&nbsp; 
+			</td><td>
+				<input id="input_db_userdata_value_add" type="text" class="input_field" />
+			</td><td>
+				<input id="button_db_userdata_add" type="button" value="Add" />
+			</td></tr></table>
+		</div>
+
+		<div class="flipper" id="parameter_flipper">
+			<div class="box">
+				<div class="front">
+					<h1>Behavior Parameters</h1>
+					<font style="color: gray">These parameters can be set by the operator when this behavior is started via Runtime Control. Each parameter is identified by a unique variable name and displayed by using a label and providing usage advice. Depending on their type, some parameters may require additional specification. Parameters can be accessed as self.<i>parameter_name</i>.</font>
+					<table class="box_table" id="db_parameter_table"></table>
+					<table class="box_table"><tr><td>
+						<select id="input_db_parameter_type_add" class="input_field">
+							<option value="enum">Enum</option>
+							<option value="numeric">Numeric</option>
+							<option value="boolean">Boolean</option>
+							<option value="text">Text</option>
+							<option value="yaml">File</option>
+						</select>
+					</td><td>
+						<input id="input_db_parameter_name_add" type="text" class="input_field" />
+					</td><td>
+						<input id="button_db_parameter_add" type="button" value="Add" />
+					</td></tr></table>
+				</div>
+				<div class="back">
+					<h1>Behavior Parameters</h1>
+					<table class="box_table" id="db_parameter_edit_table"></table>
+					<img id="button_db_parameter_turn" src="img/turn_back.png" style="position: absolute; top: 5px; right: 5px" />
+				</div>
+			</div>
+		</div>
+
+		<div class="box">
+			<h1>Private Functions</h1>
+			<font style="color: gray">Defines which functions can be referenced by states that accept functions as parameters. Make sure that the interface of each function matches the requirements of the respective state. These functions can be implemented later in the generated code. Functions can be accessed as self.<i>function_name</i>.</font>
+			<table class="box_table" id="db_function_table"></table>
+		</div>
+
+		<div class="box">
+			<h1>State Machine Interface</h1>
+			<font style="color: gray">Defines how the state machine of this behavior can be accessed when embedded in another behavior.</font>
+			<table style="width: 100%; padding-right: 5px; margin-top: 5px">
+				<tr>
+					<td valign="top" style="padding-top: 10px;">Outcomes</td>
+					<td>
+						<table class="box_table" id="db_outcome_table"></table>
+						<table class="box_table"><tr><td>
+							<input id="input_db_outcome_add" type="text" class="input_field" />
+						</td><td>
+							<input id="button_db_outcome_add" type="button" value="Add" />
+						</td></tr></table>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top" style="padding-top: 10px;">Input Keys</td>
+					<td>
+						<table class="box_table" id="db_input_key_table"></table>
+						<table class="box_table"><tr><td>
+							<input id="input_db_input_key_add" type="text" class="input_field" />
+						</td><td>
+							<input id="button_db_input_key_add" type="button" value="Add" />
+						</td></tr></table>
+					</td>
+				</tr>
+				<tr>
+					<td valign="top" style="padding-top: 10px;">Output Keys</td>
+					<td>
+						<table class="box_table" id="db_output_key_table"></table>
+						<table class="box_table"><tr><td>
+							<input id="input_db_output_key_add" type="text" class="input_field" />
+						</td><td>
+							<input id="button_db_output_key_add" type="button" value="Add" />
+						</td></tr></table>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="db_readonly_overlay" style="display: none; width: 100%; height: 100%; background-color: rgba(100, 150, 255, 0.1); position: absolute; top:0; left:0; z-index:2;">
+			<div style="width: 100%; position: absolute; bottom:25px; left:0; z-index:1; text-align: center; font-size: 14pt; color: #57a;">
+				Behavior is running! --- Read-Only Mode
+			</div>
+		</div>
+
+	</div>
+
+	<div id="statemachine">
+		<div id="drawing_area" class="box"></div>
+	</div>
+
+	<div id="runtimecontrol">
+
+		<div id="runtime_state_display" class="drawbox">
+			<div id="runtime_configuration_display" class="runtimebox_text">
+				<h1>Configure Behavior Execution</h1>
+				<font style="color: gray">
+					Set available parameters for execution and start the current behavior.
+					You will be able to control execution of the behavior at this page.
+				</font>
+				<br /><br /><br />
+				<table class="box_table" id="rc_parameter_table">
+					<tr><td><i>The selected behavior supports no parameters.</i></td></tr>
+				</table>
+				<br /><br />
+				<table class="box_table">
+					<tr>
+						<td align="center"><input id="button_behavior_start" type="button" value="Start Execution" class="big_button" style="color: green; width: 200px;" /></td>
+						<td align="center"><input id="button_behavior_params_reset" type="button" value="Reset to Default" class="big_button" style="color: red; width: 200px;" /></td>
+					</tr>
+				</table>
+			</div>
+			<div id="runtime_waiting_display" class="runtimebox_text">
+				<h1>Waiting for Behavior</h1>
+				<div class="rc_font_subtitle">
+					<br /><br /><br /><br />
+					Start command has been sent.<br /><br />
+					Now waiting for confirmation from onboard behavior...
+				</div>
+			</div>
+			<div id="runtime_external_display" class="runtimebox_text">
+				<h1>External Behavior Running</h1>
+				<font style="color: gray">
+					<br />
+					Behavior has been started from a different control instance.<br /><br />
+					You can load the currently running behavior and attach this GUI to it in order to monitor and control execution.
+				</font>
+				<br /><br />
+				<table class="box_table">
+					<tr>
+						<td align="center"><input id="button_behavior_attach_external" type="button" value="Attach" class="big_button" style="color: green; width: 200px;" /></td>
+					</tr>
+				</table>
+			</div>
+			<div id="runtime_offline_display" class="runtimebox_text" style="display: inline;">
+				<h1>No connection!</h1>
+				<font style="color: gray">
+					You are currently not connected to the onboard behavior engine of the robot.
+					As soon as you are connected, you can configure the behavior by setting the values of its parameters and then start execution.
+				</font>
+				<br /><br />
+				Please execute the following steps to connect to the onboard behavior engine:
+				<ul>
+					<li>
+						Make sure the onboard behavior engine is running in the current ROS environment. You can start it with the following command:<br />
+						<input id="rc_command_engine" type="text" value="roslaunch flexbe_onboard behavior_onboard.launch" class="code_copy" readonly="readonly" size="39" />
+						<br /><br />
+					</li>
+					<li>
+						Make sure that operator control software is running for starting a behavior and monitoring its execution. You can start it with the following command:<br />
+						<input id="rc_command_engine" type="text" value="roslaunch flexbe_widget behavior_ocs.launch" class="code_copy" readonly="readonly" size="34" />
+						<br /><br />
+					</li>
+					<li>
+						Connect to the ROS master.<br />
+						<input id="button_rc_connect" type="button" value="Connect" />
+						<br /><br />
+					</li>
+				</ul>
+			</div>
+			<div id="runtime_no_behavior_display" class="runtimebox_text">
+				<h1>No behavior selected!</h1>
+				<font style="color: gray">
+					In order to start execution of a behavior, you need to have a saved behavior open.
+					Please go to the Behavior Dashboard and load an existing behavior or create a new one and save it.
+				</font>
+				<br /><br />
+				Please choose one of the following options to proceed:
+				<ul>
+					<li>
+						Save your current behavior (make sure it is complete and correct).<br />
+						<input id="button_rc_save" type="button" value="Save Behavior" />
+						<br /><br />
+					</li>
+					<li>
+						Load an existing behavior to execute.<br />
+						<input id="button_rc_load" type="button" value="Load Behavior" />
+						<br /><br />
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="box">
+			<div id="sync_bar" class="loading_bar">
+				<div id="progress_bar"></div>
+				<div id="progress_left"></div>
+				<div id="progress_txt">Sync</div>
+			</div>
+			<div id="sync_extension" style="display: none;"></div>
+
+			<table><tr>
+				<td>
+					<input id="button_behavior_lock" type="button" value="Lock Behavior" class="big_button" style="width: 170px" />
+				</td><td>
+					<table>
+						<tr id="behavior_lock_display">
+						</tr>
+					</table>
+				</td>
+			</tr></table>
+			<br />
+			Block transitions which require at least
+			<select id="selection_rc_autonomy" style="width: 70px; color: blue; font-weight: bold;">
+				<option value="0" style="color: black;">No</option>
+				<option value="1" style="color: blue;" selected="selected">Low</option>
+				<option value="2" style="color: green;">High</option>
+				<option value="3" style="color: red;">Full</option>
+			</select>
+			autonomy.
+			<br /><br />
+			<input id="button_behavior_repeat" type="button" style="width: 100px;" value="Repeat" /> <i>(execute current state again from beginning)</i>
+			<br />
+			<input id="button_behavior_pause" type="button" style="width: 100px;" value="Pause" /> <i>(stay active, but suspend execution)</i>
+			<br /><br />
+			<input id="button_behavior_sync" type="button" value="Sync" style="float: right;" />
+			<input id="cb_allow_preempt" type="checkbox" />
+			<input id="button_behavior_preempt" type="button" value="Stop Execution" style="color: gray;" disabled="disabled" /> <i>(stopped behaviors can't be resumed)</i>
+		</div>
+
+		<div class="widebox" style="height: calc(33% - 35px);">
+			<h1>Behavior Feedback</h1>
+			<div id="runtime_feedback_text" style="overflow: auto; line-height: 1.8em; max-height: calc(100% - 40px); -webkit-user-select: text; cursor: text; font-family: monospace;"></div>
+		</div>
+
+		<div class="box" style="height: calc(33% - 35px);">
+			<h1>Documentation</h1>
+			<div id="runtime_documentation_text" style="overflow: auto;"></div>
+		</div>
+	</div>
+
+	<div id="settings">
+
+		<div class="box">
+			<h1>Runtime Settings</h1>
+			<font style="color: gray">
+				Configuration of controlling behaviors during runtime.
+			</font>
+			<table  class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
+				<tr title="Connection is considered to be lost if no heartbeat message is received for this amount of time.">
+					<td width="150">Heartbeat timeout: </td>
+					<td><input id="input_runtime_timeout" type="number" value="10" min="4" max="30" step="1" /> seconds</td>
+				</tr>
+				<tr title="Make sure that only this GUI (if running) is able to execute behaviors and automatically stop others.">
+					<td width="150">Restrict execution: </td><td><input id="cb_stop_behaviors" type="checkbox" /> (stops externally started behaviors)</td>
+				</tr>
+				<tr title="Multi-line feedback messages of the selected types are automatically collapsed ([+] and [-] button in Behavior Feedback).">
+					<td width="150">Collapse feedback: </td><td>
+						<input id="cb_collapse_info" type="checkbox" /> Info&nbsp;&nbsp;&nbsp;
+						<input id="cb_collapse_warn" type="checkbox" /> Warning&nbsp;&nbsp;&nbsp;
+						<input id="cb_collapse_error" type="checkbox" /> Error&nbsp;&nbsp;&nbsp;
+						<input id="cb_collapse_hint" type="checkbox" /> Hint
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="box">
+			<h1>Code Generation</h1>
+			<font style="color: gray">Configuration of code files generated from this editor.</font>
+			<table  class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
+				<tr title="Default name of the ROS package to which new behaviors should be added, adjust this for each behavior at the Behavior Dashboard.">
+					<td width="150">Default package: </td>
+					<td><select id="select_default_package"></select></td>
+				</tr>
+				<tr title="Type of whitespaces used for indentation in generated sourcecode when a behavior is saved.">
+					<td width="150">Code indentation: </td>
+					<td><select id="select_code_indentation">
+							<option value="0">Tabs</option>
+							<option value="1">2 Spaces</option>
+							<option value="2">4 Spaces</option>
+							<option value="3">8 Spaces</option>
+						</select>
+					</td>
+				</tr>
+				<tr title="Terminal command which is used to open the code editor.">
+					<td width="150">Editor command: </td>
+					<td><input id="input_editor_command" type="text" class="input_field" /></td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="box">
+			<h1>Editor Settings</h1>
+			<font style="color: gray">
+				Configuration of developing or modifying behaviors.
+			</font>
+			<table  class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
+				<tr title="Drawing mode of transition arrows in the editor.">
+					<td width="150">Transition endpoints: </td>
+					<td><select id="select_transition_mode">
+							<option value="0">Centered</option>
+							<option value="1">Relative</option>
+							<option value="2">Combined</option>
+						</select>
+					</td>
+				</tr>
+				<tr title="Size of the state arrangement aid grid when holding down Shift in the editor.">
+					<td width="150">Grid size: </td>
+					<td><input id="input_gridsize" type="number" min="10" max="200" step="10" /> px</td>
+				</tr>
+				<tr title="If enabled, any ROS node can send UI commands (those typed after pressing enter) by publishing to /flexbe/ui_command.">
+					<td width="150">Allow ROS commands: </td>
+					<td><input id="cb_commands_enabled" type="checkbox" /> (requires ROS connection)</td>
+				</tr>
+				<tr title="If not empty, UI command messages are only accepted if their keys match. This helps to only let authorized nodes execute commands.">
+					<td width="150">ROS command key: </td>
+					<td><input id="input_commands_key" type="password" class="input_field" /></td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="box">
+			<h1>ROS Properties</h1>
+			<font style="color: gray">
+				Overview of the ROS connection and FlexBE-related configuration.
+			</font>
+			<table  class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
+				<tr>
+					<td width="150">ROS Status: </td>
+					<td>
+						<input id="ros_prop_status" class="input_field" type="text" style="width:160px;border:none" readonly />
+						<input id="button_ros_connect" type="button" value="Disconnect" />
+					</td>
+				</tr>
+				<tr>
+					<td width="150">Namespace: </td>
+					<td><input id="ros_prop_namespace" class="input_field" type="text" style="border:none;font-family:monospace" readonly /></td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="box">
+			<h1>Workspace</h1>
+			<font style="color: gray">
+				Provides an overview of available state and behavior packages.
+			</font>
+			<table class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
+				<tr><td>Behavior Packages:</td></tr>
+				<tr><td id="workspace_behavior_packages"><i>none</i></td></tr>
+			</table>
+			<table class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
+				<tr><td>State Packages:</td></tr>
+				<tr><td id="workspace_state_packages"><i>none</i></td></tr>
+				<!--<tr>
+					<td colspan="2">
+						<input id="button_force_discover" type="button" value="Force Discover" title="Force discovery of new state or behavior packages. This is only required if you add the export statement to an already existing package." />
+					</td>
+				</tr>-->
+			</table>
+		</div>
+
+		<div class="box">
+			<h1>Behavior Synthesis</h1>
+			<font style="color: gray">
+				Incorporate any compatible external synthesis tool in order to automatically generate state machines.
+			</font>
+			<table  class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
+				<tr title="If enabled, adds a synthesis interface to the property panel of containers in the editor in order to send synthesis requests.">
+					<td width="150">Enable synthesis: </td>
+					<td><input id="cb_synthesis_enabled" type="checkbox" /> (requires ROS connection)</td>
+				</tr>
+				<tr title="The topic used by the action server of the synthesis node.">
+					<td width="150">Action topic: </td>
+					<td><input id="input_synthesis_topic" type="text" class="input_field" /></td>
+				</tr>
+				<tr title="Message type of the action interface. Needs to be interpretable by this app (see tutorial).">
+					<td width="150">Action type: </td>
+					<td><input id="input_synthesis_type" type="text" class="input_field" /></td>
+				</tr>
+				<tr title="Optional system identification string passed to the synthesis node when sending requests.">
+					<td width="150">System: </td>
+					<td><input id="input_synthesis_system" type="text" class="input_field" /></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div id="panel_properties" class="sidepanel">
+		<div id="panel_properties_state" style="display: none;">
+			<div style="font-weight: bold;">
+				<input id="input_prop_state_name" class="inline_title_text_edit" type="text" />
+			</div>
+			<div id="label_prop_state_class" style="font-style: italic; padding: 0px 5px; color: gray;"></div>
+
+			<div id="label_prop_state_desc"  class="sidepanel_category" style="color: gray;"></div>
+
+			<div id="panel_prop_parameters" class="sidepanel_category">
+				<b>Parameters</b>
+				<table id="panel_prop_parameters_content" class="sidepanel_table">
+					
+				</table>
+			</div>
+			<div id="panel_prop_autonomy" class="sidepanel_category">
+				<b>Required Autonomy Levels</b>
+				<table id="panel_prop_autonomy_content" class="sidepanel_table">
+					
+				</table>
+			</div>
+			<div id="panel_prop_input_keys" class="sidepanel_category">
+				<b>Input Key Mapping</b>
+				<table id="panel_prop_input_keys_content" class="sidepanel_table">
+					
+				</table>
+			</div>
+			<div id="panel_prop_output_keys" class="sidepanel_category">
+				<b>Output Key Mapping</b>
+				<table id="panel_prop_output_keys_content" class="sidepanel_table">
+					
+				</table>
+			</div>
+
+			<input id="button_apply_properties" type="button" value="Apply" />
+			<input id="button_close_properties" type="button" value="Close" />
+			&nbsp;&nbsp;&nbsp;
+			<input id="button_delete_state" type="button" value="Delete" />
+		</div>
+
+		<div id="panel_properties_behavior" style="display: none;">
+			<div style="font-weight: bold;">
+				<input id="input_prop_be_name" class="inline_title_text_edit" type="text" />
+			</div>
+			<div id="label_prop_be_class" style="font-style: italic; padding: 0px 5px; color: gray;"></div>
+
+			<div id="label_prop_be_desc"  class="sidepanel_category" style="color: gray;"></div>
+
+			<input id="button_view_behavior" type="button" value="Open this Behavior" />
+
+			<div id="panel_prop_be_autonomy" class="sidepanel_category">
+				<b>Required Autonomy Levels</b>
+				<table id="panel_prop_be_autonomy_content" class="sidepanel_table">
+					
+				</table>
+			</div>
+			<div id="panel_prop_be_input_keys" class="sidepanel_category">
+				<b>Input Key Mapping</b>
+				<table id="panel_prop_be_input_keys_content" class="sidepanel_table">
+					
+				</table>
+			</div>
+			<div id="panel_prop_be_output_keys" class="sidepanel_category">
+				<b>Output Key Mapping</b>
+				<table id="panel_prop_be_output_keys_content" class="sidepanel_table">
+					
+				</table>
+			</div>
+
+			<input id="button_close_be_properties" type="button" value="Close" />
+			&nbsp;&nbsp;&nbsp;
+			<input id="button_delete_be" type="button" value="Delete" />
+		</div>
+
+		<div id="panel_properties_statemachine">
+			<div style="font-weight: bold;">
+				<input id="input_prop_sm_name" class="inline_title_text_edit" type="text" />
+			</div>
+			<div style="font-style: italic; padding: 0px 5px; margin-top: 5px; color: gray;">
+				Type: 
+				<select id="select_container_type">
+					<option value="statemachine">Statemachine</option>
+					<option value="concurrency">Concurrency</option>
+					<option value="priority">Priority</option>
+				</select>
+				<div id="doc_container_type" style="margin-top: 5px;">
+					Sequential execution based on outcomes.
+				</div>
+			</div>
+
+			<br /><input id="button_view_statemachine" type="button" value="Open this Container" />
+			<div id="synthesis_display_option" style="display: inline;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<input id="cb_display_synthesis" type="checkbox" /> Display synthesis
+			</div>
+
+			<div id="panel_prop_sm_synthesis" class="sidepanel_category" style="display: none;">
+				<b>Synthesis</b>
+
+				<table class="sidepanel_table"><tr><td>
+				Initial Conditions:
+				</td></tr><tr><td>
+				<input id="input_prop_synthesis_initial" type="text" class="input_field" />
+				</td></tr><tr><td>
+				Goal:
+				</td></tr><tr><td>
+				<input id="input_prop_synthesis_goal" type="text" class="input_field" />
+				</td></tr><tr><td>
+				<br />
+				<input id="button_prop_synthesize" type="button" value="Synthesize" />
+				&nbsp;&nbsp;&nbsp;
+				<div id="label_synthesis_feedback" style="display: inline;">This will delete the current content!</div>
+				</td></tr></table>
+			</div>
+
+			<div id="panel_prop_sm_autonomy" class="sidepanel_category">
+				<b>Outcomes</b>
+				<table id="panel_prop_sm_outcomes_content" class="sidepanel_table">
+					
+				</table>
+				<table class="sidepanel_table"><tr><td>
+					<input id="input_prop_outcome_add" type="text" class="input_field" />
+				</td><td>
+					<input id="button_prop_outcome_add" type="button" value="Add" />
+				</td></tr></table>
+			</div>
+			<div id="panel_prop_sm_input_keys" class="sidepanel_category">
+				<b>Input Keys</b>
+				<table id="panel_prop_sm_input_keys_content" class="sidepanel_table">
+					
+				</table>
+				<table class="sidepanel_table"><tr><td>
+					<input id="input_prop_input_key_add" type="text" class="input_field" />
+				</td><td>
+					<input id="button_prop_input_key_add" type="button" value="Add" />
+				</td></tr></table>
+			</div>
+			<div id="panel_prop_sm_output_keys" class="sidepanel_category">
+				<b>Output Keys</b>
+				<table id="panel_prop_sm_output_keys_content" class="sidepanel_table">
+					
+				</table>
+				<table class="sidepanel_table"><tr><td>
+					<input id="input_prop_output_key_add" type="text" class="input_field" />
+				</td><td>
+					<input id="button_prop_output_key_add" type="button" value="Add" />
+				</td></tr></table>
+			</div>
+
+			<input id="button_close_sm_properties" type="button" value="Close" />
+			&nbsp;&nbsp;&nbsp;
+			<input id="button_delete_sm" type="button" value="Delete" />
+		</div>
+	</div>
+
+	<div id="panel_add_state" class="sidepanel">
+		<div class="sidepanel_title_text">
+			Add New State
+		</div>
+		<div class="sidepanel_category">
+			<table class="sidepanel_table">
+				<tr>
+					<td>Name: </td>
+					<td><input id="add_state_name" type="text" class="inline_text_edit" /></td>
+				</tr>
+				<tr>
+					<td>Class: </td>
+					<td><input id="add_state_class" readonly="readonly" style="border: none; width:100%" /></td>
+				</tr>
+			</table>
+		</div>
+		<input id="button_add_state_confirm" type="button" value="Add" />
+		<input id="button_add_state_cancel" type="button" value="Cancel" />
+		<div class="sidepanel_category">
+			<b>Class Selection</b>
+			<table class="sidepanel_table">
+				<tr>
+					<td>Filter: </td>
+					<td><input id="input_class_filter" type="text" style="width:100%" /></td>
+				</tr>
+			</table>
+		</div>
+		<div id="panel_class_select"></div>
+	</div>
+
+	<div id="panel_select_behavior" class="sidepanel">
+		<div class="sidepanel_title_text">
+			Select Behavior
+		</div>
+		
+		<div class="sidepanel_category">
+			<table class="sidepanel_table">
+				<tr>
+					<td>Filter:&nbsp;&nbsp;&nbsp;</td>
+					<td><input id="input_behavior_filter" type="text" style="width:100%" /></td>
+					<td><input id="button_select_behavior_cancel" type="button" value="Cancel" /></td>
+				</tr>
+				<tr>
+					<td>Tags: </td>
+					<td colspan="2" id="behavior_tag_filter" style="width:100%"></td>
+				</tr>
+			</table>
+		</div>
+		<div id="panel_select_behavior_selection"></div>
+	</div>
+
+	<div id="terminal">
+		
+	</div>
+
+	<div class="emptypage">
+
+	</div>
+
+	<div id="add_state_panel" style="display: none; position: absolute; top: 100px; left: 100px; background-color: white; border: 1px solid black;">
+		
+	</div>
+
+	<div id="tool_overlay">
+		<div id="tool_overlay_undo" class="tool_overlay_button">undo</div>
+		<div id="tool_overlay_copy" class="tool_overlay_button">copy</div>
+		<div id="tool_overlay_cut" class="tool_overlay_button">cut</div>
+		<div id="tool_overlay_redo" class="tool_overlay_button">redo</div>
+		<div id="tool_overlay_paste" class="tool_overlay_button">paste</div>
+		<div id="tool_overlay_dfg" class="tool_overlay_button"><img src="img/dataflow_white.png"></div>
+		<div id="tool_overlay_terminal" class="tool_overlay_button"><img src="img/title_terminal_white.png"></div>
+		<div id="tool_overlay_save" class="tool_overlay_button"><img src="img/file_save_white.png"></div>
+	</div>
+	<div id="history_overlay">
+		<div id="history_info"></div>
+		<div>
+			<b><i>Activity History</i></b>
+			<div id="history_list"></div>
+		</div>
+	</div>
+	<div id="command_overlay_suggestions"></div>
+	<div id="command_overlay">
+		<input id="tool_input_command" type="text" />
+	</div>
+
+	<div id="note_editor">
+		<textarea id="input_note_editor_text" rows="5"></textarea>
+		<input id="button_note_editor_delete" type="button" style="float: right;" value="Delete" />
+		<input id="button_note_editor_save" type="button" value="Save" />
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input id="cb_note_editor_important" type="checkbox"> important?
+	</div>
+
+</body>
+</html>

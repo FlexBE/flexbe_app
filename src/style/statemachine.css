@@ -1,0 +1,16 @@
+#statemachine {
+	position: absolute;
+	top: 80px;
+	left: calc(100% + 50px);
+	height: calc(100% - 80px);
+	width: 100%;
+	transition: all 0.5s ease;
+}
+
+#drawing_area {
+	width: calc(100% - 20px);
+	height: calc(100% - 20px);
+	padding: 0;
+	border: none;
+	background-color: #eee;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "FlexBE App",
+  "version": "2.0.0",
+  "main": "src/window.html",
+  "window": {
+    "icon": "src/img/icon-128.png",
+    "toolbar": false,
+    "width": 1340,
+    "height": 830,
+    "min_width": 1340,
+    "min_height": 650
+  }
+}
