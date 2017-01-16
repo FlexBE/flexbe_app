@@ -41,7 +41,6 @@ IO.CodeGenerator = new (function() {
 			import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass());
 		}
 		// put together
-		code += "import roslib; roslib.load_manifest('" + names.rosnode_name + "')\n";
 		code += "from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger\n";
 		code += import_list.join("\n");
 		code += "\n";
