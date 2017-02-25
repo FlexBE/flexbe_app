@@ -32,9 +32,9 @@ Drawable.Helper = new (function() {
 		var pos_left  = o.x - m - t.width;
 
 		var transformations = [];
-		if (pos_above > 0)
-			transformations.push({ x: 0, y: pos_above - t.y });
 		transformations.push({ x: pos_right - t.x, y: 0 });
+		if (pos_above > 20)
+			transformations.push({ x: 0, y: pos_above - t.y });
 		transformations.push({ x: 0, y: pos_below - t.y });
 		if (pos_left > 0)
 			transformations.push({ x: pos_left - t.x, y: 0 });
