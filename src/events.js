@@ -155,6 +155,15 @@ document.addEventListener('DOMContentLoaded', function() {
         ROS.shutdown();
     });
 
+    nw.App.on('open', () => {
+        nw.Window.open('src/window.html', {
+            'width': 1340,
+            'height': 830,
+            'min_width': 1340,
+            'min_height': 650
+        });
+    });
+
     nw.Window.get().on('close', function() {
         var allow_close = true;
         if (RC.Controller.isReadonly() || RC.Controller.isRunning()) {
