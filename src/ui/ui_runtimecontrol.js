@@ -718,8 +718,10 @@ UI.RuntimeControl = new (function() {
 
 		if (target != undefined) {
 			outcome_request.target = target.getStatePath();
-			drawStatusLabel("Onboard requested outcome: " + target.getStateName() + " > " + outcome);
-			updateDrawing();
+			if (R != undefined) {
+				drawStatusLabel("Onboard requested outcome: " + target.getStateName() + " > " + outcome);
+				updateDrawing();
+			}
 		}
 	}
 
