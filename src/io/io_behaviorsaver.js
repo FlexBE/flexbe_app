@@ -16,12 +16,18 @@ IO.BehaviorSaver = new (function() {
 			var file_path = path.join(folder_path, names.file_name);
 			var file_tmp_path = path.join(folder_path, names.file_name_tmp);
 			if (RC.Controller.isConnected()) {
-				IO.Filesystem.checkFileExists(folder_path, names.file_name_tmp, function(exists) {
-					if (!exists) {
-						IO.Filesystem.getFileContent(folder_path, names.file_name, function(content_onboard) {
-							IO.Filesystem.createFile(folder_path, names.file_name_tmp, content_onboard, function() { 
+				IO.Filesystem.checkFileExists(folder_path, names.file_name_tmp, function(tmp_exists) {
+					if (!tmp_exists) {
+						IO.Filesystem.checkFileExists(folder_path, names.file_name_tmp, function(src_exists) {
+							if (src_exists) {
+								IO.Filesystem.getFileContent(folder_path, names.file_name, function(content_onboard) {
+									IO.Filesystem.createFile(folder_path, names.file_name_tmp, content_onboard, function() { 
+										create_callback(folder_path);
+									});
+								});
+							} else {
 								create_callback(folder_path);
-							});
+							}
 						});
 					} else {
 						create_callback(folder_path);
