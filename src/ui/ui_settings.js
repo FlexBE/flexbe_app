@@ -130,6 +130,7 @@ UI.Settings = new (function() {
 
 				that.createBehaviorPackageSelect(document.getElementById("select_default_package"));
 				that.createBehaviorPackageSelect(document.getElementById("select_behavior_package"));
+				Behavior.setBehaviorPackage(document.getElementById('select_behavior_package').value);
 
 				// async
 				that.updateStatelib();
