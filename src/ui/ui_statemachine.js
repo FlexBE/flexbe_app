@@ -192,7 +192,7 @@ UI.Statemachine = new (function() {
 
 	var initializeDrawingArea = function() {
 		R = Raphael("drawing_area");
-		drag_indicator = R.rect(0,0,10,10).attr({opacity: 0});
+		drag_indicator = R.rect(0,0,1,1).attr({opacity: 0});
 		selection_area = R.rect(0,0,0,0).attr({opacity: 0, stroke: "#000", 'stroke-dasharray': "--", fill: "rgba(250,250,250,0.4)", 'stroke-width': 0.5})
 			.drag(updateSelectionMove, beginSelectionMove, endSelectionMove);
 

@@ -152,7 +152,9 @@ Drawable.Helper = new (function() {
 		var container = state.getContainer();
 		var state_name = state.getStateName();
 		var old_pos = state.getPosition();
-		var new_pos = UI.Statemachine.getDragIndicator().attr(['x', 'y']);
+		var new_pos = (UI.Statemachine.getDragIndicator().attr(['width']) > 1)?
+			UI.Statemachine.getDragIndicator().attr(['x', 'y']):
+			state.getPosition();
 		new_pos.x -= UI.Statemachine.getPanShift().x;
 		new_pos.y -= UI.Statemachine.getPanShift().y;
 
