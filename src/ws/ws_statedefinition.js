@@ -11,7 +11,10 @@ WS.StateDefinition = function(state_class, state_desc, state_path, parameters, o
 	var output_keys = output_keys;
 	var default_parameter_values = parameter_values;
 	var default_autonomy = autonomy;
-	var class_vars;
+	var class_vars = class_vars;
+	var file_path = undefined;
+
+	this.setFilePath = function(_file_path) { file_path = _file_path; }
 
 
 	this.getStateClass = function() { return state_class; }
@@ -32,5 +35,7 @@ WS.StateDefinition = function(state_class, state_desc, state_path, parameters, o
 	this.getOutcomeDesc = function() { return state_desc.getOutcomes(); }
 
 	this.getClassVariables = function() { return class_vars; }
+
+	this.getFilePath = function() { return file_path; }
 
 };

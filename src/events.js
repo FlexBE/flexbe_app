@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cb_display_synthesis').addEventListener('change', UI.Panels.StateProperties.displaySynthesisClicked);
     document.getElementById('button_prop_synthesize').addEventListener('click', UI.Panels.StateProperties.synthesizeClicked);
 
+    document.getElementById('button_view_state').addEventListener('click', UI.Panels.StateProperties.openState);
     document.getElementById('button_view_behavior').addEventListener('click', UI.Panels.StateProperties.openBehavior);
     document.getElementById('button_view_statemachine').addEventListener('click', UI.Panels.StateProperties.openStatemachine);
     document.getElementById('button_prop_outcome_add').addEventListener('click', UI.Panels.StateProperties.addSMOutcome);

@@ -1,6 +1,8 @@
 UI.Panels.StateProperties = new (function() {
 	var that = this;
 
+	var spawn = require('child_process').spawn;
+
 	var current_prop_state;
 	var apply_pulse = undefined;
 
@@ -617,6 +619,21 @@ UI.Panels.StateProperties = new (function() {
 		if (current_prop_state == undefined) return false;
 		
 		return current_prop_state.getStatePath() == state.getStatePath();
+	}
+
+	this.openState = function() {
+		var state_class = current_prop_state.getStateClass();
+		var state_definition = WS.Statelib.getFromLib(state_class);
+		try {
+			var file_path = state_definition.getFilePath();
+			var command = UI.Settings.getEditorCommand(file_path).split(' ');
+			var proc = spawn(command[0], command.slice(1));
+			proc.stderr.on('data', (data) => {
+				T.logError(data);
+			});
+		} catch (err) {
+			T.logError("Unable to open state in editor: " + err);
+		}
 	}
 
 	this.openStatemachine = function() {

@@ -38,4 +38,12 @@ WS.Statelib = new (function() {
 		statelib.push(state);
 	}
 
+	this.updateDef = function(state_def) {
+		var state_class = state_def.getStateClass();
+		statelib.remove(statelib.findElement(
+			(state) => state.getStateClass() == state_class)
+		);
+		statelib.push(state_def);
+	}
+
 }) ();

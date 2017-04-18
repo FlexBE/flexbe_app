@@ -6,6 +6,7 @@ IO.PackageParser = new (function() {
 
 
 	var dom_parser = new DOMParser();
+	var watched_states = {};
 
 	this.discover = function(pkg_cache, callback) {
 		var add_states = [];
@@ -47,6 +48,29 @@ IO.PackageParser = new (function() {
 		callback(hasStates, hasBehaviors);
 	}
 
+	var watchStateFolder = function(folder_path, import_path) {
+		if (watched_states[folder_path] != undefined) return;
+
+		// watched_states[folder_path] = fs.watch(folder_path,
+		// 	{persistent: false},
+		// 	(eventType, filename) => {
+		// 		if (eventType == 'change') {
+		// 			var entry = path.join(folder_path, filename);
+		// 			IO.Filesystem.readFile(entry, (content) => {
+		// 				var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
+		// 				var state_def = IO.StateParser.parseState(content, imports);
+		// 				if (state_def != undefined) {
+		// 					state_def.setFilePath(entry);
+		// 					WS.Statelib.updateDef(state_def);
+		// 					T.logInfo("Updating changed definition for state: " + state_def.getStateClass());
+		// 					// TODO update defs for existing states and re-draw
+		// 				}
+		// 			});
+		// 		}
+		// 	}
+		// );
+	}
+
 	this.parseStateFolder = function(folder, import_path, has_init) {
 		IO.Filesystem.checkFileExists(folder, "__init__.py", function(exists) {
 			has_init = has_init || exists;
@@ -64,7 +88,9 @@ IO.PackageParser = new (function() {
 							var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
 							var state_def = IO.StateParser.parseState(content, imports);
 							if (state_def != undefined) {
+								state_def.setFilePath(entry);
 								WS.Statelib.addToLib(state_def);
+								watchStateFolder(folder, import_path);
 							}
 						});
 					}
