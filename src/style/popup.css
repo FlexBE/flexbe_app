@@ -88,10 +88,10 @@
 
 #panel_class_select {
 	width: 345px;
-	height: calc(100% - 180px);
+	height: calc(100% - 205px);
 	padding: 0;
 	margin: 0;
-	margin-top: -15px;
+	margin-top: -12px;
 	overflow: auto;
 }
 .panel_class_select_class {
@@ -111,7 +111,7 @@
 #panel_select_behavior_selection {
 	position: relative;
 	width: 345px;
-	height: calc(100% - 110px);
+	height: calc(100% - 130px);
 	padding: 0;
 	margin: 0;
 	margin-top: 5px;

@@ -606,9 +606,14 @@
 			<div style="font-weight: bold;">
 				<input id="input_prop_state_name" class="inline_title_text_edit" type="text" />
 			</div>
-			<div id="label_prop_state_class" style="font-style: italic; padding: 0px 5px; color: gray;"></div>
+			<table class="sidepanel_table" style="font-style: italic; padding: 0px 5px; color: gray;">
+				<tr><td style="width: 60px">Type:</td>
+					<td id="label_prop_state_class"></td></tr>
+				<tr><td>Package:</td>
+					<td id="label_prop_state_package"></td></tr>
+			</table>
 
-			<div id="label_prop_state_desc"  class="sidepanel_category" style="color: gray;"></div>
+			<div id="label_prop_state_desc"  class="sidepanel_category" style="color: gray; margin-top: 5px"></div>
 
 			<input id="button_view_state" type="button" value="View Source" />
 
@@ -647,9 +652,14 @@
 			<div style="font-weight: bold;">
 				<input id="input_prop_be_name" class="inline_title_text_edit" type="text" />
 			</div>
-			<div id="label_prop_be_class" style="font-style: italic; padding: 0px 5px; color: gray;"></div>
+			<table class="sidepanel_table" style="font-style: italic; padding: 0px 5px; color: gray;">
+				<tr><td style="width: 60px">Type:</td>
+					<td id="label_prop_be_class"></td></tr>
+				<tr><td>Package:</td>
+					<td id="label_prop_be_package"></td></tr>
+			</table>
 
-			<div id="label_prop_be_desc"  class="sidepanel_category" style="color: gray;"></div>
+			<div id="label_prop_be_desc"  class="sidepanel_category" style="color: gray; margin-top: 5px"></div>
 
 			<input id="button_view_behavior" type="button" value="Open this Behavior" />
 
@@ -768,7 +778,7 @@
 					<td><input id="add_state_name" type="text" class="inline_text_edit" /></td>
 				</tr>
 				<tr>
-					<td>Class: </td>
+					<td>Type: </td>
 					<td><input id="add_state_class" readonly="readonly" style="border: none; width:100%" /></td>
 				</tr>
 			</table>
@@ -776,8 +786,12 @@
 		<input id="button_add_state_confirm" type="button" value="Add" />
 		<input id="button_add_state_cancel" type="button" value="Cancel" />
 		<div class="sidepanel_category">
-			<b>Class Selection</b>
+			<b>Type Selection</b>
 			<table class="sidepanel_table">
+				<tr>
+					<td>Package: </td>
+					<td><select id="input_package_filter" style="width:100%" /></td>
+				</tr>
 				<tr>
 					<td>Filter: </td>
 					<td><input id="input_class_filter" type="text" style="width:100%" /></td>
@@ -795,8 +809,12 @@
 		<div class="sidepanel_category">
 			<table class="sidepanel_table">
 				<tr>
-					<td>Filter:&nbsp;&nbsp;&nbsp;</td>
-					<td><input id="input_behavior_filter" type="text" style="width:100%" /></td>
+					<td>Package:&nbsp;&nbsp;&nbsp;</td>
+					<td colspan="2"><select id="input_behavior_package_filter" style="width:100%" /></td>
+				</tr>
+				<tr>
+					<td>Filter: </td>
+					<td style="width:100%"><input id="input_behavior_filter" type="text" style="width:100%" /></td>
 					<td><input id="button_select_behavior_cancel" type="button" value="Cancel" /></td>
 				</tr>
 				<tr>

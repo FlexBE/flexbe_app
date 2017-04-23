@@ -155,15 +155,16 @@ UI.Settings = new (function() {
 		});
 	}
 
-	this.createBehaviorPackageSelect = function(select_el) {
+	this.createBehaviorPackageSelect = function(select_el, add_all_option) {
 		select_el.innerHTML = "";
 		if (behavior_pkg_cache == undefined || behavior_pkg_cache.length == 0) {
 			return;
 		}
-		var default_package_index = behavior_pkg_cache.map((pkg) => { return pkg['name']; }).indexOf(default_package);
-		if (default_package_index < 0) {
-			default_package_index = 0;
-			default_package = behavior_pkg_cache[0]['name'];
+		if (add_all_option) {
+			var option = document.createElement("option");
+			option.setAttribute("value", "ALL");
+			option.innerText = "ALL";
+			select_el.appendChild(option);
 		}
 		for (var i=0; i<behavior_pkg_cache.length; i++) {
 			var option = document.createElement("option");
@@ -171,7 +172,14 @@ UI.Settings = new (function() {
 			option.innerText = behavior_pkg_cache[i]["name"];
 			select_el.appendChild(option);
 		}
-		select_el.selectedIndex = default_package_index;
+		if (!add_all_option) {
+			var default_package_index = behavior_pkg_cache.map((pkg) => { return pkg['name']; }).indexOf(default_package);
+			if (default_package_index < 0) {
+				default_package_index = 0;
+				default_package = behavior_pkg_cache[0]['name'];
+			}
+			select_el.selectedIndex = default_package_index;
+		}
 	}
 
 	this.createStatePackageSelect = function(select_el, add_all_option) {

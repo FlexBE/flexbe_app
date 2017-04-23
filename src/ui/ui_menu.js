@@ -225,6 +225,7 @@ UI.Menu = new (function() {
 				);
 			});
 		});
+		UI.Panels.SelectBehavior.enableHover();
 		UI.Panels.SelectBehavior.show();
 	}
 

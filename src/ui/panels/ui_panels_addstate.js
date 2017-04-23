@@ -3,16 +3,85 @@ UI.Panels.AddState = new (function() {
 
 	var statelib = [];
 
-	var filterClassList = function(filter_exp) {
-		if (filter_exp == "") {
-			displayStatelib();
-			return;
+	var addHoverDetails = function(el, state_def) {
+		var details = "<div style='margin-bottom: 0.5em;'>Package: <i>" + state_def.getStatePackage() + "</i></div>";
+		var params = state_def.getParameters();
+		if (params.length > 0) {
+			details += "<div style='margin-bottom: 0.5em;'>Parameters:";
+			params.forEach(param => {
+				details += "<br />&nbsp;&nbsp;- " + param;
+				var doc = state_def.getParamDesc().findElement(desc => { return desc.name == param; });
+				if (doc != undefined) details += "&nbsp;&nbsp;<i>" + doc.type + "</i>";
+			});
+			details += "</div>";
+		}
+		var input_keys = state_def.getInputKeys().filter(key => !key.startsWith("$"));
+		if (input_keys.length > 0) {
+			details += "<div style='margin-bottom: 0.5em;'>Input Keys:";
+			input_keys.forEach(key => {
+				details += "<br />&nbsp;&nbsp;- " + key;
+				var doc = state_def.getInputDesc().findElement(desc => { return desc.name == key; });
+				if (doc != undefined) details += "&nbsp;&nbsp;<i>" + doc.type + "</i>";
+			});
+			details += "</div>";
+		}
+		var output_keys = state_def.getOutputKeys().filter(key => !key.startsWith("$"));
+		if (output_keys.length > 0) {
+			details += "<div style='margin-bottom: 0.5em;'>Output Keys:";
+			output_keys.forEach(key => {
+				details += "<br />&nbsp;&nbsp;- " + key;
+				var doc = state_def.getOutputDesc().findElement(desc => { return desc.name == key; });
+				if (doc != undefined) details += "&nbsp;&nbsp;<i>" + doc.type + "</i>";
+			});
+			details += "</div>";
+		}
+		var outcomes = state_def.getOutcomes().filter(outcome => !outcome.startsWith("$"));
+		if (outcomes.length > 0) {
+			details += "<div style='margin-bottom: 0em;'>Outcomes:";
+			outcomes.forEach(outcome => {
+				details += "<br />&nbsp;&nbsp;- " + outcome;
+			});
+			details += "</div>";
 		}
 
-		var begin_list = statelib.filter(function(element) {
+		el.addEventListener('mouseover', function() {
+			var rect = this.getBoundingClientRect();
+			var tt = document.createElement("div");
+			tt.setAttribute("style", "right: 370px; top: " + rect.top + "px; display: block;");
+			tt.setAttribute("class", "sidepanel_tooltip");
+			tt.setAttribute("id", "add_state_tooltip");
+			tt.innerHTML = details;
+			document.getElementsByTagName("body")[0].appendChild(tt);
+			if (tt.getBoundingClientRect().bottom >= window.innerHeight - 5) {
+				tt.setAttribute("style", "right: 370px; bottom: 5px; display: block;");
+			}
+		});
+		el.addEventListener('mouseout', removeHover);
+	}
+
+	var removeHover = function() {
+		var tt = document.getElementById("add_state_tooltip");
+		if (tt != undefined) {
+			tt.parentNode.removeChild(tt);
+		}
+	}
+
+	var filterClassList = function() {
+		removeHover();
+		document.getElementById('panel_class_select').innerHTML = "";
+		var filter_exp = document.getElementById("input_class_filter").value.toLowerCase();
+		var filter_pkg = document.getElementById("input_package_filter").value;
+
+		var filtered_lib = (filter_pkg == "ALL")?
+			statelib :
+			statelib.filter(function(element) {
+				return WS.Statelib.getFromLib(element).getStatePackage() == filter_pkg;
+			});
+
+		var begin_list = filtered_lib.filter(function(element) {
 			return element.toLowerCase().indexOf(filter_exp) == 0;
 		});
-		var contain_list = statelib.filter(function(element) {
+		var contain_list = filtered_lib.filter(function(element) {
 			return element.toLowerCase().indexOf(filter_exp) > 0;
 		});
 
@@ -29,12 +98,6 @@ UI.Panels.AddState = new (function() {
 		}
 	};
 
-	var displayStatelib = function() {
-		document.getElementById('panel_class_select').innerHTML = "";
-
-		displayStateClasses(statelib);
-	};
-
 	var displayStateClasses = function(class_list) {
 		var panel_class_select = document.getElementById('panel_class_select');
 
@@ -48,12 +111,13 @@ UI.Panels.AddState = new (function() {
 			class_div.setAttribute("class", "panel_class_select_class");
 			class_div.setAttribute("value", state_def.getStateClass());
 			class_div.innerHTML =
-				  '<b>' + state_def.getStateClass() + '</b><br />'
+				  '<b>' + state_def.getStateClass() + '</b><br>'
 				+ '<i>' + state_def.getShortDesc() + '</i>';
 
 			class_div.addEventListener('click', function() {
 				document.getElementById('add_state_class').value = this.getAttribute("value");
 			});
+			addHoverDetails(class_div, state_def);
 
 			panel_class_select.appendChild(class_div);
 		}
@@ -62,14 +126,16 @@ UI.Panels.AddState = new (function() {
 
 	this.show = function() {
 		statelib = WS.Statelib.getClassList();
-		displayStatelib();
+		displayStateClasses(statelib);
 		UI.Panels.setActivePanel(UI.Panels.ADD_STATE_PANEL);
+		UI.Settings.createStatePackageSelect(document.getElementById("input_package_filter"), true);
 	}
 
 	this.hide = function() {
 		UI.Panels.hidePanelIfActive(UI.Panels.ADD_STATE_PANEL);
 		document.getElementById("input_class_filter").value = "";
 		document.activeElement.blur();
+		removeHover();
 	}
 
 	this.addStateConfirmClicked = function() {
@@ -89,7 +155,7 @@ UI.Panels.AddState = new (function() {
 		document.getElementById("add_state_name").value = "";
 		document.getElementById("add_state_class").value = "";
 		document.getElementById("input_class_filter").value = "";
-		UI.Panels.AddState.classFilterChanged();
+		UI.Panels.AddState.filterChanged();
 
 		UI.Statemachine.refreshView();
 		UI.Panels.StateProperties.displayStateProperties(new_state);
@@ -116,9 +182,8 @@ UI.Panels.AddState = new (function() {
 		);
 	}
 
-	this.classFilterChanged = function() {
-		document.getElementById('panel_class_select').innerHTML = "";
-		filterClassList(document.getElementById("input_class_filter").value.toLowerCase());
+	this.filterChanged = function() {
+		filterClassList();
 	}
 
 	this.addStateCancelClicked = function() {

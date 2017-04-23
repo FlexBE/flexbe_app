@@ -87,8 +87,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('input_prop_state_name').addEventListener('blur', UI.Panels.StateProperties.statePropNameChanged);
     document.getElementById('input_prop_be_name').addEventListener('blur', UI.Panels.StateProperties.statePropNameChanged);
     document.getElementById('input_prop_sm_name').addEventListener('blur', UI.Panels.StateProperties.statePropNameChanged);
-    document.getElementById('input_class_filter').addEventListener('keyup', UI.Panels.AddState.classFilterChanged);
+
+    document.getElementById('input_class_filter').addEventListener('keyup', UI.Panels.AddState.filterChanged);
+    document.getElementById('input_package_filter').addEventListener('change', UI.Panels.AddState.filterChanged);
     document.getElementById('input_behavior_filter').addEventListener('keyup', UI.Panels.SelectBehavior.behaviorFilterChanged);
+    document.getElementById('input_behavior_package_filter').addEventListener('change', UI.Panels.SelectBehavior.behaviorFilterChanged);
 
 // Runtime Control
     document.getElementById('button_rc_connect').addEventListener('click', UI.RuntimeControl.connectClicked);

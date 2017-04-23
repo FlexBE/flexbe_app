@@ -3,7 +3,7 @@ Drawable.Statemachine = function(state_obj, target_paper, readonly, mode, active
 
 	var paper = target_paper;
 	var width = 0;
-	var height = 57;
+	var height = 60;
 	var result = {};
 	var state = paper.set();
 	var state_obj = state_obj;
@@ -12,7 +12,7 @@ Drawable.Statemachine = function(state_obj, target_paper, readonly, mode, active
 	// Title
 	//-------
 
-	state_name = paper.text(8, 10, state_obj.getStateName())
+	state_name = paper.text(8, 13, state_obj.getStateName())
 		.attr({"text-anchor": 'start', "font-weight": 'bold'});
 	if (!readonly) state_name
 		.attr({'cursor': 'pointer'})
@@ -21,7 +21,7 @@ Drawable.Statemachine = function(state_obj, target_paper, readonly, mode, active
 		.dblclick(Drawable.Helper.enterStatemachine);
 	width = Math.max(width, state_name.getBBox().width);
 
-	state_class = paper.text(8, 25, 
+	state_class = paper.text(8, 28, 
 		state_obj.isConcurrent()? "Concurrency":
 		state_obj.isPriority()? "Priority": 
 		"Statemachine")
@@ -33,7 +33,7 @@ Drawable.Statemachine = function(state_obj, target_paper, readonly, mode, active
 		.dblclick(Drawable.Helper.enterStatemachine);
 	width = Math.max(width, state_class.getBBox().width);
 
-	state_childs = paper.text(8, 37, state_obj.getStates().length + " states")
+	state_childs = paper.text(8, 41, state_obj.getStates().length + " states")
 		.attr({"text-anchor": 'start', fill: '#555'});
 	if (!readonly) state_childs
 		.attr({'cursor': 'pointer'})
@@ -128,6 +128,7 @@ Drawable.Statemachine = function(state_obj, target_paper, readonly, mode, active
 	//------------
 
 	width += 50;
+	height -= 2;
 	state_outer_box = paper.rect(0, 0, width, height).toBack();
 	if (!readonly) state_outer_box
 		.attr({'cursor': 'pointer'})

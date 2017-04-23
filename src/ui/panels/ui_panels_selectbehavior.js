@@ -5,13 +5,78 @@ UI.Panels.SelectBehavior = new (function() {
 	var be_list_displayed = [];
 	var selection_callback = undefined;
 	var caret_position = 0;
+	var enable_hover = false;
 
-	var filterBehaviorList = function(filter_exp) {
-		if (filter_exp == "") {
-			displayBehaviors(be_list, true);
-			updateTags();
-			return;
+	var addHoverDetails = function(el, be_def) {
+		var details = "<div style='margin-bottom: 0.5em;'>";
+		details += "Package: <i>" + be_def.getStatePackage() + "</i><br />";
+		details += "Tags: <i>" + be_def.getBehaviorTagList().join(", ") + "</i>";
+		details += "</div>";
+		var params = be_def.getParameters();
+		if (params.length > 0) {
+			details += "<div style='margin-bottom: 0.5em;'>Parameters:";
+			params.forEach(param => {
+				details += "<br />&nbsp;&nbsp;- " + param;
+				var doc = be_def.getParamDesc().findElement(desc => { return desc.name == param; });
+				if (doc != undefined) details += "&nbsp;&nbsp;<i>" + doc.type + "</i>";
+			});
+			details += "</div>";
 		}
+		var input_keys = be_def.getInputKeys().filter(key => !key.startsWith("$"));
+		if (input_keys.length > 0) {
+			details += "<div style='margin-bottom: 0.5em;'>Input Keys:";
+			input_keys.forEach(key => {
+				details += "<br />&nbsp;&nbsp;- " + key;
+				var doc = be_def.getInputDesc().findElement(desc => { return desc.name == key; });
+				if (doc != undefined) details += "&nbsp;&nbsp;<i>" + doc.type + "</i>";
+			});
+			details += "</div>";
+		}
+		var output_keys = be_def.getOutputKeys().filter(key => !key.startsWith("$"));
+		if (output_keys.length > 0) {
+			details += "<div style='margin-bottom: 0.5em;'>Output Keys:";
+			output_keys.forEach(key => {
+				details += "<br />&nbsp;&nbsp;- " + key;
+				var doc = be_def.getOutputDesc().findElement(desc => { return desc.name == key; });
+				if (doc != undefined) details += "&nbsp;&nbsp;<i>" + doc.type + "</i>";
+			});
+			details += "</div>";
+		}
+		var outcomes = be_def.getOutcomes().filter(outcome => !outcome.startsWith("$"));
+		if (outcomes.length > 0) {
+			details += "<div style='margin-bottom: 0em;'>Outcomes:";
+			outcomes.forEach(outcome => {
+				details += "<br />&nbsp;&nbsp;- " + outcome;
+			});
+			details += "</div>";
+		}
+
+		el.addEventListener('mouseover', function() {
+			var rect = this.getBoundingClientRect();
+			var tt = document.createElement("div");
+			tt.setAttribute("style", "right: 370px; top: " + rect.top + "px; display: block;");
+			tt.setAttribute("class", "sidepanel_tooltip");
+			tt.setAttribute("id", "select_behavior_tooltip");
+			tt.innerHTML = details;
+			document.getElementsByTagName("body")[0].appendChild(tt);
+			if (tt.getBoundingClientRect().bottom >= window.innerHeight - 5) {
+				tt.setAttribute("style", "right: 370px; bottom: 5px; display: block;");
+			}
+		});
+		el.addEventListener('mouseout', removeHover);
+	}
+
+	var removeHover = function() {
+		var tt = document.getElementById("select_behavior_tooltip");
+		if (tt != undefined) {
+			tt.parentNode.removeChild(tt);
+		}
+	}
+
+	var filterBehaviorList = function() {
+		removeHover();
+		var filter_exp = document.getElementById("input_behavior_filter").value.toLowerCase();
+		var filter_pkg = document.getElementById("input_behavior_package_filter").value;
 
 		var tag_update_args = {tag: undefined, modifier: undefined};
 		var be_list_tagged = be_list.clone();
@@ -32,6 +97,12 @@ UI.Panels.SelectBehavior = new (function() {
 			}
 			return "";
 		}).trim();
+
+		if (filter_pkg != "ALL") {
+			be_list_tagged = be_list_tagged.filter(function(element) {
+				return WS.Behaviorlib.getByName(element).getStatePackage() == filter_pkg;
+			});
+		}
 
 		var begin_list = be_list_tagged.filter(function(element) {
 			return element.toLowerCase().indexOf(filter_exp) == 0;
@@ -143,6 +214,7 @@ UI.Panels.SelectBehavior = new (function() {
 				selection_callback(m);
 				that.hide();
 			});
+			if (enable_hover) addHoverDetails(behavior_div, WS.Behaviorlib.getByName(b));
 
 			panel.appendChild(behavior_div);
 		});
@@ -151,6 +223,9 @@ UI.Panels.SelectBehavior = new (function() {
 
 	this.setSelectionCallback = function(callback) {
 		selection_callback = callback;
+	}
+	this.enableHover = function() {
+		enable_hover = true;
 	}
 
 	this.show = function() {
@@ -161,6 +236,7 @@ UI.Panels.SelectBehavior = new (function() {
 		be_list = WS.Behaviorlib.getBehaviorList();
 		displayBehaviors(be_list, true);
 		updateTags();
+		UI.Settings.createBehaviorPackageSelect(document.getElementById("input_behavior_package_filter"), true);
 	}
 
 	this.hide = function() {
@@ -168,10 +244,12 @@ UI.Panels.SelectBehavior = new (function() {
 		selection_callback = undefined;
 		document.getElementById("input_behavior_filter").value = "";
 		document.activeElement.blur();
+		enable_hover = false;
+		removeHover();
 	}
 
 	this.behaviorFilterChanged = function() {
-		filterBehaviorList(document.getElementById("input_behavior_filter").value.toLowerCase());
+		filterBehaviorList();
 		caret_position = document.getElementById("input_behavior_filter").selectionStart;
 	}
 

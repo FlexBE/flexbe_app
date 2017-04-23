@@ -133,6 +133,7 @@ State = function(state_name, state_def) {
 	var state_name = state_name;
 	var state_class = state_def.getStateClass();
 	var state_import = state_def.getStatePath();
+	var state_pkg = state_def.getStatePackage();
 	var behavior = undefined;
 
 	var parameters = state_def.getParameters().clone();
@@ -207,6 +208,13 @@ State = function(state_name, state_def) {
 	}
 	this.setStateImport = function(_state_import) {
 		state_import = _state_import;
+	}
+
+	this.getStatePackage = function() {
+		return state_pkg;
+	}
+	this.setStatePackage = function(_state_pkg) {
+		state_pkg = _state_pkg;
 	}
 
 	this.getParameters = function() {

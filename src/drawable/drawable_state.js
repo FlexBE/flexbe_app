@@ -3,7 +3,7 @@ Drawable.State = function(state_obj, target_paper, readonly, mode, active, locke
 
 	var paper = target_paper;
 	var width = 0;
-	var height = 45;
+	var height = 57;
 	var result = {};
 	var state = paper.set();
 	var state_obj = state_obj;
@@ -28,8 +28,17 @@ Drawable.State = function(state_obj, target_paper, readonly, mode, active, locke
 		.click(Drawable.Helper.viewStateProperties);
 	width = Math.max(width, state_class.getBBox().width);
 
+	state_pkg = paper.text(5, 38, state_obj.getStatePackage())
+		.attr({"text-anchor": 'start', fill: '#555'});
+	if (!readonly) state_pkg
+		.attr({'cursor': 'pointer'})
+		.data("state", state_obj)
+		.click(Drawable.Helper.viewStateProperties);
+	width = Math.max(width, state_pkg.getBBox().width);
+
 	state.push(state_name);
 	state.push(state_class);
+	state.push(state_pkg);
 
 
 	// Outcomes
@@ -113,6 +122,7 @@ Drawable.State = function(state_obj, target_paper, readonly, mode, active, locke
 	//------------
 
 	width += 25;
+	height -= 5;
 	state_box = paper.rect(0, 0, width, height).toBack();
 	if (locked) state_box
 		.attr({fill: '120-#eb6:0-#fd9:80', 'stroke-width': 2});

@@ -108,6 +108,7 @@ UI.Panels.StateProperties = new (function() {
 
 		document.getElementById("input_prop_state_name").value = state.getStateName();
 		document.getElementById("label_prop_state_class").innerText = state.getStateClass();
+		document.getElementById("label_prop_state_package").innerText = state.getStatePackage();
 		document.getElementById("label_prop_state_desc").innerText = WS.Statelib.getFromLib(state.getStateClass()).getStateDesc();
 
 		var highlight_apply_button = function() {
@@ -428,6 +429,7 @@ UI.Panels.StateProperties = new (function() {
 
 		document.getElementById("input_prop_be_name").value = state.getStateName();
 		document.getElementById("label_prop_be_class").innerText = state.getBehaviorName();
+		document.getElementById("label_prop_be_package").innerText = state.getStatePackage();
 		document.getElementById("label_prop_be_desc").innerText = WS.Behaviorlib.getByName(state.getBehaviorName()).getBehaviorDesc();
 
 		// Outcomes
