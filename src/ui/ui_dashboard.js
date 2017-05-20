@@ -713,7 +713,7 @@ UI.Dashboard = new (function() {
 					this.value = entry.default;
 				}
 			} else if (entry.type == "numeric") {
-				if (this.value.match(/^[0-9]+(\.[0-9]+)?$/i) == undefined) {
+				if (this.value.match(/^-?[0-9]+(\.[0-9]+)?$/i) == undefined) {
 					this.value = entry.default;
 				}
 				if (parseInt(this.value) < parseInt(entry.additional.min)) {
