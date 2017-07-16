@@ -365,6 +365,7 @@ IO.CodeGenerator = new (function() {
 
 		// prefix
 		var code = "#!/usr/bin/env python\n";
+		code += "# -*- coding: utf-8 -*-\n";
 		code += "###########################################################\n";
 		code += "#               WARNING: Generated code!                  #\n";
 		code += "#              **************************                 #\n";
