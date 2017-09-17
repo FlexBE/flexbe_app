@@ -1,3 +1,6 @@
-#!/bin/bash
-cd "$( dirname "${BASH_SOURCE[0]}" )"/..
+#!/bin/bash -e
+echo -e "\033[1mInstalling nwjs... (this is only done for the first execution)\033[0m"
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+./nwjs_install
+cd ..
 ./nw $*

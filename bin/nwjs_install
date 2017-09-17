@@ -1,0 +1,20 @@
+#!/bin/bash -e
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+TEMPFILE="nwjs.tar.gz"
+cd ..
+
+if [ `uname -m` == "x86_64" ]; then
+	wget -O $TEMPFILE https://dl.nwjs.io/v0.25.1/nwjs-v0.25.1-linux-x64.tar.gz
+else
+	wget -O $TEMPFILE https://dl.nwjs.io/v0.25.1/nwjs-v0.25.1-linux-ia32.tar.gz
+fi
+
+echo "Unpacking..."
+tar -xzf $TEMPFILE --strip-components 1
+rm $TEMPFILE
+cd bin
+
+mv run_app run_app_before_install
+mv run_app_after_install run_app
+
+echo -e "\033[1mInstallation complete!\033[0m"
