@@ -196,7 +196,7 @@ UI.Menu = new (function() {
 			IO.BehaviorLoader.loadBehaviorInterface(manifest, function(smi) {
 				if (smi.class_name != manifest.class_name) T.logWarn("Class names of behavior " + manifest.name + " do not match!");
 				var be_def = WS.Behaviorlib.getByName(manifest.name);
-				var be = new BehaviorState(manifest.name, be_def);
+				var be = new BehaviorState(manifest.name, be_def, []);
 				be.setStateName(Tools.getUniqueName(UI.Statemachine.getDisplayedSM(), be.getStateName()));
 				UI.Statemachine.getDisplayedSM().addState(be);
 				UI.Statemachine.refreshView();
@@ -218,7 +218,7 @@ UI.Menu = new (function() {
 					},
 					function() {
 						var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
-						var redo_state = new BehaviorState(be_name, WS.Behaviorlib.getByName(be_name));
+						var redo_state = new BehaviorState(be_name, WS.Behaviorlib.getByName(be_name), []);
 						container.addState(redo_state);
 						UI.Statemachine.refreshView();
 					}

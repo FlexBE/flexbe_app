@@ -290,7 +290,16 @@ IO.CodeGenerator = new (function() {
 			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ sm_name + ",\n";
 
 		} else if (s instanceof BehaviorState) {
-			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"self.use_behavior(" + s.getStateClass() + ", '" + s.getStatePath().substr(1) + "'),\n";
+			var defkeys_str = "";
+			var be_defkeys = s.getDefaultKeys();
+			if (be_defkeys.length > 0) {
+				var be_defkeys_str = []
+				for (var j = 0; j < be_defkeys.length; j++) {
+					be_defkeys_str.push("'"+be_defkeys[j]+"'");
+				}
+				defkeys_str = ", default_keys=[" + be_defkeys_str.join(',') + "]";
+			}
+			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"self.use_behavior(" + s.getStateClass() + ", '" + s.getStatePath().substr(1) + "'" + defkeys_str + "),\n";
 
 		} else {
 			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ s.getStateClass() + "(";

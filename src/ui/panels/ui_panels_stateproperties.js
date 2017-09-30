@@ -465,6 +465,10 @@ UI.Panels.StateProperties = new (function() {
 				input_field.setAttribute("type", "text");
 				input_field.setAttribute("value", input_mapping[i]);
 				input_field.setAttribute("input_key", input_keys[i]);
+				if (state.getDefaultKeys().contains(input_keys[i])) {
+					input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
+					input_field.setAttribute("disabled", "disabled");
+				}
 				input_field.addEventListener("blur", function() {
 					if (RC.Controller.isReadonly()
 						|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
@@ -479,9 +483,41 @@ UI.Panels.StateProperties = new (function() {
 				input_field_td.appendChild(input_field);
 				addAutocomplete(input_field, undefined, "input", state);
 
+				var default_button = document.createElement("input");
+				default_button.setAttribute("type", "checkbox");
+				default_button.setAttribute("input_key", input_keys[i]);
+				if (state.getDefaultKeys().contains(input_keys[i])) {
+					default_button.setAttribute("checked", "checked");
+				}
+				default_button.addEventListener("change", function() {
+					if (RC.Controller.isReadonly()
+						|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+						|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
+						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
+						) return;
+					var input_field = this.parentNode.parentNode.childNodes[1].firstChild;
+					if(this.checked) {
+						input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
+						input_field.setAttribute("disabled", "disabled");
+						state.addDefaultKey(this.getAttribute("input_key"));
+					} else {
+						input_field.removeAttribute("style");
+						input_field.removeAttribute("disabled");
+						state.removeDefaultKey(this.getAttribute("input_key"));
+					}
+					if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+				});
+				var default_button_txt = document.createElement("label");
+				default_button_txt.innerText = "default";
+				var default_button_td = document.createElement("td");
+				default_button_td.setAttribute("title", "Use the default value as defined by the behavior.");
+				default_button_td.appendChild(default_button);
+				default_button_td.appendChild(default_button_txt);
+
 				var row = document.createElement("tr");
 				row.appendChild(label);
 				row.appendChild(input_field_td);
+				row.appendChild(default_button_td);
 				document.getElementById("panel_prop_be_input_keys_content").appendChild(row);
 			}
 		} else {

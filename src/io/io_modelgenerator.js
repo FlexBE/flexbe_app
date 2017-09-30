@@ -86,7 +86,7 @@ IO.ModelGenerator = new (function() {
 					T.logInfo("Please check your workspace settings.");
 					continue;
 				}
-				s = new BehaviorState(s_def.state_name, state_def);
+				s = new BehaviorState(s_def.state_name, state_def, s_def.parameter_values);
 			} else {
 				var state_def = WS.Statelib.getFromLib(s_def.state_class);
 				if (state_def == undefined) {

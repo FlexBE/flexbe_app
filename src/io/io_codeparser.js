@@ -86,8 +86,8 @@ IO.CodeParser = new (function() {
 	var string_quotes_pattern = /^["'](.*)["']/;
 		// [1] - name of the state class
 	var state_class_pattern = /^\s*(\w+)\(/;
-		// [1] - name of the behavior class
-	var state_behavior_pattern = /^\s*self\.use_behavior\((\w+)(?:, ['"](?:[^'"]*)['"])?\)/;
+		// [1] - name of the behavior class , [2] - (optional) list of default keys
+	var state_behavior_pattern = /^\s*self\.use_behavior\((\w+)(?:, ?['"](?:[^'"]*)['"])?(?:, ?default_keys ?= ?\[([^\]]*)\])?\)/;
 		// [1] - kind of data (transitions/autonomy/remapping), [2] - comma separated list of values including surrounding braces
 	var state_interface_pattern = /(transitions|autonomy|remapping)\s*=\s*(\{[^}]*\})/;
 
@@ -479,7 +479,11 @@ IO.CodeParser = new (function() {
 			if (behavior_use_result != null) {
 				state_class = behavior_use_result[1];
 				state_type = "behavior";
-				parameter_values = [];
+				if (behavior_use_result[2] != undefined) {
+					parameter_values = behavior_use_result[2].replace(/["'\s]/g, '').split(',');
+				} else {
+					parameter_values = [];
+				}
 			} else {
 				state_class = params[1];
 				parameter_values = undefined;

@@ -161,8 +161,9 @@ Statemachine = function(sm_name, sm_definition) {
 		dataflow = [];
 		states.forEach(function(state) {
 			var added_keys = []
-			state.getInputMapping().forEach(function(key) {
+			state.getInputMapping().forEach(function(key, i) {
 				if (added_keys.contains(key)) return;
+				if (state instanceof BehaviorState && state.getDefaultKeys().contains(state.getInputKeys()[i])) return;
 				added_keys.push(key);
 				addDataEdgeForPredecessors(state, state, key, []);
 			});
@@ -175,19 +176,25 @@ Statemachine = function(sm_name, sm_definition) {
 	}
 
 	var addDataEdgeForPredecessors = function(state, target, key, checked) {
-		transitions.forEach(function(trans) {
-			if (trans.getTo() == undefined || trans.getTo().getStateName() != state.getStateName()) return;
-			if (trans.getFrom().getStateName() == "INIT") {
-				dataflow.push(new Transition(trans.getFrom(), target, key, 0));
-			} else if (!checked.contains(trans.getFrom().getStateName())) {
-				checked.push(trans.getFrom().getStateName());
-				if (trans.getFrom().getOutputMapping().contains(key)) {
+		if (concurrent) {
+			var init = that.getInitialTransition().getFrom();
+			// in concurrency, userdata always needs to be given from container keys
+			dataflow.push(new Transition(init, target, key, 0));
+		} else {
+			transitions.forEach(function(trans) {
+				if (trans.getTo() == undefined || trans.getTo().getStateName() != state.getStateName()) return;
+				if (trans.getFrom().getStateName() == "INIT") {
 					dataflow.push(new Transition(trans.getFrom(), target, key, 0));
-				} else {
-					addDataEdgeForPredecessors(trans.getFrom(), target, key, checked);
+				} else if (!checked.contains(trans.getFrom().getStateName())) {
+					checked.push(trans.getFrom().getStateName());
+					if (trans.getFrom().getOutputMapping().contains(key)) {
+						dataflow.push(new Transition(trans.getFrom(), target, key, 0));
+					} else {
+						addDataEdgeForPredecessors(trans.getFrom(), target, key, checked);
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 
