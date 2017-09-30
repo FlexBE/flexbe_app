@@ -716,10 +716,10 @@ UI.Dashboard = new (function() {
 				if (this.value.match(/^-?[0-9]+(\.[0-9]+)?$/i) == undefined) {
 					this.value = entry.default;
 				}
-				if (parseInt(this.value) < parseInt(entry.additional.min)) {
+				if (parseFloat(this.value) < parseFloat(entry.additional.min)) {
 					this.value = entry.additional.min;
 				}
-				if (parseInt(this.value) > parseInt(entry.additional.max)) {
+				if (parseFloat(this.value) > parseFloat(entry.additional.max)) {
 					this.value = entry.additional.max;
 				}
 			} else if (entry.type == "enum") {
@@ -895,13 +895,13 @@ UI.Dashboard = new (function() {
 				var additional = Behavior.getBehaviorParameters().findElement(function(element) {
 					return element.name == name;
 				}).additional;
-				if (parseInt(this.value) > parseInt(additional.max)) this.value = additional.max;
+				if (parseFloat(this.value) > parseFloat(additional.max)) this.value = additional.max;
 				additional.min = this.value;
 				Behavior.updateBehaviorParameter(name, additional, "additional");
 
 				// update default value
 				var default_field = this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.children[3].children[2].children[0];
-				if (parseInt(default_field.value) < parseInt(this.value)) {
+				if (parseFloat(default_field.value) < parseFloat(this.value)) {
 					default_field.value = this.value;
 					Behavior.updateBehaviorParameter(name, this.value, "default");
 				}
@@ -917,13 +917,13 @@ UI.Dashboard = new (function() {
 				var additional = Behavior.getBehaviorParameters().findElement(function(element) {
 					return element.name == name;
 				}).additional;
-				if (parseInt(this.value) < parseInt(additional.min)) this.value = additional.min;
+				if (parseFloat(this.value) < parseFloat(additional.min)) this.value = additional.min;
 				additional.max = this.value;
 				Behavior.updateBehaviorParameter(name, additional, "additional");
 
 				// update default value
 				var default_field = this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.children[3].children[2].children[0];
-				if (parseInt(default_field.value) > parseInt(this.value)) {
+				if (parseFloat(default_field.value) > parseFloat(this.value)) {
 					default_field.value = this.value;
 					Behavior.updateBehaviorParameter(name, this.value, "default");
 				}
