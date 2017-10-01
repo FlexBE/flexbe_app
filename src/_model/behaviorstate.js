@@ -33,6 +33,13 @@ BehaviorState = function(be_name, be_definition, be_defkeys) {
 		if (!default_keys.contains(key)) return;
 		default_keys.remove(key);
 	}
+
+	this.getDefaultValue = function(key) {
+		var element = be_definition.getDefaultUserdata().findElement(function(el) {
+			return el.key == key;
+		});
+		return (element != undefined)? element.value : "";
+	}
 	
 };
 BehaviorState.prototype = Object.create(State.prototype);

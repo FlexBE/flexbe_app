@@ -338,7 +338,7 @@ UI.Dashboard = new (function() {
 		name_input_field.setAttribute("readonly", "readonly");
 
 		var params_input_field = document.createElement("input");
-		params_input_field.setAttribute("value", new_params);
+		params_input_field.setAttribute("value", new_params != undefined ? new_params : "");
 		params_input_field.setAttribute("name", new_name);
 		params_input_field.setAttribute("class", "inline_text_edit_readonly");
 		params_input_field.setAttribute("type", "text");

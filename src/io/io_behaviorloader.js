@@ -134,7 +134,8 @@ IO.BehaviorLoader = new (function() {
 					container_name: "",
 					container_sm_var_name: parsingResult.root_sm_name,
 					sm_defs: parsingResult.sm_defs,
-					sm_states: parsingResult.sm_states
+					sm_states: parsingResult.sm_states,
+					default_userdata: parsingResult.default_userdata
 				});
 			});
 		});

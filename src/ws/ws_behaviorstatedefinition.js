@@ -23,6 +23,7 @@ WS.BehaviorStateDefinition = function(manifest, outcomes, input_keys, output_key
 	this.getBehaviorManifest = function() { return behavior_manifest; }
 	this.getBehaviorDesc = function() { return behavior_manifest.description; }
 	this.getBehaviorTagList = function() { return behavior_tag_list; }
+	this.getDefaultUserdata = function() { return bsm_parsing_result.default_userdata; }
 	this.cloneBehaviorStatemachine = function() {
 		return IO.ModelGenerator.buildStateMachine(bsm_parsing_result.container_name, bsm_parsing_result.container_sm_var_name, 
 												bsm_parsing_result.sm_defs, bsm_parsing_result.sm_states, true);

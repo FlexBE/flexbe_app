@@ -125,6 +125,7 @@ UI.Panels.AddState = new (function() {
 
 
 	this.show = function() {
+		panel_class_select.innerHTML = "";
 		statelib = WS.Statelib.getClassList();
 		displayStateClasses(statelib);
 		UI.Panels.setActivePanel(UI.Panels.ADD_STATE_PANEL);

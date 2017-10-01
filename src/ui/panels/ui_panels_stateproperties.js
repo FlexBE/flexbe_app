@@ -468,6 +468,7 @@ UI.Panels.StateProperties = new (function() {
 				if (state.getDefaultKeys().contains(input_keys[i])) {
 					input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
 					input_field.setAttribute("disabled", "disabled");
+					input_field.setAttribute("title", "Value: " + state.getDefaultValue(input_keys[i]));
 				}
 				input_field.addEventListener("blur", function() {
 					if (RC.Controller.isReadonly()
@@ -500,9 +501,11 @@ UI.Panels.StateProperties = new (function() {
 						input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
 						input_field.setAttribute("disabled", "disabled");
 						state.addDefaultKey(this.getAttribute("input_key"));
+						input_field.setAttribute("title", "Value: " + state.getDefaultValue(this.getAttribute("input_key")));
 					} else {
 						input_field.removeAttribute("style");
 						input_field.removeAttribute("disabled");
+						input_field.removeAttribute("title");
 						state.removeDefaultKey(this.getAttribute("input_key"));
 					}
 					if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
@@ -667,7 +670,7 @@ UI.Panels.StateProperties = new (function() {
 			var command = UI.Settings.getEditorCommand(file_path).split(' ');
 			var proc = spawn(command[0], command.slice(1));
 			proc.stderr.on('data', (data) => {
-				T.logError(data);
+				T.logWarn(data);
 			});
 		} catch (err) {
 			T.logError("Unable to open state in editor: " + err);
