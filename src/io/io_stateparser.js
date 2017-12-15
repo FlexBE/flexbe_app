@@ -6,7 +6,7 @@ IO.StateParser = new (function() {
 			// Inherits from EventState, state description is directly below class definition.
 		var name_desc_pattern = /class (\w+)\(EventState\):(?:\n\r?\s+(?:'''|""")\n?\r?((?:\s*(?:.*?)\n?\r?\s*)*?)(?:'''|"""))?/i;
 			// Returns all params as list
-		var param_pattern = /def __init__\(self, ([^)]+)\):/i;
+		var param_pattern = /def __init__\(self, ?([^)]+)\):/i;
 			// Extracts parameters of super class call, such as outcomes.
 		var super_pattern = /super\(.*\)\.__init__\(((?:.|\s)*?)\)\n/i;
 			// Has two matches: 1) key 2) list

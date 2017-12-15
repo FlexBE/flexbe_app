@@ -30,17 +30,20 @@ Scripts = new (function() {
 		T.clearLog();
 		T.show();
 		var total = 0;
-		Behaviorlib.getBehaviorList().forEach(function (bn) {
-			var bsm = Behaviorlib.getByName(bn).cloneBehaviorStatemachine();
+		WS.Behaviorlib.getBehaviorList().forEach(function (bn) {
+			var bsm = WS.Behaviorlib.getByName(bn).cloneBehaviorStatemachine();
 			var states = searchFunction(bsm, function(s) { return s.getStateClass() == class_name; });
 			if (states.length > 0) {
+				if (total == 0) {
+					T.logInfo("Found the following uses of state class " + class_name + ":");
+				}
 				T.logInfo(bn + " (" + states.length + "x)");
 				states.forEach(function(s) { T.logInfo("&nbsp;&nbsp;" + s.getStatePath()); });
 			}
 			total += states.length;
 		});
 		if (total == 0) {
-			T.logInfo("Did not find any usage of state class " + class_name);
+			T.logInfo("Did not find any usage of state class " + class_name + ".");
 		}
 	}
 

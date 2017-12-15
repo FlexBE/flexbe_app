@@ -8,8 +8,8 @@ Tools = new (function() {
 		if (s instanceof Statemachine) {
 			var state_def = new WS.StateMachineDefinition(s.getOutcomes(), s.getInputKeys(), s.getOutputKeys());
 			new_state = new Statemachine(s.getStateName(), state_def);
-			new_state.setConcurrent(s.isConcurrent());
 			new_state.setPriority(s.isPriority());
+			new_state.setConcurrent(s.isConcurrent());
 			s.getStates().forEach(function (element) {
 				pasteStateInto(element, new_state);
 			});
@@ -17,16 +17,20 @@ Tools = new (function() {
 				if (element.getOutcome() == "" && element.getFrom().getStateName() == "INIT") return;
 				var new_from = new_state.getStateByName(element.getFrom().getStateName());
 				var new_to = new_state.getStateByName(element.getTo().getStateName());
-				if (new_to == undefined) {
+				var is_outcome = new_to == undefined;
+				if (is_outcome) {
 					new_to = new_state.getSMOutcomeByName(element.getTo().getStateName());
 				}
 				new_state.addTransition(new Transition(new_from, new_to, element.getOutcome(), element.getAutonomy()));
+				if (new_state.isConcurrent() && is_outcome) {
+					new_state.tryDuplicateOutcome(element.getTo().getStateName().split('#')[0]);
+				}
 			});
 			if (s.getInitialState() != undefined) {
 				new_state.setInitialState(new_state.getStateByName(s.getInitialState().getStateName()));
 			}
 		} else if (s instanceof BehaviorState) {
-			new_state = new BehaviorState(s.getBehaviorName(), WS.Behaviorlib.getByName(s.getBehaviorName()));
+			new_state = new BehaviorState(s.getBehaviorName(), WS.Behaviorlib.getByName(s.getBehaviorName()), s.getDefaultKeys().clone());
 			new_state.setStateName(s.getStateName());
 		} else if (s instanceof State) {
 			var state_def = WS.Statelib.getFromLib(s.getStateClass());
@@ -47,6 +51,8 @@ Tools = new (function() {
 		elements.filter(function(s) {
 			return (s instanceof State) || (s instanceof Statemachine) || (s instanceof BehaviorState);
 		}).forEach(function(s) {
+			if (UI.Panels.StateProperties.isCurrentState(s))
+				UI.Panels.StateProperties.hide();
 			s.getContainer().removeState(s);
 		});
 		UI.Statemachine.refreshView();
@@ -299,7 +305,7 @@ Tools = new (function() {
 
 		ActivityTracer.addActivity(ActivityTracer.ACT_COMPLEX_OPERATION,
 			"Grouped " + state_list.length + " states",
-			function() {
+			function() { // undo
 				var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
 				var sm = container.getStateByName(sm_name);
 				if (UI.Statemachine.getDisplayedSM().getStatePath() == sm.getStatePath()) {
@@ -334,7 +340,7 @@ Tools = new (function() {
 
 				UI.Statemachine.refreshView();
 			},
-			function() {
+			function() { // redo
 				var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
 				var sm_def = new WS.StateMachineDefinition(sm_outcomes, sm_input_keys, sm_output_keys);
 				var sm = new Statemachine(sm_name, sm_def);
@@ -350,6 +356,7 @@ Tools = new (function() {
 				sm_outcomes.forEach(function(oc) {
 					var transition = transitions_out.findElement(t => t.getOutcome() == oc);
 					var t_to = container.getStateByName(transition.getTo().getStateName());
+					if (t_to == undefined) t_to = container.getSMOutcomeByName(transition.getTo().getStateName());
 					container.addTransition(new Transition(sm, t_to, oc, -1));
 				});
 				transitions_in.forEach(function(transition) {

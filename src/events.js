@@ -140,11 +140,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     Mousetrap.bind("ctrl+c", Tools.copy);
     Mousetrap.bind("ctrl+x", Tools.cut);
-    Mousetrap.bind("ctrl+v",  Tools.paste);
+    Mousetrap.bind("ctrl+v", Tools.paste);
+
+    Mousetrap.bind("f1", UI.Menu.toDashboardClicked );
+    Mousetrap.bind("f2", UI.Menu.toStatemachineClicked );
+    Mousetrap.bind("f3", UI.Menu.toControlClicked );
+    Mousetrap.bind("f4", UI.Menu.toSettingsClicked );
+
+    Mousetrap.bind("ctrl+t", UI.Panels.Terminal.toggle );
 
     Mousetrap.bind("esc", function() {
         UI.Statemachine.abortTransition();
         UI.Statemachine.removeSelection();
+    });
+
+    UI.Menu.configureKeybindings();
+
+    Mousetrap(document.getElementById("input_note_editor_text")).bind("shift+enter", function() {
+        var evt = new CustomEvent("click", { "detail": "shift+enter" });
+        document.getElementById("button_note_editor_save").dispatchEvent(evt);
     });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

@@ -27,7 +27,7 @@ UI.Menu = new (function() {
 			["Save Behavior", "file_save", function() { UI.Menu.saveBehaviorClicked(); }]
 		],
 		[
-			["Edit Code", "page_edit", function() { UI.Menu.scEditClicked(); }]
+			["Edit Code", "page_edit", function() { UI.Menu.scEditClicked(); }, "ctrl+e"]
 		],
 		[
 			["Check Behavior", "check", function() { UI.Menu.checkBehaviorClicked(); }]
@@ -35,45 +35,44 @@ UI.Menu = new (function() {
 	];
 	var button_config_sm = [
 		[
-			["Add State", "add", function() { UI.Menu.addStateClicked(); }],
-			["Add Behavior", "add", function() { UI.Menu.addBehaviorClicked(); }],
-			["Add Container", "add", function() { UI.Menu.addStatemachineClicked(); }]
+			["Add State", "add", function() { UI.Menu.addStateClicked(); }, "ctrl+1"],
+			["Add Behavior", "add", function() { UI.Menu.addBehaviorClicked(); }, "ctrl+2"],
+			["Add Container", "add", function() { UI.Menu.addStatemachineClicked(); }, "ctrl+3"]
 		],
 		[
-			["Data Flow Graph", "dataflow", function() { UI.Statemachine.toggleDataflow(); }],
+			["Data Flow Graph", "dataflow", function() { UI.Statemachine.toggleDataflow(); }, "ctrl+d"],
 			["Check Behavior", "check", function() { UI.Menu.checkBehaviorClicked(); }],
 			["Save Behavior", "file_save", function() { UI.Menu.saveBehaviorClicked(); }]
 		],
 		[
-			["Undo", "undo", function() { ActivityTracer.undo(); }],
-			["Redo", "redo", function() { ActivityTracer.redo(); }],
+			["Undo", "undo", function() { ActivityTracer.undo(); }, undefined],
+			["Redo", "redo", function() { ActivityTracer.redo(); }, undefined],
 			["Reset", "cross", function() { ActivityTracer.resetToSave(); }]
 		],
 		[
-			["Hide Comments", "note", function() { UI.Statemachine.toggleComments(); }],
-			["Write Comment", "note_add", function() { UI.Menu.addCommentClicked(); }]
+			["Hide Comments", "note", function() { UI.Statemachine.toggleComments(); }, "ctrl+h"],
+			["Write Comment", "note_add", function() { UI.Menu.addCommentClicked(); }, "ctrl+4"]
 		],
 		[
-			["Fade Outcomes", "outcome", function() { UI.Statemachine.toggleOutcomes(); }],
-			["Auto-Connect", "autoconnect", function() { Tools.autoconnect(); }],
-			["Group Selection", "group_selection", function() { Tools.groupSelection(); }]
+			["Fade Outcomes", "outcome", function() { UI.Statemachine.toggleOutcomes(); }, "ctrl+f"],
+			["Auto-Connect", "autoconnect", function() { Tools.autoconnect(); }, "ctrl+a"],
+			["Group Selection", "group_selection", function() { Tools.groupSelection(); }, "ctrl+g"]
 		]
 	];
 	var button_config_rc = [
 		[
-			["Show Terminal", "title_terminal", function() { UI.Menu.terminalClicked(); }]
+			["Show Terminal", "title_terminal", function() { UI.Menu.terminalClicked(); }, undefined]
 		]
 	];
 	var button_config_se = [
 		[
-			["Show Terminal", "title_terminal", function() { UI.Menu.terminalClicked(); }]
+			["Show Terminal", "title_terminal", function() { UI.Menu.terminalClicked(); }, undefined]
 		],
 		[
 			["Import Configuration", "settings_import", function() { UI.Settings.importConfiguration(); }],
 			["Export Configuration", "settings_export", function() { UI.Settings.exportConfiguration(); }]
 		]
 	];
-
 
 	var setMenuButtons = function(config) {
 		panel = document.getElementById("title_button_panel");
@@ -110,6 +109,20 @@ UI.Menu = new (function() {
 	this.isPageControl = function() { return current_page == "rc"; }
 	this.isPageSettings = function() { return current_page == "se"; }
 
+	this.configureKeybindings = function() {
+		[[button_config_db, that.isPageDashboard],
+		 [button_config_sm, that.isPageStatemachine],
+		 [button_config_rc, that.isPageControl],
+		 [button_config_se, that.isPageSettings]
+		].forEach(function(element) {
+			element[0].forEach(function(column) {
+				column.forEach(function(button) {
+					if (button[3] == undefined) return;
+					Mousetrap.bind(button[3], function() {
+						if (!element[1]()) return;
+						button[2]();
+		}); }); }); });
+	}
 
 	this.toDashboardClicked = function() {
 		document.getElementById("dashboard").style.left = "0px";
@@ -175,7 +188,7 @@ UI.Menu = new (function() {
 				var command = UI.Settings.getEditorCommand(file_path).split(' ');
 				var proc = spawn(command[0], command.slice(1));
 				proc.stderr.on('data', (data) => {
-					T.logError(data);
+					T.logWarn(data);
 				});
 			} catch (err) {
 				T.logError("Unable to open editor. Make sure you already saved the behavior to generate code files.");
@@ -196,7 +209,7 @@ UI.Menu = new (function() {
 			IO.BehaviorLoader.loadBehaviorInterface(manifest, function(smi) {
 				if (smi.class_name != manifest.class_name) T.logWarn("Class names of behavior " + manifest.name + " do not match!");
 				var be_def = WS.Behaviorlib.getByName(manifest.name);
-				var be = new BehaviorState(manifest.name, be_def);
+				var be = new BehaviorState(manifest.name, be_def, []);
 				be.setStateName(Tools.getUniqueName(UI.Statemachine.getDisplayedSM(), be.getStateName()));
 				UI.Statemachine.getDisplayedSM().addState(be);
 				UI.Statemachine.refreshView();
@@ -218,7 +231,7 @@ UI.Menu = new (function() {
 					},
 					function() {
 						var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
-						var redo_state = new BehaviorState(be_name, WS.Behaviorlib.getByName(be_name));
+						var redo_state = new BehaviorState(be_name, WS.Behaviorlib.getByName(be_name), []);
 						container.addState(redo_state);
 						UI.Statemachine.refreshView();
 					}
@@ -334,6 +347,7 @@ UI.Menu = new (function() {
 
 	this.addCommentClicked = function() {
 		if (UI.Statemachine.isReadonly()) return;
+		if (Behavior.getCommentNotes().findElement(function(n) { return n.getContent() == ""; }) != undefined) return;
 
 		var note = new Note("");
 		note.setContainerPath(UI.Statemachine.getDisplayedSM().getStatePath());

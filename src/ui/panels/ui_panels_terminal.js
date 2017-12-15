@@ -1,6 +1,7 @@
 UI.Panels.Terminal = new (function() {
 	var that = this;
 	var debug_mode = false;
+	var is_active = false;
 
 	var logTerminal = function (msg, color) {
 		document.getElementById("terminal").innerHTML += "<font style='color: " + color + ";'>" + msg + "</font><br />";
@@ -54,10 +55,17 @@ UI.Panels.Terminal = new (function() {
 
 	this.show = function() {
 		UI.Panels.setActivePanel(UI.Panels.TERMINAL_PANEL);
+		is_active = true;
 	}
 
 	this.hide = function() {
 		UI.Panels.hidePanelIfActive(UI.Panels.TERMINAL_PANEL);
+		is_active = false;
+	}
+
+	this.toggle = function() {
+		if (is_active) that.hide();
+		else that.show();
 	}
 
 }) ();

@@ -542,6 +542,8 @@ UI.Statemachine = new (function() {
 
 		if (drag_transition == displayed_sm.getInitialTransition()) {
 			displayed_sm.setInitialState(displayed_sm.getStateByName(previous_transition_end));
+		} else if (previous_transition_end != undefined) {
+			drag_transition.setTo(displayed_sm.getStateByName(previous_transition_end));
 		}
 
 		connecting = false;
