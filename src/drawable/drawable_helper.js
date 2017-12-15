@@ -122,6 +122,7 @@ Drawable.Helper = new (function() {
 	// state - object representing the state
 	// box - rectangle matching the size of the movable object
 	this.moveFnc = function(dx, dy, x, y, evt) {
+		if (UI.Statemachine.isConnecting()) return;
 		lx = dx + ox;
 		ly = dy + oy;
 		lx = Math.min(Math.max(lx, 0), UI.Statemachine.getR().width - this.data("box").attr("width"));
@@ -139,6 +140,7 @@ Drawable.Helper = new (function() {
 	// Raphael func
 	// state - object representing the state
 	this.startFnc = function() {
+		if (UI.Statemachine.isConnecting()) return;
 		lx = this.data("state").getPosition().x + UI.Statemachine.getPanShift().x;
 		ly = this.data("state").getPosition().y + UI.Statemachine.getPanShift().y;
 		ox = this.data("state").getPosition().x + UI.Statemachine.getPanShift().x;
@@ -148,6 +150,7 @@ Drawable.Helper = new (function() {
 	// Raphael func
 	// state - object representing the state
 	this.endFnc = function(evt) {
+		if (UI.Statemachine.isConnecting()) return;
 		var state = this.data("state");
 		var container = state.getContainer();
 		var state_name = state.getStateName();
