@@ -5,7 +5,7 @@ if [ $1 == "create" ] ; then
 	cp src/img/icon-128.png ~/.local/share/icons/flexbe_app.png
 	echo "Launcher shortcut created"
 elif [ $1 == "remove" ] ; then
-	rm  ~/.local/share/applications/flexbe.desktop
+	rm ~/.local/share/applications/flexbe.desktop
 	rm ~/.local/share/icons/flexbe_app.png
 	echo "Launch shortcut removed"
 else

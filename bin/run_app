@@ -1,6 +1,11 @@
-#!/bin/bash -e
-echo -e "\033[1mInstalling nwjs... (this is only done for the first execution)\033[0m"
+#!/bin/bash
 cd "$( dirname "${BASH_SOURCE[0]}" )"
-./nwjs_install
-cd ..
-./nw $*
+
+if [ ! -f ../nw ]; then
+  echo "Cannot run flexbe_app, need to download nwjs first."
+  echo "Please build flexbe_app via catkin before using it or run the following command now:"
+  echo "  rosrun flexbe_app nwjs_install"
+  exit -1
+fi
+
+../nw $*
