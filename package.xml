@@ -1,6 +1,6 @@
 <package>
   <name>flexbe_app</name>
-  <version>2.0.5</version>
+  <version>2.0.6</version>
   <description>
      flexbe_app provides a user interface (editor + runtime control) for the FlexBE behavior engine.
   </description>
