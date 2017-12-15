@@ -1,0 +1,36 @@
+#!/bin/bash -e
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+TEMPFILE="nwjs.tar.gz"
+cd ..
+
+# check if nw is already existing and abort if so
+if [ -f nw ]; then
+  exit 0
+fi
+
+# determine correct executable version
+VERSION="v0.27.2" # verified working, to be incremented explicitly
+OS="linux"
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
+	OS="win"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+	OS="osx"
+else
+	OS="linux"
+fi
+ARCH="x64"
+if [ `uname -m` == "x86_64" ]; then
+	ARCH="x64"
+else
+	ARCH="ia32"
+fi
+
+# ready to go
+echo "Downloading nwjs..."
+wget -q -O $TEMPFILE https://dl.nwjs.io/$VERSION/nwjs-$VERSION-$OS-$ARCH.tar.gz
+
+echo "Unpacking..."
+tar -xzf $TEMPFILE --strip-components 1
+rm $TEMPFILE
+
+echo -e "Successfully downloaded nwjs!"
