@@ -543,7 +543,11 @@ UI.Statemachine = new (function() {
 		if (drag_transition == displayed_sm.getInitialTransition()) {
 			displayed_sm.setInitialState(displayed_sm.getStateByName(previous_transition_end));
 		} else if (previous_transition_end != undefined) {
-			drag_transition.setTo(displayed_sm.getStateByName(previous_transition_end));
+			var old_to = displayed_sm.getStateByName(previous_transition_end);
+			if (old_to == undefined) {
+				old_to = displayed_sm.getSMOutcomeByName(previous_transition_end);
+			}
+			drag_transition.setTo(old_to);
 		}
 
 		connecting = false;
@@ -556,6 +560,64 @@ UI.Statemachine = new (function() {
 		previous_transition_end = drag_transition.getTo().getStateName();
 		drag_transition.setTo(undefined);
 		connecting = true;
+	}
+
+	this.removeTransition = function() {
+		if (!connecting) return;
+		if (!displayed_sm.hasTransition(drag_transition)) {
+			that.abortTransition();
+			return;
+		}
+
+		var is_initial = drag_transition == displayed_sm.getInitialTransition();
+		var from = drag_transition.getFrom().getStateName();
+		var to = previous_transition_end;
+		var outcome = drag_transition.getOutcome();
+		var autonomy = drag_transition.getAutonomy();
+		var container_path = displayed_sm.getStatePath();
+
+		if (!is_initial) {
+			displayed_sm.removeTransitionObject(drag_transition);
+		} else {
+			displayed_sm.setInitialState(undefined);
+		}
+		connecting = false;
+		that.refreshView();
+
+		ActivityTracer.addActivity(ActivityTracer.ACT_TRANSITION,
+			is_initial?
+			"Unset initial state"
+			: "Removed transition from " + from + " to " + to.split('#')[0] + " on outcome " + outcome + ".",
+			function() {
+				var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
+				var target = container.getStateByName(to);
+				if (target == undefined && container.getOutcomes().contains(to.split('#')[0])) target = container.getSMOutcomeByName(to);
+				if (is_initial) {
+					container.setInitialState(target);
+				} else {
+					container.addTransition(new Transition(container.getStateByName(from), target, outcome, autonomy));
+				}
+				UI.Statemachine.refreshView();
+			},
+			function() {
+				var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
+				var target = container.getStateByName(to);
+				if (target == undefined && container.getOutcomes().contains(to.split('#')[0])) target = container.getSMOutcomeByName(to);
+				if (is_initial) {
+					container.setInitialState(undefined);
+				} else {
+					var transition = container.getTransitions().findElement(function(trans) {
+						return trans.getFrom().getStateName() == from && trans.getOutcome() == outcome;
+					});
+					if (transition != undefined) {
+						container.removeTransitionObject(transition);
+					}
+				}
+				UI.Statemachine.refreshView();
+			}
+		);
+
+		previous_transition_end = undefined;
 	}
 
 	this.connectTransition = function(state) {
@@ -588,7 +650,7 @@ UI.Statemachine = new (function() {
 		}
 
 		connecting = false;
-		this.refreshView();
+		that.refreshView();
 
 		ActivityTracer.addActivity(ActivityTracer.ACT_TRANSITION,
 			is_initial?

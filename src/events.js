@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.Statemachine.abortTransition();
         UI.Statemachine.removeSelection();
     });
+    Mousetrap.bind("del", UI.Statemachine.removeTransition );
 
     UI.Menu.configureKeybindings();
 
