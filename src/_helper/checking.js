@@ -37,6 +37,9 @@ Checking = new (function() {
 		if (Behavior.getBehaviorDescription() == "") return "behavior description needs to be set";
 		if (Behavior.getAuthor() == "") return "author needs to be set";
 
+		// Python problems
+		if (Behavior.getBehaviorName().match(/^[0-9]/)) return "behavior name must not start with a numeric character";
+
 		// variables
 		var illegal_element = Behavior.getPrivateVariables().findElement(function(el) {
 			return !that.isValidPythonVarname(el.key);

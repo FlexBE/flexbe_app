@@ -318,10 +318,10 @@ Behavior = new (function() {
 		};
 		result.behavior_name = behavior_name;
 		result.rosnode_name = behavior_package;
-		result.class_name = behavior_name.replace(/ /g, "") + 'SM';
-		result.manifest_name = behavior_name.toLowerCase().replace(/ /g, "_") + '.xml';
+		result.class_name = behavior_name.replace(/[^\w]/g, "") + 'SM';
+		result.manifest_name = behavior_name.toLowerCase().replace(/[^\w]/g, "_") + '.xml';
 		result.manifest_path = manifest_path;
-		result.file_name = file_name || behavior_name.toLowerCase().replace(/ /g, "_") + '_sm.py';
+		result.file_name = file_name || behavior_name.toLowerCase().replace(/[^\w]/g, "_") + '_sm.py';
 		result.file_name_tmp = result.file_name.replace(/\.py$/, "_tmp.py");
 		return result;
 	}
