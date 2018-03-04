@@ -26,3 +26,18 @@ catkin_package(
 # install executables
 #install(PROGRAMS ${BIN_FILES} DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 #install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+#add_custom_target(nwjs_inst)
+#add_custom_command(TARGET nwjs_inst POST_BUILD COMMAND bin/nwjs_install)
+
+add_custom_command(OUTPUT nw
+  COMMAND bin/nwjs_install
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  VERBATIM
+)
+
+add_custom_target(nw_install DEPENDS nw)
+
+if(NOT ${CMAKE_CURRENT_SOURCE_DIR}/nw)
+  safe_execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/nwjs_install)
+endif()

@@ -11,6 +11,7 @@ UI.Statemachine = new (function() {
 
 	var drawings = [];
 	var drag_transition;
+	var drag_transition_drawing;
 	var previous_transition_end;
 	var connecting = false;
 	var selecting = false;
@@ -51,16 +52,9 @@ UI.Statemachine = new (function() {
 	});
 
 	var updateMousePos = function(event) {
-		var bnds = event.target.getBoundingClientRect();
-		
-		// adjust mouse x/y
-		var mx = event.clientX - bnds.left;
-		var my = event.clientY - bnds.top;
+		mouse_pos.attr({cx: event.layerX, cy: event.layerY});
 
-		mouse_pos.attr({cx: mx, cy: my});
-		if (connecting)
-			that.refreshView();
-		
+		if (connecting) that.refreshView();
 	}
 
 	var displayGrid = function() {
@@ -196,6 +190,7 @@ UI.Statemachine = new (function() {
 		selection_area = R.rect(0,0,0,0).attr({opacity: 0, stroke: "#000", 'stroke-dasharray': "--", fill: "rgba(250,250,250,0.4)", 'stroke-width': 0.5})
 			.drag(updateSelectionMove, beginSelectionMove, endSelectionMove);
 
+		console.log(R);
 		mouse_pos = R.circle(0, 0, 2).attr({opacity: 0});
 		background = R.rect(0, 0, R.width, R.height)
 			.attr({fill: '#FFF', stroke: '#FFF'}).toBack()
@@ -376,6 +371,15 @@ UI.Statemachine = new (function() {
 //			drawn_sms.push(displayed_sm);
 //			that.applyGraphLayout();
 //		}
+		if (drag_transition_drawing != undefined) {
+			drag_transition_drawing.drawing.remove();
+			drag_transition_drawing = undefined;
+		}
+		if (connecting) {
+			drag_transition_drawing = new Drawable.Transition(drag_transition, R, false, drawings, false, false, Drawable.Transition.PATH_CURVE);
+			return;
+		}
+
 		if (dataflow_displayed) {
 			displayed_sm.updateDataflow();
 		}
@@ -393,7 +397,7 @@ UI.Statemachine = new (function() {
 
 		// draw
 		drawings.push(displayInitialDot());
-		
+
 		for (var i=0; i<states.length; ++i) {
 			var s = states[i];
 			var a = RC.Controller.isRunning() && RC.Controller.isCurrentState(s, true);
@@ -417,6 +421,7 @@ UI.Statemachine = new (function() {
 		for (var i=0; i<transitions.length; ++i) {
 			var t = transitions[i];
 			if (t.getTo() == undefined) continue;
+			if (drag_transition != undefined && t.getFrom().getStateName() == drag_transition.getFrom().getStateName() && t.getOutcome() == drag_transition.getOutcome()) continue;
 			var draw_outline = dataflow_displayed || !outcomes_displayed && (t.getTo().getStateClass() == ":OUTCOME" || t.getTo().getStateClass() == ":CONDITION")
 			var dt = new Drawable.Transition(t, R, transitions_readonly, drawings, false, draw_outline, Drawable.Transition.PATH_CURVE);
 			new_transitions.forEach(function(ot) {
@@ -427,9 +432,7 @@ UI.Statemachine = new (function() {
 			new_transitions.push(dt);
 			drawings.push(dt);
 		}
-		if (connecting) {
-			drawings.push(new Drawable.Transition(drag_transition, R, false, drawings, false, false, Drawable.Transition.PATH_CURVE));
-		}
+
 		var new_transitions = [];
 		if (dataflow_displayed) {
 			for (var i=0; i<dataflow.length; ++i) {
@@ -493,6 +496,7 @@ UI.Statemachine = new (function() {
 			if (entry.obj instanceof State && entry.obj.getStateClass() == ':CONTAINER') return;
 			var d = entry.drawing;
 			d.translate(pan_shift.x, pan_shift.y);
+			d.mousemove(updateMousePos);
 		});
 	}
 
@@ -516,8 +520,9 @@ UI.Statemachine = new (function() {
 		drag_transition = new Transition(state, undefined, label, autonomy);
 		previous_transition_end = undefined;
 
+		that.refreshView();
 		connecting = true;
-		this.refreshView();
+		that.refreshView();
 	}
 
 	this.beginInitTransition = function() {
@@ -533,8 +538,9 @@ UI.Statemachine = new (function() {
 
 		drag_transition = displayed_sm.getInitialTransition();
 
+		that.refreshView();
 		connecting = true;
-		this.refreshView();
+		that.refreshView();
 	}
 
 	this.abortTransition = function() {
@@ -543,11 +549,16 @@ UI.Statemachine = new (function() {
 		if (drag_transition == displayed_sm.getInitialTransition()) {
 			displayed_sm.setInitialState(displayed_sm.getStateByName(previous_transition_end));
 		} else if (previous_transition_end != undefined) {
-			drag_transition.setTo(displayed_sm.getStateByName(previous_transition_end));
+			var old_to = displayed_sm.getStateByName(previous_transition_end);
+			if (old_to == undefined) {
+				old_to = displayed_sm.getSMOutcomeByName(previous_transition_end);
+			}
+			drag_transition.setTo(old_to);
 		}
 
 		connecting = false;
-		this.refreshView();
+		drag_transition = undefined;
+		that.refreshView();
 	}
 
 	this.resetTransition = function(transition) {
@@ -555,7 +566,69 @@ UI.Statemachine = new (function() {
 		drag_transition = transition;
 		previous_transition_end = drag_transition.getTo().getStateName();
 		drag_transition.setTo(undefined);
+
+		that.refreshView();
 		connecting = true;
+		that.refreshView();
+	}
+
+	this.removeTransition = function() {
+		if (!connecting) return;
+		if (!displayed_sm.hasTransition(drag_transition)) {
+			that.abortTransition();
+			return;
+		}
+
+		var is_initial = drag_transition == displayed_sm.getInitialTransition();
+		var from = drag_transition.getFrom().getStateName();
+		var to = previous_transition_end;
+		var outcome = drag_transition.getOutcome();
+		var autonomy = drag_transition.getAutonomy();
+		var container_path = displayed_sm.getStatePath();
+
+		if (!is_initial) {
+			displayed_sm.removeTransitionObject(drag_transition);
+		} else {
+			displayed_sm.setInitialState(undefined);
+		}
+		connecting = false;
+		drag_transition = undefined;
+		that.refreshView();
+
+		ActivityTracer.addActivity(ActivityTracer.ACT_TRANSITION,
+			is_initial?
+			"Unset initial state"
+			: "Removed transition from " + from + " to " + to.split('#')[0] + " on outcome " + outcome + ".",
+			function() {
+				var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
+				var target = container.getStateByName(to);
+				if (target == undefined && container.getOutcomes().contains(to.split('#')[0])) target = container.getSMOutcomeByName(to);
+				if (is_initial) {
+					container.setInitialState(target);
+				} else {
+					container.addTransition(new Transition(container.getStateByName(from), target, outcome, autonomy));
+				}
+				UI.Statemachine.refreshView();
+			},
+			function() {
+				var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
+				var target = container.getStateByName(to);
+				if (target == undefined && container.getOutcomes().contains(to.split('#')[0])) target = container.getSMOutcomeByName(to);
+				if (is_initial) {
+					container.setInitialState(undefined);
+				} else {
+					var transition = container.getTransitions().findElement(function(trans) {
+						return trans.getFrom().getStateName() == from && trans.getOutcome() == outcome;
+					});
+					if (transition != undefined) {
+						container.removeTransitionObject(transition);
+					}
+				}
+				UI.Statemachine.refreshView();
+			}
+		);
+
+		previous_transition_end = undefined;
 	}
 
 	this.connectTransition = function(state) {
@@ -574,6 +647,11 @@ UI.Statemachine = new (function() {
 		var autonomy = drag_transition.getAutonomy();
 		var container_path = displayed_sm.getStatePath();
 
+		if (undo_end == redo_end) {
+			that.abortTransition();
+			return;
+		}
+
 		if (!is_initial) {
 			drag_transition.setTo(state);
 
@@ -588,12 +666,13 @@ UI.Statemachine = new (function() {
 		}
 
 		connecting = false;
-		this.refreshView();
+		drag_transition = undefined;
+		that.refreshView();
 
 		ActivityTracer.addActivity(ActivityTracer.ACT_TRANSITION,
 			is_initial?
 			"Set initial state to " + state.getStateName()
-			: "Connected outcome " + outcome + " of " + drag_transition.getFrom().getStateName() + " with " + state.getStateName().split('#')[0],
+			: "Connected outcome " + outcome + " of " + from + " with " + state.getStateName().split('#')[0],
 			function() {
 				var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
 				var target = container.getStateByName(undo_end);

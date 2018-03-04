@@ -29,7 +29,9 @@ As mentioned above, switch to the correct branch:
 Build you workspace:
 
     cd ..
-    catkin_make
+    catkin_make # or catkin build
+
+During the build process, the required nwjs binaries are automatically downloaded and extracted.
 
 ## Workspace
 
