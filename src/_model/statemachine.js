@@ -74,6 +74,21 @@ Statemachine = function(sm_name, sm_definition) {
 		}
 		return child.getStateByPath(path.slice(that.getStateName().length + 1));
 	}
+	this.traverseStates = function(_filter) {
+		var result = [];
+		for(var i=0; i<states.length; ++i) {
+			if (states[i] instanceof Statemachine) {
+				result = result.concat(states[i].traverseStates(_filter));
+				continue;
+			} else if (states[i] instanceof BehaviorState) {
+				continue;
+			}
+			if (_filter(states[i])) {
+				result.push(states[i]);
+			}
+		}
+		return result;
+	}
 
 	this.addState = function(state) {
 		states.push(state);

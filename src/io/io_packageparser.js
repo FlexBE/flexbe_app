@@ -38,6 +38,12 @@ IO.PackageParser = new (function() {
 		});
 	}
 
+	this.stopWatching = function() {
+		for (var state in watched_states) {
+			watched_states[state].close();
+		}
+	}
+
 	var checkForRelevance = function(pkg_path, callback) {
 		var data = fs.readFileSync(path.join(pkg_path, 'package.xml'));
 		var xml = dom_parser.parseFromString(String(data), "text/xml");
@@ -51,24 +57,42 @@ IO.PackageParser = new (function() {
 	var watchStateFolder = function(folder_path, import_path) {
 		if (watched_states[folder_path] != undefined) return;
 
-		// watched_states[folder_path] = fs.watch(folder_path,
-		// 	{persistent: false},
-		// 	(eventType, filename) => {
-		// 		if (eventType == 'change') {
-		// 			var entry = path.join(folder_path, filename);
-		// 			IO.Filesystem.readFile(entry, (content) => {
-		// 				var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
-		// 				var state_def = IO.StateParser.parseState(content, imports);
-		// 				if (state_def != undefined) {
-		// 					state_def.setFilePath(entry);
-		// 					WS.Statelib.updateDef(state_def);
-		// 					T.logInfo("Updating changed definition for state: " + state_def.getStateClass());
-		// 					// TODO update defs for existing states and re-draw
-		// 				}
-		// 			});
-		// 		}
-		// 	}
-		// );
+		watched_states[folder_path] = fs.watch(folder_path,
+			{persistent: false},
+			(eventType, filename) => {
+				if(RC.Controller.isReadonly()) {
+					T.logWarn("A state definition source file changed while in read-only mode, ignoring the change for now!");
+					return;
+				}
+				if (eventType == 'change') {
+					var entry = path.join(folder_path, filename);
+					IO.Filesystem.readFile(entry, (content) => {
+						var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
+						var state_def = IO.StateParser.parseState(content, imports);
+						if (state_def != undefined) {
+							state_def.setFilePath(entry);
+							WS.Statelib.updateDef(state_def);
+							T.logInfo("Updating changed definition for state: " + state_def.getStateClass());
+							var update_states = Behavior.getStatemachine().traverseStates(function(state) {
+								return state.getStateClass() == state_def.getStateClass();
+							});
+							update_states.forEach(function (state) {
+								state.updateStateDefinition(state_def);
+								if (state.getContainer() == UI.Statemachine.getDisplayedSM() 
+									&& UI.Panels.StateProperties.isCurrentState(state)) {
+									UI.Panels.StateProperties.hide();
+									UI.Panels.StateProperties.displayStateProperties(state);
+								}
+							});
+							if (UI.Menu.isPageStatemachine()) {
+								UI.Statemachine.refreshView();
+							}
+							RC.Controller.signalChanged();
+						}
+					});
+				}
+			}
+		);
 	}
 
 	this.parseStateFolder = function(folder, import_path, has_init) {
