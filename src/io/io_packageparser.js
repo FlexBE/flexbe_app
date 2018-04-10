@@ -64,7 +64,7 @@ IO.PackageParser = new (function() {
 					T.logWarn("A state definition source file changed while in read-only mode, ignoring the change for now!");
 					return;
 				}
-				if (eventType == 'change') {
+				if (filename.endsWith(".py")) {
 					var entry = path.join(folder_path, filename);
 					IO.Filesystem.readFile(entry, (content) => {
 						var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
