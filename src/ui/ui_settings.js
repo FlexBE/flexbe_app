@@ -483,9 +483,9 @@ UI.Settings = new (function() {
         return document.getElementById('input_ssh_host_name').value;
     }
 
-	this.getRobotUsername = function() {
-	    return document.getElementById('input_ssh_user_name').value;
-	}
+    this.getRobotUsername = function() {
+        return document.getElementById('input_ssh_user_name').value;
+    }
 
 
 	// Editor

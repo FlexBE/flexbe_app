@@ -168,19 +168,19 @@ IO.BehaviorSaver = new (function() {
 				return;
 			}
 
-			// store in file
-			storeBehaviorCode(generated_code, () => {
-				// make sure code file exists before creating the manifest
-				// this reduces the risk for orphan manifests
-				storeBehaviorManifest(generated_manifest, () => {
+            // store in file
+            storeBehaviorCode(generated_code, () => {
+                // make sure code file exists before creating the manifest
+                // this reduces the risk for orphan manifests
+                storeBehaviorManifest(generated_manifest, () => {
                     if(UI.Settings.isSaveOnRobotEnabled()) {
                         //Save/Overwrite the behavior on the robot
                         saveOnRobot();
                     }
                     saveSuccessCallback();
-        		});
-			});
-		});
-	}
+                });
+            });
+        });
+    }
 
 }) ();
