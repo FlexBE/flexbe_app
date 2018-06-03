@@ -119,6 +119,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('select_default_package').addEventListener('change', UI.Settings.defaultPackageChanged);
     document.getElementById('select_code_indentation').addEventListener('change', UI.Settings.codeIndentationChanged);
     document.getElementById('input_editor_command').addEventListener('change', UI.Settings.editorCommandChanged);
+    document.getElementById('cb_save_on_robot').addEventListener('change', UI.Settings.saveOnRobotClicked);
+    document.getElementById('input_ssh_user_name').addEventListener('change', UI.Settings.sshUsernameChanged);
+    document.getElementById('input_ssh_host_name').addEventListener('change', UI.Settings.sshHostnameChanged);
+
 
     document.getElementById('select_transition_mode').addEventListener('change', UI.Settings.transitionEndpointsChanged);
     document.getElementById('input_gridsize').addEventListener('change', UI.Settings.gridsizeChanged);
