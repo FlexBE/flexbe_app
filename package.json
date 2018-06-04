@@ -1,7 +1,14 @@
 {
-  "name": "FlexBE App",
-  "version": "2.0.10",
+  "name": "flexbe_app",
+  "version": "2.0.11",
   "main": "src/main.js",
+  "description": "flexbe_app provides a user interface (editor + runtime control) for the FlexBE behavior engine.",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:FlexBE/flexbe_app.git"
+  },
+  "readme": "README.md",
   "window": {
     "icon": "src/img/icon-128.png",
     "toolbar": false,
@@ -9,5 +16,8 @@
     "height": 830,
     "min_width": 1340,
     "min_height": 650
+  },
+  "dependencies" : {
+    "scp2" : "^0.5.0"
   }
 }

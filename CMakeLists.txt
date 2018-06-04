@@ -68,3 +68,5 @@ if(CATKIN_ENABLE_TESTING)
 	find_package(rostest REQUIRED)
 	add_rostest(launch/test_report.test)
 endif()
+
+execute_process(COMMAND npm --prefix ${PROJECT_SOURCE_DIR} install)
