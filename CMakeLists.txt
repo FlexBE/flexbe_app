@@ -41,3 +41,51 @@ add_custom_target(nw_install DEPENDS nw)
 if(NOT ${CMAKE_CURRENT_SOURCE_DIR}/nw)
   safe_execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/nwjs_install)
 endif()
+
+#############
+## Install ##
+#############
+
+# all install targets should use catkin DESTINATION variables
+# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
+
+# call catkin_destinations() to populate CATKIN_*_DESTINATION cmake variables
+catkin_destinations()
+
+install(DIRECTORY
+  launch
+  src
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(PROGRAMS
+  bin/run_app
+  bin/shortcut
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY
+  lib
+  locales
+  swiftshader
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  USE_SOURCE_PERMISSIONS
+)
+
+install(FILES
+  credits.html
+  flexbe.desktop
+  icudtl.dat
+  natives_blob.bin
+  nw_100_percent.pak
+  nw_200_percent.pak
+  package.json
+  resources.pak
+  snapshot_blob.bin
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(PROGRAMS
+  nw
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

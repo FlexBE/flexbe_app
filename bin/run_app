@@ -1,11 +1,11 @@
 #!/bin/bash
-cd "$( dirname "${BASH_SOURCE[0]}" )"
 
-if [ ! -f ../nw ]; then
+NW="$(rospack find flexbe_app)/nw"
+if [ ! -x "${NW}" ]; then
   echo "Cannot run flexbe_app, need to download nwjs first."
   echo "Please build flexbe_app via catkin before using it or run the following command now:"
   echo "  rosrun flexbe_app nwjs_install"
   exit -1
 fi
 
-../nw --password-store=basic $*
+"$NW" --password-store=basic "$@"
