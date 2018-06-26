@@ -1,7 +1,8 @@
 #!/bin/bash -e
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 TEMPFILE="nwjs.tar.gz"
-cd ..
+mkdir -p ../nwjs
+cd ../nwjs
 
 # check if nw is already existing and abort if so
 if [ -f nw ]; then

@@ -27,11 +27,19 @@ IO.PackageParser = new (function() {
 					callback(pkg_list, add_states, add_behaviors);
 				} else {
 					checkForRelevance(entry['path'], (has_states, has_behaviors) => {
-							if (has_states) add_states.push(entry);
-							if (has_behaviors) add_behaviors.push(entry);
-						});
-
-					processEntry(idx+1);
+                        if (has_behaviors) {
+                            add_behaviors.push(entry);
+                        }
+                        if (has_states) {
+                            ROS.getPackagePythonPath(entry['name'], (folder_path) => {
+                                entry['path'] = folder_path;
+                                add_states.push(entry);
+                                processEntry(idx+1);
+                            });
+                        } else {
+                            processEntry(idx+1);
+                        }
+                    });
 				}
 			};
 			processEntry(0);

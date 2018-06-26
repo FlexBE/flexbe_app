@@ -89,6 +89,29 @@ rospy.spin()
 		});
 	}
 
+    var python_package_cache = {};
+	that.getPackagePythonPath = function(package_name, callback) {
+    	if (python_package_cache[package_name] !== undefined) {
+            process.nextTick(() => {
+                callback(python_package_cache[package_name]);
+            });
+    	} else {
+            var proc = spawn('python', ['-c', `import imp; print(imp.find_module('` + package_name + `')[1])`]);
+
+            var pkg_data = '';
+            proc.stdout.on('data', data => {
+                pkg_data += data;
+            });
+            proc.on('close', (code) => {
+                lines = pkg_data.split(os.EOL);
+                if (pkg_data.length > 0 && lines.length > 0) {
+                    python_package_cache[package_name] = lines[0];
+                }
+                callback(python_package_cache[package_name]);
+            });
+        }
+	}
+
 	// that.getParam = function(name, callback) {
 	// 	var proc = spawn('rosparam', ['get', name]);
 	// 	proc.stdout.on('data', data => {

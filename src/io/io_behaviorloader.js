@@ -53,12 +53,12 @@ IO.BehaviorLoader = new (function() {
 		resetEditor();
 
 		var package_name = manifest.rosnode_name;
-		ROS.getPackagePath(package_name, (package_path) => {
-			if (package_path == undefined) {
+		ROS.getPackagePythonPath(package_name, (folder_path) => {
+			if (folder_path == undefined) {
 				T.logError("Failed to load behavior: ROS package "+package_name+" not found, please check behavior manifest.");
 				return;
 			}
-			var file_path = path.join(package_path, 'src', package_name, manifest.codefile_name);
+			var file_path = path.join(folder_path, manifest.codefile_name);
 			IO.Filesystem.readFile(file_path, (content) => {
 				T.logInfo("Parsing sourcecode...");
 				parseCode(content, manifest);
@@ -68,12 +68,12 @@ IO.BehaviorLoader = new (function() {
 
 	this.loadBehaviorInterface = function(manifest, callback) {
 		var package_name = manifest.rosnode_name;
-		ROS.getPackagePath(package_name, (package_path) => {
-			if (package_path == undefined) {
+		ROS.getPackagePythonPath(package_name, (folder_path) => {
+			if (folder_path == undefined) {
 				T.logError("Failed to load behavior: ROS package "+package_name+" not found, please check behavior manifest.");
 				return;
 			}
-			var file_path = path.join(package_path, 'src', package_name, manifest.codefile_name);
+			var file_path = path.join(folder_path, manifest.codefile_name);
 			IO.Filesystem.readFile(file_path, (content) => {
 				try {
 					var parsingResult = IO.CodeParser.parseSMInterface(content);
@@ -89,11 +89,10 @@ IO.BehaviorLoader = new (function() {
 	this.updateManualSections = function(callback) {
 		var names = Behavior.createNames();
 		var package_name = names.rosnode_name;
-		ROS.getPackagePath(package_name, (package_path) => {
-			if (package_path == undefined) {
+		ROS.getPackagePythonPath(package_name, (folder_path) => {
+			if (folder_path == undefined) {
 				return;
 			}
-			var folder_path = path.join(package_path, 'src', package_name);
 			var file_path = path.join(folder_path, names.file_name);
 			IO.Filesystem.checkFileExists(folder_path, names.file_name, (exists) => {
 				if (exists) {
@@ -116,12 +115,12 @@ IO.BehaviorLoader = new (function() {
 
 	this.parseBehaviorSM = function(manifest, callback) {
 		var package_name = manifest.rosnode_name;
-		ROS.getPackagePath(package_name, (package_path) => {
-			if (package_path == undefined) {
+		ROS.getPackagePythonPath(package_name, (folder_path) => {
+			if (folder_path == undefined) {
 				T.logError("Failed to load behavior: ROS package "+package_name+" not found, please check behavior manifest.");
 				return;
 			}
-			var file_path = path.join(package_path, 'src', package_name, manifest.codefile_name);
+			var file_path = path.join(folder_path, manifest.codefile_name);
 			IO.Filesystem.readFile(file_path, (content) => {
 				console.log("Preparing sourcecode of behavior " + manifest.name + "...");
 				try {
