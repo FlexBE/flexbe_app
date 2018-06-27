@@ -96,7 +96,7 @@ rospy.spin()
                 callback(python_package_cache[package_name]);
             });
     	} else {
-            var proc = spawn('python', ['-c', `import imp; print(imp.find_module('` + package_name + `')[1])`]);
+            var proc = spawn('python', ['-c', `import importlib; print(importlib.import_module('` + package_name + `').__path__[-1])`]);
 
             var pkg_data = '';
             proc.stdout.on('data', data => {
