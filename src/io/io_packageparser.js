@@ -32,7 +32,7 @@ IO.PackageParser = new (function() {
                         }
                         if (has_states) {
                             ROS.getPackagePythonPath(entry['name'], (folder_path) => {
-                                entry['path'] = folder_path;
+                                entry['path'] = path.join(folder_path, '..');
                                 add_states.push(entry);
                                 processEntry(idx+1);
                             });
