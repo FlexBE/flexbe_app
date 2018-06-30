@@ -15,5 +15,6 @@
   <run_depend>rospy</run_depend>
   <run_depend>genpy</run_depend>
   <run_depend>actionlib</run_depend>
+  <run_depend>rospack</run_depend>
 
 </package>
