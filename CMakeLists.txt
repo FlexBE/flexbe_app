@@ -24,15 +24,15 @@ catkin_package(
 #add_custom_target(nwjs_inst)
 #add_custom_command(TARGET nwjs_inst POST_BUILD COMMAND bin/nwjs_install)
 
-add_custom_command(OUTPUT nw
+add_custom_command(OUTPUT nwjs
   COMMAND bin/nwjs_install
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   VERBATIM
 )
 
-add_custom_target(nw_install DEPENDS nw)
+add_custom_target(nw_install DEPENDS nwjs)
 
-if(NOT ${CMAKE_CURRENT_SOURCE_DIR}/nw)
+if(NOT ${CMAKE_CURRENT_SOURCE_DIR}/nwjs)
   safe_execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/nwjs_install)
 endif()
 
@@ -47,15 +47,15 @@ INSTALL(PROGRAMS
 )
 INSTALL(FILES
     package.json
-    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 INSTALL(DIRECTORY
     src
-    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 INSTALL(DIRECTORY
     nwjs
-    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
     USE_SOURCE_PERMISSIONS
 )
 install(DIRECTORY
