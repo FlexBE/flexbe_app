@@ -58,7 +58,7 @@ IO.BehaviorLoader = new (function() {
 				T.logError("Failed to load behavior: ROS package "+package_name+" not found, please check behavior manifest.");
 				return;
 			}
-			var file_path = path.join(package_path, 'src', package_name, manifest.codefile_name);
+			var file_path = path.join(manifest.codefile_path, manifest.codefile_name);
 			IO.Filesystem.readFile(file_path, (content) => {
 				T.logInfo("Parsing sourcecode...");
 				parseCode(content, manifest);
@@ -73,7 +73,7 @@ IO.BehaviorLoader = new (function() {
 				T.logError("Failed to load behavior: ROS package "+package_name+" not found, please check behavior manifest.");
 				return;
 			}
-			var file_path = path.join(package_path, 'src', package_name, manifest.codefile_name);
+			var file_path = path.join(manifest.codefile_path, manifest.codefile_name);
 			IO.Filesystem.readFile(file_path, (content) => {
 				try {
 					var parsingResult = IO.CodeParser.parseSMInterface(content);
@@ -121,7 +121,7 @@ IO.BehaviorLoader = new (function() {
 				T.logError("Failed to load behavior: ROS package "+package_name+" not found, please check behavior manifest.");
 				return;
 			}
-			var file_path = path.join(package_path, 'src', package_name, manifest.codefile_name);
+			var file_path = path.join(manifest.codefile_path, manifest.codefile_name);
 			IO.Filesystem.readFile(file_path, (content) => {
 				console.log("Preparing sourcecode of behavior " + manifest.name + "...");
 				try {

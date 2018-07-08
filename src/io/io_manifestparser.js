@@ -1,7 +1,7 @@
 IO.ManifestParser = new (function() {
 	var that = this;
 
-	this.parseManifest = function(content, file_path) {
+	this.parseManifest = function(content, file_path, python_path) {
 		parser = new DOMParser();
 		xml = parser.parseFromString(content,"text/xml");
 
@@ -26,6 +26,7 @@ IO.ManifestParser = new (function() {
 		var path = xml.getElementsByTagName("executable")[0].getAttribute("package_path").split(".");
 		var rosnode_name = path[0];
 		var codefile_name = path[1] + ".py";
+		var codefile_path = python_path;
 		var class_name = xml.getElementsByTagName("executable")[0].getAttribute("class");
 
 		var params_element = xml.getElementsByTagName("params");
@@ -74,6 +75,7 @@ IO.ManifestParser = new (function() {
 			date: 			date,
 			rosnode_name: 	rosnode_name,
 			codefile_name: 	codefile_name,
+			codefile_path: 	codefile_path,
 			class_name: 	class_name,
 			params: 		param_list,
 			contains: 		contains_list,

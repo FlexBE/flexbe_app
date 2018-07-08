@@ -64,7 +64,8 @@ rospy.spin()
 					package_cache[i] = package_cache[i].split(" ");
 					package_cache[i] = {
 						'name': package_cache[i][0],
-						'path': package_cache[i][1]
+						'path': package_cache[i][1],
+						'python_path': undefined
 					}
 				}
 				callback(package_cache.clone());
