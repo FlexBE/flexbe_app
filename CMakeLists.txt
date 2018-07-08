@@ -21,12 +21,6 @@ catkin_package(
 # use add_library() or add_executable() as required
 #add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})
 
-#FILE(GLOB BIN_FILES "bin/*")
-
-# install executables
-#install(PROGRAMS ${BIN_FILES} DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-#install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-
 #add_custom_target(nwjs_inst)
 #add_custom_command(TARGET nwjs_inst POST_BUILD COMMAND bin/nwjs_install)
 
@@ -46,46 +40,25 @@ endif()
 ## Install ##
 #############
 
-# all install targets should use catkin DESTINATION variables
-# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
-
-# call catkin_destinations() to populate CATKIN_*_DESTINATION cmake variables
-catkin_destinations()
-
+INSTALL(PROGRAMS
+    bin/run_app
+    bin/shortcut
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+INSTALL(FILES
+    package.json
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+INSTALL(DIRECTORY
+    src
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+INSTALL(DIRECTORY
+    nwjs
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    USE_SOURCE_PERMISSIONS
+)
 install(DIRECTORY
-  launch
-  src
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
-
-install(PROGRAMS
-  bin/run_app
-  bin/shortcut
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-
-install(DIRECTORY
-  lib
-  locales
-  swiftshader
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-  USE_SOURCE_PERMISSIONS
-)
-
-install(FILES
-  credits.html
-  flexbe.desktop
-  icudtl.dat
-  natives_blob.bin
-  nw_100_percent.pak
-  nw_200_percent.pak
-  package.json
-  resources.pak
-  snapshot_blob.bin
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
-
-install(PROGRAMS
-  nw
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    launch
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

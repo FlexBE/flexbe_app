@@ -1,12 +1,1 @@
-lib/*
-locales/*
-swiftshader/*
-credits.html
-icudtl.dat
-natives_blob.bin
-nw
-nw_100_percent.pak
-nw_200_percent.pak
-resources.pak
-snapshot_blob.bin
-
+nwjs/
