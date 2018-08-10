@@ -11,7 +11,7 @@ IO.BehaviorSaver = new (function() {
 		};
 		var names = Behavior.createNames();
 		var package_name = names.rosnode_name;
-		ROS.getPackagePythonPath(package_name, (folder_path) => {
+		ROS.getPackagePath(package_name, (folder_path) => {
 			var file_path = path.join(folder_path, names.file_name);
 			var file_tmp_path = path.join(folder_path, names.file_name_tmp);
 			if (RC.Controller.isConnected()) {
