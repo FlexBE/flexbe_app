@@ -6,7 +6,7 @@ IO.BehaviorPacker = new (function() {
 	this.loadBehaviorCode = function(callback) {
 		var names = Behavior.createNames();
 		var package_name = names.rosnode_name;
-		ROS.getPackagePythonPath(package_name, (folder_path) => {
+		ROS.getPackagePath(package_name, (folder_path) => {
 			if (folder_path == undefined) {
 				return;
 			}
