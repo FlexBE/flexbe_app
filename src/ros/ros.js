@@ -90,6 +90,26 @@ rospy.spin()
 		});
 	}
 
+	that.getPackagePythonPath = function(package_name, callback) {
+		var proc = spawn('python', ['-c', 'import '+package_name+'; print('+package_name+'.__path__)']);
+
+		var path_data = '';
+		proc.stdout.on('data', data => {
+			path_data += data;
+		});
+		proc.stderr.on('data', data => {
+			console.log(package_name+" failed to import: "+data);
+		});
+		proc.on('close', (code) => {
+			try {
+				var path_list = JSON.parse(path_data.replace(/'/g, '"'));
+				callback(path_list[path_list.length-1]);
+			} catch (err) {
+				callback(undefined);
+			}
+		});
+	}
+
 	// that.getParam = function(name, callback) {
 	// 	var proc = spawn('rosparam', ['get', name]);
 	// 	proc.stdout.on('data', data => {
