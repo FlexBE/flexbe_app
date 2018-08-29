@@ -4,7 +4,6 @@ IO.PackageParser = new (function() {
 	var fs = require('fs');
 	var path = require('path');
 
-
 	var dom_parser = new DOMParser();
 	var watched_states = {};
 
@@ -27,11 +26,25 @@ IO.PackageParser = new (function() {
 					callback(pkg_list, add_states, add_behaviors);
 				} else {
 					checkForRelevance(entry['path'], (has_states, has_behaviors) => {
-							if (has_states) add_states.push(entry);
-							if (has_behaviors) add_behaviors.push(entry);
-						});
-
-					processEntry(idx+1);
+						if (has_states || has_behaviors) {
+							var add_package = function(python_path) {
+								if (python_path != undefined) {
+									entry['python_path'] = python_path;
+									if (has_states) add_states.push(entry);
+									if (has_behaviors) add_behaviors.push(entry);
+								}
+								processEntry(idx+1);
+							}
+							python_path = entry['python_path'];
+							if (python_path == undefined) {
+								ROS.getPackagePythonPath(entry['name'], add_package);
+							} else {
+								add_package(python_path);
+							}
+						} else {
+							processEntry(idx+1);
+						}
+					});
 				}
 			};
 			processEntry(0);
@@ -95,18 +108,16 @@ IO.PackageParser = new (function() {
 		);
 	}
 
-	this.parseStateFolder = function(folder, import_path, has_init) {
+	this.parseStateFolder = function(folder, import_path) {
 		IO.Filesystem.checkFileExists(folder, "__init__.py", function(exists) {
-			has_init = has_init || exists;
+			if (exists) {
+				import_path = import_path || path.dirname(folder);
+			}
 			IO.Filesystem.getFolderContent(folder, function(files) {
 				files.sort().forEach(function(entry, i) {
 					if(IO.Filesystem.isFolder(entry)) {
-						if (!has_init) {
-							that.parseStateFolder(entry, path.dirname(entry), has_init);
-						} else {
-							that.parseStateFolder(entry, import_path, has_init);
-						}
-					} else if (has_init) {
+						that.parseStateFolder(entry, import_path);
+					} else if (import_path != undefined) {
 						if (path.extname(entry) != ".py") return;
 						IO.Filesystem.readFile(entry, (content) => {
 							var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
@@ -123,15 +134,15 @@ IO.PackageParser = new (function() {
 		});
 	}
 
-	this.parseBehaviorFolder = function(folder, pkg_name) {
+	this.parseBehaviorFolder = function(folder, pkg_name, python_path) {
 		IO.Filesystem.getFolderContent(folder, function(files) {
 			files.sort().forEach(function(entry, i) {
 				if(IO.Filesystem.isFolder(entry)) {
-					that.parseBehaviorFolder(entry, pkg_name);
+					that.parseBehaviorFolder(entry, pkg_name, python_path);
 				} else {
 					if (path.extname(entry) != ".xml" || path.basename(entry)[0] == '#') return;
 					IO.Filesystem.readFile(entry, (content) => {
-						var manifest = IO.ManifestParser.parseManifest(content, entry);
+						var manifest = IO.ManifestParser.parseManifest(content, entry, python_path);
 						if (manifest != undefined) {
 							if (manifest.rosnode_name != pkg_name) {
 								T.logWarn("Ignoring behavior " + manifest.name + ": Manifest and code need to be in the same ROS package.");
