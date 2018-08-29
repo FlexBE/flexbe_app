@@ -31,6 +31,8 @@ Behavior = new (function() {
 	var file_name = undefined;
 	var manifest_path = undefined;
 
+	var readonly = false;
+
 
 	this.getBehaviorName = function() {
 		return behavior_name;
@@ -274,6 +276,14 @@ Behavior = new (function() {
 		root_sm = _root_sm;
 	}
 
+	this.setReadonly = function(_readonly) {
+		readonly = _readonly;
+	}
+
+	this.isReadonly = function() {
+		return readonly;
+	}
+
 	this.resetBehavior = function() {
 		behavior_name = "";
 		behavior_package = "";
@@ -299,6 +309,7 @@ Behavior = new (function() {
 		comment_notes = [];
 
 		root_sm = new Statemachine("", new WS.StateMachineDefinition([], [], []));
+		readonly = false;
 	}
 
 	this.setFiles = function(_file_name, _manifest_path) {

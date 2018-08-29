@@ -284,7 +284,12 @@ UI.Menu = new (function() {
 	}
 
 	this.saveBehaviorClicked = function() {
-		var check_error_string = Checking.checkBehavior();
+		var check_error_string = undefined;
+		if (Behavior.isReadonly()) {
+			check_error_string = "behavior has been loaded from a read-only file";
+		} else {
+			check_error_string = Checking.checkBehavior();
+		}
 		if (check_error_string != undefined) {
 			T.clearLog();
 			T.show();

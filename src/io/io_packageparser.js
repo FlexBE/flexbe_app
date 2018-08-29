@@ -30,7 +30,6 @@ IO.PackageParser = new (function() {
 							var add_package = function(python_path) {
 								if (python_path != undefined) {
 									entry['python_path'] = python_path;
-									console.log(entry);
 									if (has_states) add_states.push(entry);
 									if (has_behaviors) add_behaviors.push(entry);
 								}

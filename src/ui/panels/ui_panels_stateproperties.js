@@ -295,6 +295,7 @@ UI.Panels.StateProperties = new (function() {
 			remove_button.addEventListener("click", function() {
 				if (RC.Controller.isReadonly()
 					|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+					|| Behavior.isReadonly()
 					|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
@@ -328,6 +329,7 @@ UI.Panels.StateProperties = new (function() {
 			input_field.addEventListener("blur", function() {
 				if (RC.Controller.isReadonly()
 					|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+					|| Behavior.isReadonly()
 					|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
@@ -348,6 +350,7 @@ UI.Panels.StateProperties = new (function() {
 			remove_button.addEventListener("click", function() {
 				if (RC.Controller.isReadonly()
 					|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+					|| Behavior.isReadonly()
 					|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
@@ -383,6 +386,7 @@ UI.Panels.StateProperties = new (function() {
 			input_field.addEventListener("blur", function() {
 				if (RC.Controller.isReadonly()
 					|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+					|| Behavior.isReadonly()
 					|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
@@ -403,6 +407,7 @@ UI.Panels.StateProperties = new (function() {
 			remove_button.addEventListener("click", function() {
 				if (RC.Controller.isReadonly()
 					|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+					|| Behavior.isReadonly()
 					|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
@@ -473,6 +478,7 @@ UI.Panels.StateProperties = new (function() {
 				input_field.addEventListener("blur", function() {
 					if (RC.Controller.isReadonly()
 						|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+						|| Behavior.isReadonly()
 						|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 						) return;
@@ -493,6 +499,7 @@ UI.Panels.StateProperties = new (function() {
 				default_button.addEventListener("change", function() {
 					if (RC.Controller.isReadonly()
 						|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+						|| Behavior.isReadonly()
 						|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 						) return;
@@ -546,6 +553,7 @@ UI.Panels.StateProperties = new (function() {
 				input_field.addEventListener("blur", function() {
 					if (RC.Controller.isReadonly()
 						|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+						|| Behavior.isReadonly()
 						|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 						) return;
@@ -596,6 +604,7 @@ UI.Panels.StateProperties = new (function() {
 	this.deleteStateClicked = function() {
 		if (RC.Controller.isReadonly()
 			|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+			|| Behavior.isReadonly()
 			|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 			|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 			) {
@@ -692,6 +701,7 @@ UI.Panels.StateProperties = new (function() {
 	this.applyPropertiesClicked = function() {
 		if (RC.Controller.isReadonly() 
 			|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+			|| Behavior.isReadonly()
 			|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 			|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 			) {
@@ -836,6 +846,7 @@ UI.Panels.StateProperties = new (function() {
 
 		if (!RC.Controller.isReadonly()
 			&& !UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+			&& !Behavior.isReadonly()
 			&& (!RC.Controller.isLocked() || !RC.Controller.isStateLocked(current_prop_state.getStatePath()))
 			&& !RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 			) {
@@ -875,6 +886,7 @@ UI.Panels.StateProperties = new (function() {
 		if (document.getElementById("input_prop_outcome_add").value == "") return;
 		if (RC.Controller.isReadonly()
 			|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+			|| Behavior.isReadonly()
 			|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 			|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 			) return;
@@ -910,6 +922,7 @@ UI.Panels.StateProperties = new (function() {
 		if (document.getElementById("input_prop_input_key_add").value == "") return;
 		if (RC.Controller.isReadonly()
 			|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+			|| Behavior.isReadonly()
 			|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 			|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 			) return;
@@ -952,6 +965,7 @@ UI.Panels.StateProperties = new (function() {
 		if (document.getElementById("input_prop_output_key_add").value == "") return;
 		if (RC.Controller.isReadonly()
 			|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+			|| Behavior.isReadonly()
 			|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 			|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 			) return;
@@ -993,6 +1007,7 @@ UI.Panels.StateProperties = new (function() {
 	this.containerTypeChanged = function(evt) {
 		if(RC.Controller.isReadonly()
 			|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+			|| Behavior.isReadonly()
 			|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 			|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 			) return;
@@ -1094,6 +1109,7 @@ UI.Panels.StateProperties = new (function() {
 	this.synthesizeClicked = function() {
 		if(RC.Controller.isReadonly()
 			|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+			|| Behavior.isReadonly()
 			|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 			|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 			) return;

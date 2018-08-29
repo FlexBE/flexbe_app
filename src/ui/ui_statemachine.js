@@ -290,7 +290,7 @@ UI.Statemachine = new (function() {
 	}
 
 	this.isReadonly = function() {
-		return RC.Controller.isReadonly() || displayed_sm.isInsideDifferentBehavior();
+		return RC.Controller.isReadonly() || displayed_sm.isInsideDifferentBehavior() || Behavior.isReadonly();
 	}
 
 	this.applyGraphLayout = function() {
@@ -416,7 +416,7 @@ UI.Statemachine = new (function() {
 		}
 
 		// draw transitions at last
-		var transitions_readonly = RC.Controller.isReadonly() || dataflow_displayed || displayed_sm.isInsideDifferentBehavior();
+		var transitions_readonly = RC.Controller.isReadonly() || dataflow_displayed || displayed_sm.isInsideDifferentBehavior() || Behavior.isReadonly();
 		var new_transitions = [];
 		for (var i=0; i<transitions.length; ++i) {
 			var t = transitions[i];
@@ -472,7 +472,7 @@ UI.Statemachine = new (function() {
 
 		if (RC.Controller.isReadonly()) {
 			background.attr({fill: '#f3f6ff', stroke: '#c5d2ee'});
-		} else if (displayed_sm.isInsideDifferentBehavior()) {
+		} else if (displayed_sm.isInsideDifferentBehavior() || Behavior.isReadonly()) {
 			background.attr({fill: '#fff3f6'});
 		} else {
 			background.attr({fill: '#FFF'});

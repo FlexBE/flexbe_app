@@ -34,6 +34,15 @@ IO.BehaviorLoader = new (function() {
 		T.logInfo("Behavior state machine built.");
 		
 		ActivityTracer.resetActivities();
+
+		ROS.getPackagePath(manifest.rosnode_name, (package_path) => {
+			ROS.getPackagePythonPath(manifest.rosnode_name, (python_path) => {
+				if (!python_path.startsWith(package_path)) {
+					Behavior.setReadonly(true);
+				}
+				UI.Statemachine.refreshView();
+			});
+		});
 	}
 
 	var resetEditor = function() {
