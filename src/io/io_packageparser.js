@@ -3,7 +3,6 @@ IO.PackageParser = new (function() {
 
 	var fs = require('fs');
 	var path = require('path');
-	var spawn = require('child_process').spawn;
 
 	var dom_parser = new DOMParser();
 	var watched_states = {};
@@ -27,15 +26,22 @@ IO.PackageParser = new (function() {
 					callback(pkg_list, add_states, add_behaviors);
 				} else {
 					checkForRelevance(entry['path'], (has_states, has_behaviors) => {
-						if ((has_states || has_behaviors) && entry['python_path'] == undefined) {
-							getPythonPath(entry, (python_path) => {
+						if (has_states || has_behaviors) {
+							var add_package = function(python_path) {
 								if (python_path != undefined) {
 									entry['python_path'] = python_path;
+									console.log(entry);
 									if (has_states) add_states.push(entry);
 									if (has_behaviors) add_behaviors.push(entry);
 								}
 								processEntry(idx+1);
-							});
+							}
+							python_path = entry['python_path'];
+							if (python_path == undefined) {
+								ROS.getPackagePythonPath(entry['name'], add_package);
+							} else {
+								add_package(python_path);
+							}
 						} else {
 							processEntry(idx+1);
 						}
@@ -60,29 +66,6 @@ IO.PackageParser = new (function() {
 		var hasStates = pkg_export && pkg_export.getElementsByTagName("flexbe_states").length > 0;
 		var hasBehaviors = pkg_export && pkg_export.getElementsByTagName("flexbe_behaviors").length > 0;
 		callback(hasStates, hasBehaviors);
-	}
-
-	var getPythonPath = function(pkg_entry, callback) {
-		var proc = spawn('python', ['-c', 'import '+pkg_entry['name']+'; print('+pkg_entry['name']+'.__path__)']);
-
-		var path_data = '';
-		proc.stdout.on('data', data => {
-			path_data += data;
-		});
-		proc.stderr.on('data', data => {
-			console.log(pkg_entry['name']+" failed to import: "+data);
-		});	
-		proc.on('close', (code) => {
-			try {
-				var path_list = JSON.parse(path_data.replace(/'/g, '"'));
-				var src_path = path_list.findElement((element) => {
-					return element.startsWith(pkg_entry['path']);
-				});
-				callback(src_path || path_list[0]);
-			} catch (err) {
-				callback(undefined);
-			}
-		});
 	}
 
 	var watchStateFolder = function(folder_path, import_path) {
