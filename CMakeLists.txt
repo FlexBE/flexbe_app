@@ -62,3 +62,9 @@ install(DIRECTORY
     launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
+
+# run tests
+if(CATKIN_ENABLE_TESTING)
+	find_package(rostest REQUIRED)
+	add_rostest(launch/test_report.test)
+endif()

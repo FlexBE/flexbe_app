@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<test test-name="flexbe_app" name="flexbe_app" pkg="flexbe_app" type="test_report" />
+
+</launch>

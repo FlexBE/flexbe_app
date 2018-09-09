@@ -17,4 +17,6 @@
   <run_depend>actionlib</run_depend>
   <run_depend>rospack</run_depend>
 
+  <test_depend>rosunit</test_depend>
+
 </package>
