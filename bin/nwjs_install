@@ -36,7 +36,7 @@ fi
 
 # ready to go
 echo "Downloading nwjs..."
-wget -O $TEMPFILE https://dl.nwjs.io/$VERSION/nwjs-$VERSION-$OS-$ARCH.tar.gz
+wget -q -O $TEMPFILE https://dl.nwjs.io/$VERSION/nwjs-$VERSION-$OS-$ARCH.tar.gz
 
 echo "Unpacking..."
 tar -xzf $TEMPFILE --strip-components 1
