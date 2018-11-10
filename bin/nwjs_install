@@ -4,13 +4,21 @@ TEMPFILE="nwjs.tar.gz"
 mkdir -p ../nwjs
 cd ../nwjs
 
-# check if nw is already existing and abort if so
+VERSION="v0.34.1" # verified working, to be incremented explicitly
+
+# check if nw is already existing and up-to-date, abort if so
 if [ -f nw ]; then
-  exit 0
+	if [ -f version ] && [ "$(cat version)" == "$VERSION" ]; then
+		exit 0
+	else
+		cd ..
+		mv nwjs nwjs_old
+		mkdir nwjs
+		cd nwjs
+	fi
 fi
 
 # determine correct executable version
-VERSION="v0.27.2" # verified working, to be incremented explicitly
 OS="linux"
 if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
 	OS="win"
@@ -28,10 +36,16 @@ fi
 
 # ready to go
 echo "Downloading nwjs..."
-wget -q -O $TEMPFILE https://dl.nwjs.io/$VERSION/nwjs-$VERSION-$OS-$ARCH.tar.gz
+wget -O $TEMPFILE https://dl.nwjs.io/$VERSION/nwjs-$VERSION-$OS-$ARCH.tar.gz
 
 echo "Unpacking..."
 tar -xzf $TEMPFILE --strip-components 1
 rm $TEMPFILE
+echo "$VERSION" > version
+
+cd ..
+if [ -f nwjs_old/nw ]; then
+	rm -rf nwjs_old
+fi
 
 echo -e "Successfully downloaded nwjs!"

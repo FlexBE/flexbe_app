@@ -1,10 +1,10 @@
 <package>
   <name>flexbe_app</name>
-  <version>2.0.9</version>
+  <version>2.0.10</version>
   <description>
      flexbe_app provides a user interface (editor + runtime control) for the FlexBE behavior engine.
   </description>
-  <maintainer email="schillinger@sim.tu-darmstadt.de">Philipp Schillinger</maintainer>
+  <maintainer email="schillin@kth.se">Philipp Schillinger</maintainer>
   <license>BSD</license>
 
   <url>http://ros.org/wiki/flexbe_app</url>
