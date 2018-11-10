@@ -25,4 +25,10 @@ window.onload = function() {
 	UI.Settings.restoreSettings();
 
 	UI.Feed.initialize();
+
+	if (gui.App.argv.contains('--run-tests')) {
+		setTimeout(() => {
+			TestReport.runAllTests(status =>  gui.App.quit());
+		}, 5 * 1000);
+	}
 }
