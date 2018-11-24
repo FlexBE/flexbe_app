@@ -2,16 +2,6 @@
 
 User interface (editor + runtime control) for the FlexBE behavior engine.
 
-The FlexBE App in this repository replaces the previous *flexbe_chrome_app*. Please refer to the following announcement for an overview of the most important changes: [Future of the FlexBE Chrome App](https://github.com/pschillinger/flexbe_chrome_app/issues/11)
-
----
-
-FlexBE App branch: **feature/flexbe_app**
-
-*Changes to FlexBE required for running this version of the FlexBE App are not yet merged into master. Please checkout the above branch on all repos if available.*
-
----
-
 ## Installation
 
 Clone the following repos into your ROS workspace:
@@ -19,19 +9,12 @@ Clone the following repos into your ROS workspace:
     git clone https://github.com/team-vigir/flexbe_behavior_engine.git  # if not already present
     git clone https://github.com/FlexBE/flexbe_app.git
 
-As mentioned above, switch to the correct branch:
-
-    cd flexbe_behavior_engine
-    git fetch
-    git checkout feature/flexbe_app
-    cd ..
-
 Build you workspace:
 
-    cd ..
     catkin_make # or catkin build
 
 During the build process, the required nwjs binaries are automatically downloaded and extracted.
+To download the binaries manually instead, run the script `bin/nwjs_install`.
 
 ## Workspace
 
@@ -40,8 +23,6 @@ In order to create and prepare a new repository for behavior development, run th
     rosrun flexbe_widget create_repo [your_project_name]
 
 This will initialize a new local git repository with the correct workspace structure which you can then push to a desired remote location. Make sure that you build the workspace afterwards.
-
-If you have been using FlexBE already, you can convert the content of your repository according to the structure defined below. Besides adding the export statement to your state packages, you can automate this conversion by running the FlexBE App. If no behavior package is detected, it will suggest you to initialize one.
 
 ## Usage
 
@@ -65,7 +46,24 @@ Use the following launch file to run both of the above for local behavior execut
 
     roslaunch flexbe_app flexbe_full.launch
 
-## Packages
+
+## Backwards Compatibility
+
+The FlexBE App in this repository replaces the previous *flexbe_chrome_app*. Please refer to the following announcement for an overview of the most important changes: [Future of the FlexBE Chrome App](https://github.com/pschillinger/flexbe_chrome_app/issues/11)
+
+If you have been using FlexBE already with the old Chrome app, you can convert the content of your repository according to the structure defined below. Besides adding the export statement to your state packages, you can automate this conversion by running the FlexBE App. If no behavior package is detected, it will suggest you to initialize one.
+
+---
+
+Deprecated Chrome App branch: **deprecated/chrome_app**
+
+*Please checkout the above branch on all repos if available for a best-effort support of the deprecated Chrome app. However, please consider to update as soon as possible according to the instructions below to ensure that the system will remain working in the future and to receive all updates.*
+
+---
+
+Please note that the way how state and behavior packages are detected has changed and breaks direct compatibility.
+Follow the instructions below to make the required changes.
+Behavior packages can also be converted automatically by the new FlexBE App.
 
 ### State packages
 
