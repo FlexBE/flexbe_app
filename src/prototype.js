@@ -33,6 +33,11 @@ Array.prototype.contains = function(element) {
 	return this.indexOf(element) != -1;
 }
 
+Array.prototype.hasSameElements = function(other) {
+	var diff = this.filter(el => !other.contains(el));
+	return 0 == diff.concat(other.filter(el => !this.contains(el))).length;
+}
+
 
 //=====================
 //	String

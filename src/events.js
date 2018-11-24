@@ -172,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
     process.on('exit', (code) => {
         RC.PubSub.shutdown();
         ROS.shutdown();
+        IO.PackageParser.stopWatching();
     });
 
     nw.App.on('open', () => {

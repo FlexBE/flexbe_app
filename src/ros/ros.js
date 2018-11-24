@@ -64,7 +64,8 @@ rospy.spin()
 					package_cache[i] = package_cache[i].split(" ");
 					package_cache[i] = {
 						'name': package_cache[i][0],
-						'path': package_cache[i][1]
+						'path': package_cache[i][1],
+						'python_path': undefined
 					}
 				}
 				callback(package_cache.clone());
@@ -87,6 +88,46 @@ rospy.spin()
 			}
 			callback(package_path);
 		});
+	}
+
+	that.getPackagePythonPath = function(package_name, callback) {
+		var python_path = undefined;
+		that.getPackageList((package_cache) => {
+			for (var i=0; i<package_cache.length; i++) {
+				if (package_cache[i]['name'] == package_name) {
+					python_path = package_cache[i]['python_path'];
+					break;
+				}
+			}
+		});
+		if (python_path !== undefined) {
+            process.nextTick(() => {
+                callback(python_path);
+            });
+    	} else {
+			var proc = spawn('python', ['-c', `import importlib; print(importlib.import_module('` + package_name + `').__path__[-1])`]);
+			var path_data = '';
+			proc.stdout.on('data', data => {
+				path_data += data;
+			});
+			proc.stderr.on('data', data => {
+				console.log(package_name+" failed to import: "+data);
+			});
+			proc.on('close', (code) => {
+				if (path_data != "") {
+					python_path = path_data.replace(/\n/g, '');
+					for (var i=0; i<package_cache.length; i++) {
+						if (package_cache[i]['name'] == package_name) {
+							package_cache[i]['python_path'] = python_path;
+							break;
+						}
+					}
+					callback(python_path);
+				} else {
+					callback(undefined);
+				}
+			});
+		}
 	}
 
 	// that.getParam = function(name, callback) {

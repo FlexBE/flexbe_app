@@ -1225,6 +1225,7 @@ UI.Dashboard = new (function() {
 
 	this.resetAllFields = function() {
 		UI.Settings.createBehaviorPackageSelect(document.getElementById('select_behavior_package'));
+		Behavior.setBehaviorPackage(UI.Settings.getDefaultPackage());
 		document.getElementById('input_behavior_name').value = "";
 		document.getElementById('input_behavior_description').value = "";
 		document.getElementById('input_behavior_tags').value = "";

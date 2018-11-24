@@ -1,10 +1,10 @@
 #!/bin/bash
-if [ $1 == "create" ] ; then
-	cd "$( dirname "${BASH_SOURCE[0]}" )"/..
+if [ "$1" == "create" ] ; then
+	cd $(rospack find flexbe_app)
 	cp flexbe.desktop ~/.local/share/applications
 	cp src/img/icon-128.png ~/.local/share/icons/flexbe_app.png
 	echo "Launcher shortcut created"
-elif [ $1 == "remove" ] ; then
+elif [ "$1" == "remove" ] ; then
 	rm ~/.local/share/applications/flexbe.desktop
 	rm ~/.local/share/icons/flexbe_app.png
 	echo "Launch shortcut removed"

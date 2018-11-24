@@ -144,14 +144,14 @@ UI.Settings = new (function() {
 	this.updateStatelib = function() {
 		WS.Statelib.resetLib();
 		state_pkg_cache.forEach(state_pkg => {
-			IO.PackageParser.parseStateFolder(state_pkg['path'], state_pkg['path'], false);
+			IO.PackageParser.parseStateFolder(state_pkg['python_path']);
 		});
 	}
 
 	this.updateBehaviorlib = function() {
 		WS.Behaviorlib.resetLib();
 		behavior_pkg_cache.forEach(behavior_pkg => {
-			IO.PackageParser.parseBehaviorFolder(behavior_pkg['path'], behavior_pkg['name']);
+			IO.PackageParser.parseBehaviorFolder(behavior_pkg['path'], behavior_pkg['name'], behavior_pkg['python_path']);
 		});
 	}
 
@@ -208,7 +208,9 @@ UI.Settings = new (function() {
 			var pkg_select = document.createElement("select");
 			pkg_select.setAttribute("style", "width:100%; margin: 5px 0;");
 			var pkg_select_update_title = function() {
-				pkg_select.setAttribute("title", pkg_select.options[pkg_select.selectedIndex].getAttribute("title"));
+				if (pkg_select.options.length > 0) {
+					pkg_select.setAttribute("title", pkg_select.options[pkg_select.selectedIndex].getAttribute("title"));
+				}
 			};
 			pkg_select.addEventListener('change', pkg_select_update_title);
 			var packages = ros_pkg_cache.filter((pkg) => { return !pkg['path'].startsWith("/opt/ros"); });
