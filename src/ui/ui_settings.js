@@ -17,6 +17,9 @@ UI.Settings = new (function() {
 	var default_package;
 	var code_indentation;
 	var editor_command;
+	var save_on_robot;
+	var ssh_hostname;
+	var ssh_username;
 
 	var transition_mode;
 	var gridsize;
@@ -42,6 +45,9 @@ UI.Settings = new (function() {
 			'default_package': default_package,
 			'code_indentation': code_indentation,
 			'editor_command': editor_command,
+			'save_on_robot': save_on_robot,
+			'ssh_username' : ssh_username,
+			'ssh_hostname' : ssh_hostname,
 			'transition_mode': transition_mode,
 			'gridsize': gridsize,
 			'commands_enabled': commands_enabled,
@@ -69,6 +75,9 @@ UI.Settings = new (function() {
 			'default_package': 'flexbe_behaviors',
 			'code_indentation': 0,
 			'editor_command': 'gedit --new-window $FILE +$LINE',
+			'save_on_robot' : false,
+			'ssh_username': "",
+			'ssh_hostname' : "",
 			'transition_mode': 1,
 			'gridsize': 50,
 			'commands_enabled': false,
@@ -101,6 +110,16 @@ UI.Settings = new (function() {
 			document.getElementById("select_code_indentation").selectedIndex = items.code_indentation;
 			editor_command = items.editor_command;
 			document.getElementById("input_editor_command").value = items.editor_command;
+			save_on_robot = items.save_on_robot;
+            document.getElementById("cb_save_on_robot").checked = items.save_on_robot;
+            ssh_username = items.ssh_username;
+            document.getElementById("input_ssh_user_name").value = items.ssh_username;
+            ssh_hostname = items.ssh_hostname;
+            document.getElementById("input_ssh_host_name").value = items.ssh_hostname;
+            document.getElementById("input_ssh_user_name").disabled = !items.save_on_robot;
+            document.getElementById("input_ssh_host_name").disabled = !items.save_on_robot;
+
+
 
 			transition_mode = items.transition_mode;
 			document.getElementById("select_transition_mode").selectedIndex = items.transition_mode;
@@ -442,6 +461,33 @@ UI.Settings = new (function() {
 		if (line_number == undefined) line_number = 0;
 		return editor_command.replace("$LINE", line_number).replace("$FILE", file_path);
 	}
+
+    this.isSaveOnRobotEnabled = function() { return save_on_robot; }
+
+    this.saveOnRobotClicked = function(evt) {
+        save_on_robot = evt.target.checked;
+        storeSettings();
+        document.getElementById("input_ssh_user_name").disabled = !save_on_robot;
+        document.getElementById("input_ssh_host_name").disabled = !save_on_robot;
+    }
+
+    this.sshUsernameChanged = function(evt) {
+        ssh_username = document.getElementById('input_ssh_user_name').value;
+        storeSettings();
+    }
+
+    this.sshHostnameChanged = function(evt) {
+        ssh_hostname = document.getElementById('input_ssh_host_name').value;
+        storeSettings();
+    }
+
+    this.getRobotHostname = function() {
+        return document.getElementById('input_ssh_host_name').value;
+    }
+
+    this.getRobotUsername = function() {
+        return document.getElementById('input_ssh_user_name').value;
+    }
 
 
 	// Editor
