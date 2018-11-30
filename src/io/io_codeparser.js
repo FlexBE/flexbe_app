@@ -25,8 +25,8 @@ IO.CodeParser = new (function() {
 		// [1] - content of the block
 	var doc_block_pattern = /'''\n\r?([^']*)\n\r?\s*'''/i;
 		// Finds all import lines
-		// [1] - from ..., [3] - import ... (comma separated list)
-	var import_line_pattern = /^\s*from ((\w|\.)+) import (.+)\s*$/igm;
+		// [1] - from ..., [3] - import ... (comma separated list), [4] - optional import alias
+	var import_line_pattern = /^\s*from ((\w|\.)+) import (\w+)(?: as (\w+))?\s*$/igm;
 		// [1] - date of behavior creation
 	var behavior_date_pattern = /Created on\s*(.+)/i;
 		// [1] - author of the behavior
@@ -180,6 +180,13 @@ IO.CodeParser = new (function() {
 
 	var parseTopSection = function(code) {
 		// parse documentation
+		var state_type_imports = {};
+		code.replace(import_line_pattern, function(l, import_path, _, import_class, import_alias) {
+			if (import_path == "flexbe_core") return l;
+			var import_package = import_path.split(".")[0];
+			state_type_imports[import_alias || import_class] = import_package;
+		});
+
 		var comment_result = code.match(doc_block_pattern);
 		var behavior_date = "";
 		var behavior_author = "";
@@ -201,6 +208,7 @@ IO.CodeParser = new (function() {
 		return {
 			behavior_date: behavior_date,
 			behavior_author: behavior_author,
+			state_type_imports: state_type_imports,
 			additional_imports: additional_imports
 		}
 	}
@@ -626,6 +634,7 @@ IO.CodeParser = new (function() {
 			author: 				top_result.behavior_author,
 			creation_date: 			top_result.behavior_date,
 			behavior_comments: 		init_result.comments,
+			state_types:			top_result.state_type_imports,
 
 			manual_code: 			{
 									manual_import: 	manual_import,

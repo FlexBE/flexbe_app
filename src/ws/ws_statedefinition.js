@@ -22,6 +22,7 @@ WS.StateDefinition = function(state_class, state_desc, state_path, parameters, o
 	this.getShortDesc = function() { return state_desc.getShort(); }
 	this.getStatePath = function() { return state_path; }
 	this.getStatePackage = function() { return state_package; }
+	this.getStateType = function() { return (state_class.startsWith(":"))? state_class : state_package + "." + state_class; }
 	this.getParameters = function() { return parameters; }
 	this.getOutcomes = function() { return outcomes; }
 	this.getInputKeys = function() { return input_keys; }

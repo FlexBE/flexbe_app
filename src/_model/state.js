@@ -220,6 +220,10 @@ State = function(state_name, state_def) {
 		state_pkg = _state_pkg;
 	}
 
+	this.getStateType = function() {
+		return that.getStatePackage() + "." + that.getStateClass();
+	}
+
 	this.getParameters = function() {
 		return parameters;
 	}

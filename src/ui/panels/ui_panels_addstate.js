@@ -85,8 +85,8 @@ UI.Panels.AddState = new (function() {
 			return element.toLowerCase().indexOf(filter_exp) > 0;
 		});
 
-		displayStateClasses(begin_list);
-		displayStateClasses(contain_list);
+		displayStateTypes(begin_list);
+		displayStateTypes(contain_list);
 
 		if (begin_list.length + contain_list.length == 1) {
 			var selected_element;
@@ -98,36 +98,38 @@ UI.Panels.AddState = new (function() {
 		}
 	};
 
-	var displayStateClasses = function(class_list) {
+	var displayStateTypes = function(type_list) {
 		var panel_class_select = document.getElementById('panel_class_select');
 
-		class_list.sort();
+		type_list.sort((el1, el2) => {
+			return el1.split(".")[1].localeCompare(el2.split(".")[1]);
+		});
 
-		for (var i=0; i<class_list.length; ++i) {
-			state_def = WS.Statelib.getFromLib(class_list[i]);
+		for (var i=0; i<type_list.length; ++i) {
+			state_def = WS.Statelib.getFromLib(type_list[i]);
 
-			class_div = document.createElement("div");
-			class_div.setAttribute("id", "class_select_" + state_def.getStateClass());
-			class_div.setAttribute("class", "panel_class_select_class");
-			class_div.setAttribute("value", state_def.getStateClass());
-			class_div.innerHTML =
+			state_div = document.createElement("div");
+			state_div.setAttribute("id", "class_select_" + state_def.getStatePackage() + "_" + state_def.getStateClass());
+			state_div.setAttribute("class", "panel_class_select_class");
+			state_div.setAttribute("value", type_list[i]);
+			state_div.innerHTML =
 				  '<b>' + state_def.getStateClass() + '</b><br>'
 				+ '<i>' + state_def.getShortDesc() + '</i>';
 
-			class_div.addEventListener('click', function() {
+			state_div.addEventListener('click', function() {
 				document.getElementById('add_state_class').value = this.getAttribute("value");
 			});
-			addHoverDetails(class_div, state_def);
+			addHoverDetails(state_div, state_def);
 
-			panel_class_select.appendChild(class_div);
+			panel_class_select.appendChild(state_div);
 		}
 	};
 
 
 	this.show = function() {
 		panel_class_select.innerHTML = "";
-		statelib = WS.Statelib.getClassList();
-		displayStateClasses(statelib);
+		statelib = WS.Statelib.getTypeList();
+		displayStateTypes(statelib);
 		UI.Panels.setActivePanel(UI.Panels.ADD_STATE_PANEL);
 		UI.Settings.createStatePackageSelect(document.getElementById("input_package_filter"), true);
 	}
@@ -141,14 +143,14 @@ UI.Panels.AddState = new (function() {
 
 	this.addStateConfirmClicked = function() {
 		var state_name = document.getElementById("add_state_name").value;
-		var state_class = document.getElementById("add_state_class").value;
-		if (state_name == "" || state_class == "") return;
+		var state_type = document.getElementById("add_state_class").value;
+		if (state_name == "" || state_type == "") return;
 		if (UI.Statemachine.getDisplayedSM().getStateByName(state_name) != undefined) {
 			T.logWarn("State name already in use!");
 			return;
 		}
 
-		var state_def = WS.Statelib.getFromLib(state_class);
+		var state_def = WS.Statelib.getFromLib(state_type);
 		var new_state = new State(state_name, state_def);
 		var sm = UI.Statemachine.getDisplayedSM();
 		sm.addState(new_state);
@@ -176,7 +178,7 @@ UI.Panels.AddState = new (function() {
 			},
 			function() {
 				var container = (container_path == "")? Behavior.getStatemachine() : Behavior.getStatemachine().getStateByPath(container_path);
-				var redo_state = new State(state_name, WS.Statelib.getFromLib(state_class));
+				var redo_state = new State(state_name, WS.Statelib.getFromLib(state_type));
 				container.addState(redo_state);
 				UI.Statemachine.refreshView();
 			}

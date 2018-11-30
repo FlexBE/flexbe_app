@@ -12,14 +12,14 @@ CommandLib = new (function() {
 			text: "Lists all available commands."
 		},
 		{
-			desc: "findStateUsage [state_class]",
-			match: /^findStateUsage[( ]["']?([a-zA-Z0-9_]+)["']?\)?$/,
+			desc: "findStateUsage [state_type]",
+			match: /^findStateUsage[( ]["']?([a-zA-Z0-9_]+\.[a-zA-Z0-9_]+)["']?\)?$/,
 			impl: function(args) {
 				Scripts.findStateUsage(args[1]);
 				UI.Tools.notifyRosCommand('findStateUsage');
 			},
-			text: "Searches in all behaviors for instantiations of the given class.",
-			completions: [function() { return WS.Statelib.getClassList(); }]
+			text: "Searches in all behaviors for instantiations of the given type.",
+			completions: [function() { return WS.Statelib.getTypeList(); }]
 		},
 		{
 			desc: "statemachine [new_name]",
