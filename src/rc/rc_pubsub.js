@@ -234,7 +234,7 @@ RC.PubSub = new (function() {
 	}
 
 	var synthesis_action_feedback_callback = function(feedback, root, feedback_cb) {
-		console.log('Synthesis status: ' + feedback.status + ' (' (feedback.progress * 100) + '%)');
+		console.log('Synthesis status: ' + feedback.status + ' (' + (feedback.progress * 100) + '%)');
 
 		if(feedback_cb != undefined) feedback_cb(feedback);
 	}
