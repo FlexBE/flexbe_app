@@ -2,8 +2,8 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2018-12-01)
+------------------
 * Initial ROS release
 * Contributors: Philipp Schillinger
 
