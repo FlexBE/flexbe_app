@@ -109,7 +109,7 @@ UI.Panels.StateProperties = new (function() {
 		document.getElementById("input_prop_state_name").value = state.getStateName();
 		document.getElementById("label_prop_state_class").innerText = state.getStateClass();
 		document.getElementById("label_prop_state_package").innerText = state.getStatePackage();
-		document.getElementById("label_prop_state_desc").innerText = WS.Statelib.getFromLib(state.getStateClass()).getStateDesc();
+		document.getElementById("label_prop_state_desc").innerText = WS.Statelib.getFromLib(state.getStateType()).getStateDesc();
 
 		var highlight_apply_button = function() {
 			if (apply_pulse != undefined) return;
@@ -154,9 +154,9 @@ UI.Panels.StateProperties = new (function() {
 				tr.appendChild(td_input);
 				document.getElementById("panel_prop_parameters_content").appendChild(tr);
 
-				addHoverDocumentation(tr, "param", params[i], state.getStateClass());
+				addHoverDocumentation(tr, "param", params[i], state.getStateType());
 
-				addAutocomplete(input_field, state.getStateClass());
+				addAutocomplete(input_field, state.getStateType());
 
 				input_field.addEventListener('blur', function() {
 					this.style.backgroundColor = Checking.isValidExpressionSyntax(this.value, false)? "initial" : "#fca";
@@ -185,7 +185,7 @@ UI.Panels.StateProperties = new (function() {
 					+"<option value='-1' " + ((autonomy_list_complete[i] == -1)? "selected='selected'" : "") + " style='color: gray; font-style: italic;'>Inherit</option>"
 					+"</select></td>";
 				document.getElementById("panel_prop_autonomy_content").appendChild(tr);
-				addHoverDocumentation(tr, "outcome", outcome_list_complete[i], state.getStateClass());
+				addHoverDocumentation(tr, "outcome", outcome_list_complete[i], state.getStateType());
 			}
 		} else {
 			document.getElementById("panel_prop_autonomy").style.display = "none";
@@ -214,9 +214,9 @@ UI.Panels.StateProperties = new (function() {
 				tr.appendChild(td_input);
 				document.getElementById("panel_prop_input_keys_content").appendChild(tr);
 
-				addHoverDocumentation(tr, "input", input_keys[i], state.getStateClass());
+				addHoverDocumentation(tr, "input", input_keys[i], state.getStateType());
 
-				addAutocomplete(input_field, state.getStateClass(), "input", state);
+				addAutocomplete(input_field, state.getStateType(), "input", state);
 			}
 		} else {
 			document.getElementById("panel_prop_input_keys").style.display = "none";
@@ -246,9 +246,9 @@ UI.Panels.StateProperties = new (function() {
 				tr.appendChild(td_input);
 				document.getElementById("panel_prop_output_keys_content").appendChild(tr);
 
-				addHoverDocumentation(tr, "output", output_keys[i], state.getStateClass());
+				addHoverDocumentation(tr, "output", output_keys[i], state.getStateType());
 
-				addAutocomplete(input_field, state.getStateClass(), "output", state);
+				addAutocomplete(input_field, state.getStateType(), "output", state);
 			}
 		} else {
 			document.getElementById("panel_prop_output_keys").style.display = "none";

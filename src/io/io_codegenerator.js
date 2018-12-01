@@ -29,7 +29,8 @@ IO.CodeGenerator = new (function() {
 			if (states[i] instanceof Statemachine) continue;
 
 			var import_reference = imported_states.findElement(function(element) {
-				return element.getStateClass() == states[i].getStateClass();
+				return element.getStateClass() == states[i].getStateClass()
+					&& element.getStatePackage() == states[i].getStatePackage();
 			});
 			if (import_reference == undefined) {
 				imported_states.push(states[i]);
@@ -38,7 +39,12 @@ IO.CodeGenerator = new (function() {
 		// generate import lines
 		var import_list = [];
 		for (var i=0; i<imported_states.length; ++i) {
-			import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass());
+			if (!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(imported_states[i].getStateClass())) {
+				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass());	
+			} else {
+				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass()
+					+ " as " + imported_states[i].getStatePackage() + "__" + imported_states[i].getStateClass());
+			}
 		}
 		// put together
 		code += "from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger\n";
@@ -302,7 +308,10 @@ IO.CodeGenerator = new (function() {
 			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"self.use_behavior(" + s.getStateClass() + ", '" + s.getStatePath().substr(1) + "'" + defkeys_str + "),\n";
 
 		} else {
-			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ s.getStateClass() + "(";
+			var class_key = (!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(s.getStateClass()))?
+				s.getStateClass() :
+				s.getStatePackage() + "__" + s.getStateClass();
+			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ class_key + "(";
 			var param_strings = [];
 			for (var j=0; j<s.getParameters().length; ++j) {
 				if (s.getParameters()[j].startsWith("?")) continue;

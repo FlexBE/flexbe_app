@@ -200,16 +200,16 @@ UI.RuntimeControl = new (function() {
 			return;
 		}
 
-		var state_class = state.getStateClass();
+		var state_type = state.getStateType();
 		var doc = "";
 
 		if (state instanceof Statemachine) {
 			doc += "<b>Statemachine</b><br />";
 		} else if (state instanceof BehaviorState) {
 			doc += "<b>Behavior</b><br />";
-		} else if (WS.Statelib.getFromLib(state_class) != undefined) {
-			doc += "<b>" + state_class + "</b><br />";
-			doc += WS.Statelib.getFromLib(state_class).getStateDesc() + "<br />";
+		} else if (WS.Statelib.getFromLib(state_type) != undefined) {
+			doc += "<b>" + state_type + "</b><br />";
+			doc += WS.Statelib.getFromLib(state_type).getStateDesc() + "<br />";
 			var pkeys = state.getParameters();
 			var pvals = state.getParameterValues();
 			if (pkeys.length > 0) {

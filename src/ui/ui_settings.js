@@ -16,6 +16,7 @@ UI.Settings = new (function() {
 
 	var default_package;
 	var code_indentation;
+	var explicit_states;
 	var editor_command;
 
 	var transition_mode;
@@ -41,6 +42,7 @@ UI.Settings = new (function() {
 			'collapse_hint': collapse_hint,
 			'default_package': default_package,
 			'code_indentation': code_indentation,
+			'explicit_states': explicit_states,
 			'editor_command': editor_command,
 			'transition_mode': transition_mode,
 			'gridsize': gridsize,
@@ -68,6 +70,7 @@ UI.Settings = new (function() {
 			'collapse_hint': false,
 			'default_package': 'flexbe_behaviors',
 			'code_indentation': 0,
+			'explicit_states': false,
 			'editor_command': 'gedit --new-window $FILE +$LINE',
 			'transition_mode': 1,
 			'gridsize': 50,
@@ -99,6 +102,8 @@ UI.Settings = new (function() {
 			that.createBehaviorPackageSelect(document.getElementById("select_default_package"));
 			code_indentation = items.code_indentation;
 			document.getElementById("select_code_indentation").selectedIndex = items.code_indentation;
+			explicit_states = items.explicit_states;
+			document.getElementById("cb_explicit_states").checked = items.explicit_states;
 			editor_command = items.editor_command;
 			document.getElementById("input_editor_command").value = items.editor_command;
 
@@ -423,6 +428,11 @@ UI.Settings = new (function() {
 		storeSettings();
 	}
 
+	this.explicitStatesClicked = function(evt) {
+		explicit_states = evt.target.checked;
+		storeSettings();
+	}
+
 	this.editorCommandChanged = function() {
 		var el = document.getElementById('input_editor_command');
 		editor_command = el.value;
@@ -436,6 +446,10 @@ UI.Settings = new (function() {
 	this.getCodeIndentation = function() {
 		var chars = ['\t', '  ', '    ', '        '];
 		return chars[code_indentation];
+	}
+
+	this.isExplicitStates = function() {
+		return explicit_states;
 	}
 
 	this.getEditorCommand = function(file_path, line_number) {

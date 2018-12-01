@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('select_default_package').addEventListener('change', UI.Settings.defaultPackageChanged);
     document.getElementById('select_code_indentation').addEventListener('change', UI.Settings.codeIndentationChanged);
+    document.getElementById('cb_explicit_states').addEventListener('change', UI.Settings.explicitStatesClicked);
     document.getElementById('input_editor_command').addEventListener('change', UI.Settings.editorCommandChanged);
 
     document.getElementById('select_transition_mode').addEventListener('change', UI.Settings.transitionEndpointsChanged);

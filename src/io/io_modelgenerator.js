@@ -88,9 +88,21 @@ IO.ModelGenerator = new (function() {
 				}
 				s = new BehaviorState(s_def.state_name, state_def, s_def.parameter_values);
 			} else {
-				var state_def = WS.Statelib.getFromLib(s_def.state_class);
+				var state_def = undefined;
+				if (s_def.state_class.includes("__")) {
+					var type_split = s_def.state_class.split("__");
+					var state_key = type_split[0] + "." + type_split[1];
+					var state_def = WS.Statelib.getFromLib(state_key);
+					if (state_def == undefined) {
+						s_def.state_class = type_split[1];
+					}
+				} 
 				if (state_def == undefined) {
-					T.logError("Unable to find state definition for: " + s_def.state_class);
+					var state_key = s_def.state_class;
+					var state_def = WS.Statelib.getClassFromLib(state_key);
+				}
+				if (state_def == undefined) {
+					T.logError("Unable to find state definition for: " + state_key);
 					T.logInfo("Please check your workspace settings.");
 					continue;
 				}

@@ -9,18 +9,32 @@ WS.Statelib = new (function() {
 	];
 
 
-	this.getFromLib = function(state_class) {
+	this.getFromLib = function(state_type) {
 		for (var i=0; i<statelib.length; ++i) {
-			if (statelib[i].getStateClass() == state_class)
+			if (state_type == statelib[i].getStateType())
 				return statelib[i];
 		}
 	}
 
-	this.getClassList = function() {
+	this.getClassFromLib = function(state_class) {
+		for (var i=0; i<statelib.length; ++i) {
+			if (state_class == statelib[i].getStateClass())
+				return statelib[i];
+		}
+	}
+
+	this.isClassUnique = function(state_class) {
+		var filtered = statelib.filter(state_def => {
+			return state_def.getStateClass() == state_class;
+		});
+		return filtered.length == 1;
+	}
+
+	this.getTypeList = function() {
 		list = []
 		for (var i=0; i<statelib.length; ++i) {
 			if (statelib[i].getStateClass().charAt(0) == ":") continue;
-			list.push(statelib[i].getStateClass());
+			list.push(statelib[i].getStateType());
 		}
 		return list;
 	}
