@@ -1,7 +1,15 @@
 #!/bin/bash
 if [ "$1" == "create" ] ; then
 	cd $(rospack find flexbe_app)
-	cp flexbe.desktop ~/.local/share/applications
+	if [[ -z $2 ]] ; then
+		cp flexbe.desktop ~/.local/share/applications
+	else
+		content=$(cat flexbe.desktop)
+		echo "${content/rosrun/$2; rosrun}" > ~/.local/share/applications/flexbe.desktop
+	fi
+	if [[ ! -d ~/.local/share/icons ]] ; then
+		mkdir -p ~/.local/share/icons
+	fi
 	cp src/img/icon-128.png ~/.local/share/icons/flexbe_app.png
 	echo "Launcher shortcut created"
 elif [ "$1" == "remove" ] ; then
@@ -9,8 +17,12 @@ elif [ "$1" == "remove" ] ; then
 	rm ~/.local/share/icons/flexbe_app.png
 	echo "Launch shortcut removed"
 else
-	echo "Creates or removes a launcher shortcut for the FlexBE App.\n"
+	echo "Create or remove a launcher shortcut for the FlexBE App."
 	echo "Specify one of the following commands to execute it:"
+	echo ""
 	echo "  create - Creates the new launcher shortcut"
+	echo "           (optional) In case you do not source a setup.bash in your .bashrc, you can specify one for the shortcut, e.g.:"
+	echo "                      > rosrun flexbe_app shortcut create \"source ~/catkin_ws/devel/setup.bash\""
+	echo ""
 	echo "  remove - Removes the launcher shortcut"
 fi
