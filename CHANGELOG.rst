@@ -2,8 +2,8 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.2 (2018-12-18)
+------------------
 * Merge remote-tracking branch 'origin/develop'
 * Switch to curl for nwjs download
 * Contributors: Philipp Schillinger
