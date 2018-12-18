@@ -672,8 +672,8 @@ UI.Panels.StateProperties = new (function() {
 	}
 
 	this.openState = function() {
-		var state_class = current_prop_state.getStateClass();
-		var state_definition = WS.Statelib.getFromLib(state_class);
+		var state_type = current_prop_state.getStateType();
+		var state_definition = WS.Statelib.getFromLib(state_type);
 		try {
 			var file_path = state_definition.getFilePath();
 			var command = UI.Settings.getEditorCommand(file_path).split(' ');
