@@ -2,6 +2,18 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.1.2 (2018-12-18)
+------------------
+* Merge remote-tracking branch 'origin/develop'
+* Switch to curl for nwjs download
+* Contributors: Philipp Schillinger
+
+2.1.1 (2018-12-18)
+------------------
+* Merge remote-tracking branch 'origin/develop'
+* Fix #29: Use correct statelib call to open source code
+* Contributors: Philipp Schillinger
+
 2.1.0 (2018-12-01)
 ------------------
 * Initial ROS release
