@@ -39,7 +39,8 @@ IO.CodeGenerator = new (function() {
 		// generate import lines
 		var import_list = [];
 		for (var i=0; i<imported_states.length; ++i) {
-			if (!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(imported_states[i].getStateClass())) {
+			if (imported_states[i] instanceof BehaviorState ||
+				!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(imported_states[i].getStateClass())) {
 				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass());	
 			} else {
 				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass()
