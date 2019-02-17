@@ -2,6 +2,13 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.1.3 (2018-12-19)
+------------------
+* Merge remote-tracking branch 'origin/develop'
+* Add cmake dependency on rostest
+* Merge remote-tracking branch 'origin/master' into develop
+* Contributors: Philipp Schillinger
+
 2.1.2 (2018-12-18)
 ------------------
 * Merge remote-tracking branch 'origin/develop'
