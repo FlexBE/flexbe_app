@@ -58,13 +58,19 @@ IO.PackageParser = new (function() {
 	}
 
 	var checkForRelevance = function(pkg_path, callback) {
-		var data = fs.readFileSync(path.join(pkg_path, 'package.xml'));
-		var xml = dom_parser.parseFromString(String(data), "text/xml");
-		var pkg_xml = xml.getElementsByTagName("package")[0];
-		var pkg_export = pkg_xml.getElementsByTagName("export")[0];
-		var hasStates = pkg_export && pkg_export.getElementsByTagName("flexbe_states").length > 0;
-		var hasBehaviors = pkg_export && pkg_export.getElementsByTagName("flexbe_behaviors").length > 0;
-		callback(hasStates, hasBehaviors);
+		var package_xml_path = path.join(pkg_path, 'package.xml');
+		
+		if (fs.existsSync(package_xml_path)) {
+			var data = fs.readFileSync(package_xml_path);
+			var xml = dom_parser.parseFromString(String(data), "text/xml");
+			var pkg_xml = xml.getElementsByTagName("package")[0];
+			var pkg_export = pkg_xml.getElementsByTagName("export")[0];
+			var hasStates = pkg_export && pkg_export.getElementsByTagName("flexbe_states").length > 0;
+			var hasBehaviors = pkg_export && pkg_export.getElementsByTagName("flexbe_behaviors").length > 0;
+			callback(hasStates, hasBehaviors);
+		} else {
+			callback(undefined, undefined);
+		}
 	}
 
 	var watchStateFolder = function(folder_path, import_path) {
