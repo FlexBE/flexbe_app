@@ -2,6 +2,15 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge remote-tracking branch 'origin/develop'
+* Merge pull request `#33 <https://github.com/FlexBE/flexbe_app/issues/33>`_ from henroth/master
+  Check that package.xml exists before trying to read it.
+* Fix indentation and variable declaration
+* Check that package.xml exists before trying to read it. Very old packages/stacks may not have a package.xml, but ros will report them as existing packages
+* Contributors: Henry Roth, Philipp Schillinger
+
 2.1.3 (2018-12-19)
 ------------------
 * Merge remote-tracking branch 'origin/develop'
