@@ -2,8 +2,8 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.5 (2019-04-09)
+------------------
 * Merge remote-tracking branch 'origin/develop'
 * Merge pull request `#33 <https://github.com/FlexBE/flexbe_app/issues/33>`_ from henroth/master
   Check that package.xml exists before trying to read it.
