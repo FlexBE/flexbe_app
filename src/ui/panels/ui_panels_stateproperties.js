@@ -11,8 +11,12 @@ UI.Panels.StateProperties = new (function() {
 		document.getElementById(id).style.background = "";
 	}
 
-	var addHoverDocumentation = function(el, type, name, state_class) {
-		var def = WS.Statelib.getFromLib(state_class);
+	var addHoverDocumentation = function(el, type, name, state_class, behavior_name) {
+		if (state_class) {
+			var def = WS.Statelib.getFromLib(state_class);
+		} else if (behavior_name) {
+			var def = WS.Behaviorlib.getByName(behavior_name);
+		}
 		var doc = undefined;
 		switch (type) {
 			case "param": doc = def.getParamDesc().findElement(function(el) { return el.name == name; }); break;
@@ -41,8 +45,8 @@ UI.Panels.StateProperties = new (function() {
 		});
 	}
 
-	var addAutocomplete = function(el, state_class, mode, state) {
-		var additional_keywords = [];
+	var addAutocomplete = function(el, state_class, mode, state, additional_keywords) {
+		var additional_keywords = additional_keywords || [];
 		if (state_class != undefined) {
 			var class_vars = WS.Statelib.getFromLib(state_class).getClassVariables();
 			for (var i = 0; i < class_vars.length; i++) {
@@ -437,6 +441,111 @@ UI.Panels.StateProperties = new (function() {
 		document.getElementById("label_prop_be_package").innerText = state.getStatePackage();
 		document.getElementById("label_prop_be_desc").innerText = WS.Behaviorlib.getByName(state.getBehaviorName()).getBehaviorDesc();
 
+		// Parameters
+		//-----------
+		params = state.getParameters();
+		values = state.getParameterValues();
+		if (params.length > 0) {
+			document.getElementById("panel_prop_be_parameters").style.display = "block";
+			document.getElementById("panel_prop_be_parameters_content").innerHTML = "";
+			for (var i=0; i<params.length; ++i) {
+				var param_def = state.getParameterDefinition(params[i]);
+				var default_value = param_def.default;
+				default_value = (param_def.type == "text")? '"' + default_value + '"' : default_value;
+				var label = document.createElement("td");
+				label.innerHTML = params[i] + ": ";
+
+				var input_field = document.createElement("input");
+				input_field.setAttribute("class", "inline_text_edit");
+				input_field.setAttribute("type", "text");
+				input_field.setAttribute("value", values[i] || default_value);
+				input_field.setAttribute("default_value", default_value);
+				input_field.setAttribute("param_key", params[i]);
+				if (values[i] == undefined) {
+					input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
+					input_field.setAttribute("disabled", "disabled");
+					input_field.setAttribute("title", "Default: " + default_value);
+					input_field.setAttribute("class", "inline_text_edit_readonly");
+					label.setAttribute("style", "color: gray");
+				}
+				input_field.addEventListener("blur", function() {
+					if (RC.Controller.isReadonly()
+						|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+						|| Behavior.isReadonly()
+						|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
+						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
+						) {
+							this.value = !this.value;
+							return;
+						}
+					var idx = state.getParameters().indexOf(this.getAttribute("param_key"));
+					state.getParameterValues()[idx] = this.value;
+				});
+				var input_field_td = document.createElement("td");
+				input_field_td.appendChild(input_field);
+				var additional_keywords = undefined;
+				if (param_def.type == "enum") {
+					additional_keywords = [];
+					param_def.additional.forEach(opt => {
+						additional_keywords.push({text: opt, hint: "enum", fill: opt})
+					});
+				}
+				addAutocomplete(input_field, undefined, undefined, undefined, additional_keywords);
+
+				var default_button = document.createElement("input");
+				default_button.setAttribute("type", "checkbox");
+				default_button.setAttribute("param_key", params[i]);
+				if (values[i] == undefined) {
+					default_button.setAttribute("checked", "checked");
+				}
+				default_button.addEventListener("change", function() {
+					if (RC.Controller.isReadonly()
+						|| UI.Statemachine.getDisplayedSM().isInsideDifferentBehavior()
+						|| Behavior.isReadonly()
+						|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
+						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
+						) return;
+					var input_field = this.parentNode.parentNode.childNodes[1].firstChild;
+					var label = this.parentNode.parentNode.firstChild;
+					if(this.checked) {
+						input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
+						input_field.setAttribute("disabled", "disabled");
+						input_field.setAttribute("class", "inline_text_edit_readonly");
+						label.setAttribute("style", "color: gray");
+						var idx = state.getParameters().indexOf(this.getAttribute("param_key"));
+						state.getParameterValues()[idx] = undefined;
+						input_field.setAttribute("title", "Value: " + input_field.getAttribute("default_value"));
+					} else {
+						input_field.removeAttribute("style");
+						input_field.removeAttribute("disabled");
+						input_field.removeAttribute("title");
+						input_field.setAttribute("class", "inline_text_edit");
+						label.setAttribute("style", "color: black");
+						var idx = state.getParameters().indexOf(this.getAttribute("param_key"));
+						state.getParameterValues()[idx] =  input_field.value;
+					}
+					if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+					if (UI.Menu.isPageControl()) UI.RuntimeControl.resetParameterTableClicked();
+				});
+				var default_button_txt = document.createElement("label");
+				default_button_txt.innerText = "default";
+				var default_button_td = document.createElement("td");
+				default_button_td.setAttribute("title", "Use the default value as defined by the behavior.");
+				default_button_td.appendChild(default_button);
+				default_button_td.appendChild(default_button_txt);
+
+				var row = document.createElement("tr");
+				row.appendChild(label);
+				row.appendChild(input_field_td);
+				row.appendChild(default_button_td);
+				document.getElementById("panel_prop_be_parameters_content").appendChild(row);
+
+				addHoverDocumentation(row, "param", params[i], undefined, state.getBehaviorName());
+			}
+		} else {
+			document.getElementById("panel_prop_be_parameters").style.display = "none";
+		}
+
 		// Outcomes
 		//----------
 		var outcome_list_complete = state.getOutcomes();
@@ -468,12 +577,14 @@ UI.Panels.StateProperties = new (function() {
 				var input_field = document.createElement("input");
 				input_field.setAttribute("class", "inline_text_edit");
 				input_field.setAttribute("type", "text");
-				input_field.setAttribute("value", input_mapping[i]);
+				input_field.setAttribute("value", input_mapping[i] || input_keys[i]);
 				input_field.setAttribute("input_key", input_keys[i]);
-				if (state.getDefaultKeys().contains(input_keys[i])) {
+				if (input_mapping[i] == undefined) {
 					input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
 					input_field.setAttribute("disabled", "disabled");
-					input_field.setAttribute("title", "Value: " + state.getDefaultValue(input_keys[i]));
+					input_field.setAttribute("title", "Value: " + state.getDefaultUserdataValue(input_keys[i]));
+					input_field.setAttribute("class", "inline_text_edit_readonly");
+					label.setAttribute("style", "color: gray");
 				}
 				input_field.addEventListener("blur", function() {
 					if (RC.Controller.isReadonly()
@@ -493,7 +604,7 @@ UI.Panels.StateProperties = new (function() {
 				var default_button = document.createElement("input");
 				default_button.setAttribute("type", "checkbox");
 				default_button.setAttribute("input_key", input_keys[i]);
-				if (state.getDefaultKeys().contains(input_keys[i])) {
+				if (input_mapping[i] == undefined) {
 					default_button.setAttribute("checked", "checked");
 				}
 				default_button.addEventListener("change", function() {
@@ -504,16 +615,23 @@ UI.Panels.StateProperties = new (function() {
 						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 						) return;
 					var input_field = this.parentNode.parentNode.childNodes[1].firstChild;
+					var label = this.parentNode.parentNode.firstChild;
 					if(this.checked) {
 						input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
 						input_field.setAttribute("disabled", "disabled");
-						state.addDefaultKey(this.getAttribute("input_key"));
-						input_field.setAttribute("title", "Value: " + state.getDefaultValue(this.getAttribute("input_key")));
+						input_field.setAttribute("class", "inline_text_edit_readonly");
+						label.setAttribute("style", "color: gray");
+						var idx = state.getInputKeys().indexOf(this.getAttribute("input_key"));
+						state.getInputMapping()[idx] = undefined;
+						input_field.setAttribute("title", "Value: " + state.getDefaultUserdataValue(this.getAttribute("input_key")));
 					} else {
 						input_field.removeAttribute("style");
 						input_field.removeAttribute("disabled");
 						input_field.removeAttribute("title");
-						state.removeDefaultKey(this.getAttribute("input_key"));
+						input_field.setAttribute("class", "inline_text_edit");
+						label.setAttribute("style", "color: black");
+						var idx = state.getInputKeys().indexOf(this.getAttribute("input_key"));
+						state.getInputMapping()[idx] = input_field.value;
 					}
 					if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
 				});

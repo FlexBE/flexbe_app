@@ -249,7 +249,9 @@ UI.RuntimeControl = new (function() {
 		for (var i = 0; i < embedded_behaviors.length; i++) {
 			if (embedded_behaviors[i] == undefined) continue;
 			var b = embedded_behaviors[i];
-			var ps = b.getBehaviorManifest().params.clone();
+			var ps = b.getBehaviorManifest().params.filter(p => {
+				return b.getParameterValues()[b.getParameters().indexOf(p.name)] == undefined;
+			});
 			params = params.concat(ps.filter(function(el) {
 				return params.findElement(function(p) {
 					return p.name == el.name;

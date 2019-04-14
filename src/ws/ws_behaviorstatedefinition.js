@@ -16,8 +16,31 @@ WS.BehaviorStateDefinition = function(manifest, outcomes, input_keys, output_key
 		if (bsm_loaded_callback != undefined) bsm_loaded_callback();
 	});
 
-	this.__proto__ = new WS.StateDefinition(manifest.class_name, new WS.Documentation(manifest.description),
-		path, [], outcomes, input_keys, output_keys, [], autonomy, []);
+	var documentation = new WS.Documentation(manifest.description);
+	var parameters = [];
+	var parameterDefaults = [];
+	manifest.params.forEach(param => {
+		parameters.push(param.name);
+		parameterDefaults.push(undefined); 
+		var defaultValue = (param.type == "text")? '"' + param.default + '"' : param.default;
+		var desc = "<div style='margin-bottom: 0.5em;'>Default: <i>" + defaultValue + "</i></div>" + param.label + ": " + param.hint;
+		var info = "";
+		if (param.type == "numeric") {
+			info = "Value range: " + param.additional.min + " - " + param.additional.max;
+		} else if (param.type == "enum") {
+			info = "Possible values:";
+			param.additional.forEach(opt => {
+				info += "<br />&nbsp;&nbsp;&nbsp;&nbsp;- " + opt;
+			});
+		}
+		if (info != "") {
+			desc += "<div style='margin-top: 0.5em;'>" + info + "</div>";
+		}
+		documentation.addDescription('--', param.name, param.type, desc);
+	});
+	
+	this.__proto__ = new WS.StateDefinition(manifest.class_name, documentation,
+		path, parameters, outcomes, input_keys, output_keys, parameterDefaults, autonomy, []);
 
 	this.getBehaviorName = function() { return behavior_name; }
 	this.getBehaviorManifest = function() { return behavior_manifest; }
