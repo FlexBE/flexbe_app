@@ -7,9 +7,11 @@
 <arg name="offline_arg" value="--offline" if="$(arg offline)" />
 <arg name="offline_arg" value="" unless="$(arg offline)" />
 
+<arg name="no_app" default="false" />
+
 <node name="behavior_mirror" pkg="flexbe_mirror" type="behavior_mirror_sm" output="screen" />
 
-<node name="flexbe_app" pkg="flexbe_app" type="run_app" args="$(arg offline_arg)" output="screen"  />
+<node name="flexbe_app" pkg="flexbe_app" type="run_app" args="$(arg offline_arg)" output="screen" unless="$(arg no_app)" />
 
 <node name="behavior_launcher" pkg="flexbe_widget" type="be_launcher" output="screen" />
 

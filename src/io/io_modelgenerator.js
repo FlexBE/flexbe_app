@@ -99,7 +99,18 @@ IO.ModelGenerator = new (function() {
 				} 
 				if (state_def == undefined) {
 					var state_key = s_def.state_class;
-					var state_def = WS.Statelib.getClassFromLib(state_key);
+					var state_def = WS.Statelib.getClassFromLib(state_key, WS.Statelib.isClassUnique(state_key)? undefined : lib_def => {
+						for (var j=0; j<s_def.transitions_from.length; j++) {
+							if (!lib_def.getOutcomes().contains(s_def.transitions_from[j].outcome)) {
+								return false;
+							}
+						}
+						return true;
+					});
+					if (state_def != undefined && !WS.Statelib.isClassUnique(state_key)) {
+						T.logWarn("State class name " + state_key + " is not unique, but was able to re-construct.");
+						T.logWarn("Please save behavior again to fix this for the future.");
+					}
 				}
 				if (state_def == undefined) {
 					T.logError("Unable to find state definition for: " + state_key);

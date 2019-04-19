@@ -204,9 +204,21 @@ UI.RuntimeControl = new (function() {
 		var doc = "";
 
 		if (state instanceof Statemachine) {
-			doc += "<b>Statemachine</b><br />";
+			doc += "<b>Container</b><br /><br />";
+			if (state.isConcurrent()) {
+				doc += "Execution type: Concurrency<br />";
+				doc += "<i>Parallel execution of all elements.</i><br />";
+			} else if (state.isPriority()) {
+				doc += "Execution type: Priority<br />";
+				doc += "<i>Execution supersedes all other containers.</i><br />";
+			} else {
+				doc += "Execution type: Statemachine<br />";
+				doc += "<i>Sequential execution based on outcomes.</i><br />";
+			}
+			doc += "<br />Double-click the displayed container symbol to look inside."
 		} else if (state instanceof BehaviorState) {
-			doc += "<b>Behavior</b><br />";
+			doc += "<b>" + state.getBehaviorName() + "</b> (Behavior)<br />";
+			doc += WS.Behaviorlib.getByName(state.getBehaviorName()).getBehaviorDesc() + "<br />";
 		} else if (WS.Statelib.getFromLib(state_type) != undefined) {
 			doc += "<b>" + state_type + "</b><br />";
 			doc += WS.Statelib.getFromLib(state_type).getStateDesc() + "<br />";
@@ -224,6 +236,11 @@ UI.RuntimeControl = new (function() {
 					doc += " (" + resolved + ")</div>";
 				}
 			}
+			doc += "<br /><br />";
+			doc += "<b>Outcomes:</b><br />";
+			WS.Statelib.getFromLib(state_type).getOutcomeDesc().forEach(outcome => {
+				doc += "<div><b>" + outcome.name + "</b>: " + outcome.desc + "</div>";
+			});
 		}
 
 		document.getElementById("runtime_documentation_text").innerHTML = doc;
@@ -501,7 +518,7 @@ UI.RuntimeControl = new (function() {
 			});
 			var selection_box = document.getElementById("selection_rc_autonomy");
 			var autonomy_value = parseInt(selection_box.options[selection_box.selectedIndex].value);
-			RC.PubSub.sendBehaviorStart(param_keys, param_vals, autonomy_value); 
+			RC.PubSub.sendBehaviorStart(param_keys, param_vals, autonomy_value);
 		});
 	}
 

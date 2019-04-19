@@ -16,9 +16,9 @@ WS.Statelib = new (function() {
 		}
 	}
 
-	this.getClassFromLib = function(state_class) {
+	this.getClassFromLib = function(state_class, filter_function) {
 		for (var i=0; i<statelib.length; ++i) {
-			if (state_class == statelib[i].getStateClass())
+			if (state_class == statelib[i].getStateClass() && (!filter_function || filter_function(statelib[i])))
 				return statelib[i];
 		}
 	}

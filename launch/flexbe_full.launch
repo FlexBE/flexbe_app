@@ -2,8 +2,11 @@
 
 <launch>
 
+<arg name="no_app" default="false" />
+
 <include file="$(find flexbe_app)/launch/flexbe_ocs.launch" >
     <arg name="offline" value="false"/>
+    <arg name="no_app" value="$(arg no_app)"/>
 </include>
 
 <include file="$(find flexbe_onboard)/launch/behavior_onboard.launch" />

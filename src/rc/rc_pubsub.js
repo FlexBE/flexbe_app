@@ -447,13 +447,20 @@ RC.PubSub = new (function() {
 			RC.Controller.signalStarted();
 			RC.Sync.register("BehaviorStart", 60);
 
+			var behavior_structure = undefined;
+			try {
+				behavior_structure = Behavior.createStructureInfo();
+			} catch (error) {
+				T.logError("Failed to construct behavior structure, execution might fail: " + error);	
+			}
+
 			// request start
 			behavior_start_publisher.publish({
 				behavior_name: Behavior.getBehaviorName(),
 				autonomy_level: autonomy,
 				arg_keys: param_keys,
 				arg_values: param_vals,
-				structure: Behavior.createStructureInfo()
+				structure: behavior_structure
 			});
 			RC.Sync.setProgress("BehaviorStart", 0.2, false);
 		});

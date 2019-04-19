@@ -20,6 +20,22 @@ Checking = new (function() {
 			return error;
 		}
 
+		try {
+			// this needs to work when starting a behavior
+			Behavior.createStructureInfo();
+		} catch (error) {
+			var container_path = error.path.replace("/"+error.path.split("/").pop(), "");
+			var container = Behavior.getStatemachine().getStateByPath(container_path);
+			if (container instanceof BehaviorState) {
+				error.error += "<br />Note: Since this error is inside a contained behavior, please open this behavior directly and fix it there.";
+				error.error += "<br />Affected behavior: " + container.getBehaviorName();
+				container = container.getBehaviorStatemachine();
+			}
+			UI.Statemachine.setDisplayedSM(container);
+			UI.Menu.toStatemachineClicked();
+			return error.error;
+		}
+
 		return undefined;
 	}
 
