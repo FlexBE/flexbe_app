@@ -303,10 +303,29 @@ UI.Panels.StateProperties = new (function() {
 					|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
-				state.removeOutcome(this.getAttribute("outcome"));
+				var removed_outcome = this.getAttribute("outcome");
+				state.removeOutcome(removed_outcome);
 				var row = this.parentNode;
 				row.parentNode.removeChild(row);
 				UI.Statemachine.refreshView();
+				var container_path = current_prop_state.getStatePath();
+				ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+					"Removed outcome from container " + current_prop_state.getStateName(),
+					function() { // undo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						container.addOutcome(removed_outcome);
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					},
+					function() { // redo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						container.removeOutcome(removed_outcome);
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					}
+				);
 			});
 
 			var row = document.createElement("tr");
@@ -337,9 +356,32 @@ UI.Panels.StateProperties = new (function() {
 					|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
-				var idx = state.getInputKeys().indexOf(this.getAttribute("input_key"));
-				state.getInputMapping()[idx] = this.value;
+				var input_key = this.getAttribute("input_key");
+				var idx = state.getInputKeys().indexOf(input_key);
+				var old_mapping_value = state.getInputMapping()[idx];
+				var new_mapping_value = this.value
+				state.getInputMapping()[idx] = new_mapping_value;
 				if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+				var container_path = current_prop_state.getStatePath();
+				ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+					"Changed input mapping of container " + current_prop_state.getStateName(),
+					function() { // undo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						var idx = state.getInputKeys().indexOf(input_key);
+						container.getInputMapping()[idx] = old_mapping_value;
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					},
+					function() { // redo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						var idx = state.getInputKeys().indexOf(input_key);
+						container.getInputMapping()[idx] = old_mapping_value;
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					}
+				);
 			});
 			var input_field_td = document.createElement("td");
 			input_field_td.appendChild(input_field);
@@ -359,11 +401,33 @@ UI.Panels.StateProperties = new (function() {
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
 				var idx = state.getInputKeys().indexOf(this.getAttribute("input_key"));
-				state.getInputKeys().remove(this.getAttribute("input_key"));
-				state.getInputMapping().remove(state.getInputMapping()[idx]);
+				var old_input_key = this.getAttribute("input_key");
+				var old_input_mapping = state.getInputMapping()[idx];
+				state.getInputKeys().remove(old_input_key);
+				state.getInputMapping().remove(old_input_mapping);
 				var row = this.parentNode;
 				row.parentNode.removeChild(row);
 				if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+				var container_path = current_prop_state.getStatePath();
+				ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+					"Removed input key of container " + current_prop_state.getStateName(),
+					function() { // undo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						container.getInputKeys().push(old_input_key);
+						container.getInputMapping().push(old_input_mapping);
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					},
+					function() { // redo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						container.getInputKeys().remove(old_input_key);
+						container.getInputMapping().remove(old_input_mapping);
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					}
+				);
 			});
 
 			var row = document.createElement("tr");
@@ -394,9 +458,32 @@ UI.Panels.StateProperties = new (function() {
 					|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
-				var idx = state.getOutputKeys().indexOf(this.getAttribute("output_key"));
-				state.getOutputMapping()[idx] = this.value;
+				var output_key = this.getAttribute("output_key");
+				var idx = state.getOutputKeys().indexOf(output_key);
+				var old_mapping_value = state.getOutputMapping()[idx];
+				var new_mapping_value = this.value
+				state.getOutputMapping()[idx] = new_mapping_value;
 				if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+				var container_path = current_prop_state.getStatePath();
+				ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+					"Changed output mapping of container " + current_prop_state.getStateName(),
+					function() { // undo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						var idx = state.getOutputKeys().indexOf(output_key);
+						container.getOutputMapping()[idx] = old_mapping_value;
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					},
+					function() { // redo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						var idx = state.getOutputKeys().indexOf(output_key);
+						container.getOutputMapping()[idx] = old_mapping_value;
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					}
+				);
 			});
 			var input_field_td = document.createElement("td");
 			input_field_td.appendChild(input_field);
@@ -416,11 +503,33 @@ UI.Panels.StateProperties = new (function() {
 					|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 					) return;
 				var idx = state.getOutputKeys().indexOf(this.getAttribute("output_key"));
-				state.getOutputKeys().remove(this.getAttribute("output_key"));
-				state.getOutputMapping().remove(state.getOutputMapping()[idx]);
+				var old_output_key = this.getAttribute("output_key");
+				var old_output_mapping = state.getOutputMapping()[idx];
+				state.getOutputKeys().remove(old_output_key);
+				state.getOutputMapping().remove(old_output_mapping);
 				var row = this.parentNode;
 				row.parentNode.removeChild(row);
 				if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+				var container_path = current_prop_state.getStatePath();
+				ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+					"Removed output key of container " + current_prop_state.getStateName(),
+					function() { // undo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						container.getOutputKeys().push(old_output_key);
+						container.getOutputMapping().push(old_output_mapping);
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					},
+					function() { // redo
+						var container = Behavior.getStatemachine().getStateByPath(container_path);
+						container.getOutputKeys().remove(old_output_key);
+						container.getOutputMapping().remove(old_output_mapping);
+						UI.Statemachine.refreshView();
+						if (container == current_prop_state)
+							displayPropertiesForStatemachine(current_prop_state);
+					}
+				);
 			});
 
 			var row = document.createElement("tr");
@@ -432,6 +541,11 @@ UI.Panels.StateProperties = new (function() {
 	}
 
 	var displayPropertiesForBehavior = function(state) {
+		var tt = document.getElementById("properties_tooltip");
+		if (tt != undefined) {
+			tt.parentNode.removeChild(tt);
+		}
+
 		document.getElementById("panel_properties_state").style.display = "none";
 		document.getElementById("panel_properties_behavior").style.display = "block";
 		document.getElementById("panel_properties_statemachine").style.display = "none";
@@ -451,7 +565,7 @@ UI.Panels.StateProperties = new (function() {
 			for (var i=0; i<params.length; ++i) {
 				var param_def = state.getParameterDefinition(params[i]);
 				var default_value = param_def.default;
-				default_value = (param_def.type == "text")? '"' + default_value + '"' : default_value;
+				default_value = (param_def.type == "text" || param_def.type == "enum")? '"' + default_value + '"' : default_value;
 				var label = document.createElement("td");
 				label.innerHTML = params[i] + ": ";
 
@@ -478,8 +592,29 @@ UI.Panels.StateProperties = new (function() {
 							this.value = !this.value;
 							return;
 						}
-					var idx = state.getParameters().indexOf(this.getAttribute("param_key"));
-					state.getParameterValues()[idx] = this.value;
+					var param_key = this.getAttribute("param_key");
+					var param_value = this.value;
+					var idx = state.getParameters().indexOf(param_key);
+					var old_value = state.getParameterValues()[idx];
+					state.getParameterValues()[idx] = param_value;
+					var behavior_path = current_prop_state.getStatePath();
+					ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+						"Changed parameter value of behavior " + current_prop_state.getStateName(),
+						function() { // undo
+							var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+							var idx = behavior_state.getParameters().indexOf(param_key);
+							behavior_state.getParameterValues()[idx] = old_value;
+							if (behavior_state == current_prop_state)
+								displayPropertiesForBehavior(current_prop_state);
+						},
+						function() { // redo
+							var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+							var idx = behavior_state.getParameters().indexOf(param_key);
+							behavior_state.getParameterValues()[idx] = param_value;
+							if (behavior_state == current_prop_state)
+								displayPropertiesForBehavior(current_prop_state);
+						}
+					);
 				});
 				var input_field_td = document.createElement("td");
 				input_field_td.appendChild(input_field);
@@ -487,7 +622,7 @@ UI.Panels.StateProperties = new (function() {
 				if (param_def.type == "enum") {
 					additional_keywords = [];
 					param_def.additional.forEach(opt => {
-						additional_keywords.push({text: opt, hint: "enum", fill: opt})
+						additional_keywords.push({text: opt, hint: "enum", fill: '"' + opt + '"'});
 					});
 				}
 				addAutocomplete(input_field, undefined, undefined, undefined, additional_keywords);
@@ -506,26 +641,39 @@ UI.Panels.StateProperties = new (function() {
 						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 						) return;
 					var input_field = this.parentNode.parentNode.childNodes[1].firstChild;
-					var label = this.parentNode.parentNode.firstChild;
-					if(this.checked) {
-						input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
-						input_field.setAttribute("disabled", "disabled");
-						input_field.setAttribute("class", "inline_text_edit_readonly");
-						label.setAttribute("style", "color: gray");
-						var idx = state.getParameters().indexOf(this.getAttribute("param_key"));
-						state.getParameterValues()[idx] = undefined;
-						input_field.setAttribute("title", "Value: " + input_field.getAttribute("default_value"));
-					} else {
-						input_field.removeAttribute("style");
-						input_field.removeAttribute("disabled");
-						input_field.removeAttribute("title");
-						input_field.setAttribute("class", "inline_text_edit");
-						label.setAttribute("style", "color: black");
-						var idx = state.getParameters().indexOf(this.getAttribute("param_key"));
-						state.getParameterValues()[idx] =  input_field.value;
+					var param_key = this.getAttribute("param_key");
+					var param_value = input_field.value;
+					var behavior_path = current_prop_state.getStatePath();
+					var make_default = function() {
+						var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+						var idx = behavior_state.getParameters().indexOf(param_key);
+						behavior_state.getParameterValues()[idx] = undefined;
+						if (behavior_state == current_prop_state)
+							displayPropertiesForBehavior(current_prop_state);
 					}
-					if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
-					if (UI.Menu.isPageControl()) UI.RuntimeControl.resetParameterTableClicked();
+					var remove_default = function() {
+						var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+						var idx = behavior_state.getParameters().indexOf(param_key);
+						behavior_state.getParameterValues()[idx] = param_value;
+						if (behavior_state == current_prop_state)
+							displayPropertiesForBehavior(current_prop_state);
+					}
+					if(this.checked) {
+						make_default();
+						ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+							"Use default value for parameter " + param_key + " of behavior " + current_prop_state.getStateName(),
+							remove_default,
+							make_default
+						);
+					} else {
+						remove_default();
+						ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+							"Set custom value for parameter " + param_key + " of behavior " + current_prop_state.getStateName(),
+							make_default,
+							remove_default
+						);
+					}
+					UI.RuntimeControl.resetParameterTableClicked();
 				});
 				var default_button_txt = document.createElement("label");
 				default_button_txt.innerText = "default";
@@ -593,9 +741,30 @@ UI.Panels.StateProperties = new (function() {
 						|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 						) return;
-					var idx = state.getInputKeys().indexOf(this.getAttribute("input_key"));
-					state.getInputMapping()[idx] = this.value;
+					var input_key = this.getAttribute("input_key");
+					var input_value = this.value;
+					var idx = state.getInputKeys().indexOf(input_key);
+					var old_input_value = state.getInputMapping()[idx];
+					state.getInputMapping()[idx] = input_value;
 					if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+					var behavior_path = current_prop_state.getStatePath();
+					ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+						"Changed input mapping of behavior " + current_prop_state.getStateName(),
+						function() { // undo
+							var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+							var idx = behavior_state.getInputKeys().indexOf(input_key);
+							behavior_state.getInputMapping()[idx] = old_input_value;
+							if (behavior_state == current_prop_state)
+								displayPropertiesForBehavior(current_prop_state);
+						},
+						function() { // redo
+							var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+							var idx = behavior_state.getInputKeys().indexOf(input_key);
+							behavior_state.getInputMapping()[idx] = input_value;
+							if (behavior_state == current_prop_state)
+								displayPropertiesForBehavior(current_prop_state);
+						}
+					);
 				});
 				var input_field_td = document.createElement("td");
 				input_field_td.appendChild(input_field);
@@ -615,23 +784,39 @@ UI.Panels.StateProperties = new (function() {
 						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 						) return;
 					var input_field = this.parentNode.parentNode.childNodes[1].firstChild;
-					var label = this.parentNode.parentNode.firstChild;
+					var input_key = this.getAttribute("input_key");
+					var input_value = input_field.value;
+					var behavior_path = current_prop_state.getStatePath();
+					var make_default = function() {
+						var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+						var idx = behavior_state.getInputKeys().indexOf(input_key);
+						behavior_state.getInputMapping()[idx] = undefined;
+						if (behavior_state == current_prop_state)
+							displayPropertiesForBehavior(current_prop_state);
+						if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+					}
+					var remove_default = function() {
+						var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+						var idx = behavior_state.getInputKeys().indexOf(input_key);
+						behavior_state.getInputMapping()[idx] = input_value;
+						if (behavior_state == current_prop_state)
+							displayPropertiesForBehavior(current_prop_state);
+						if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+					}
 					if(this.checked) {
-						input_field.setAttribute("style", "text-decoration: line-through; color: rgba(0,0,0,.4);");
-						input_field.setAttribute("disabled", "disabled");
-						input_field.setAttribute("class", "inline_text_edit_readonly");
-						label.setAttribute("style", "color: gray");
-						var idx = state.getInputKeys().indexOf(this.getAttribute("input_key"));
-						state.getInputMapping()[idx] = undefined;
-						input_field.setAttribute("title", "Value: " + state.getDefaultUserdataValue(this.getAttribute("input_key")));
+						make_default();
+						ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+							"Use default value for input key " + input_key + " of behavior " + current_prop_state.getStateName(),
+							remove_default,
+							make_default
+						);
 					} else {
-						input_field.removeAttribute("style");
-						input_field.removeAttribute("disabled");
-						input_field.removeAttribute("title");
-						input_field.setAttribute("class", "inline_text_edit");
-						label.setAttribute("style", "color: black");
-						var idx = state.getInputKeys().indexOf(this.getAttribute("input_key"));
-						state.getInputMapping()[idx] = input_field.value;
+						remove_default();
+						ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+							"Set custom value for input key " + input_key + " of behavior " + current_prop_state.getStateName(),
+							make_default,
+							remove_default
+						);
 					}
 					if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
 				});
@@ -675,9 +860,30 @@ UI.Panels.StateProperties = new (function() {
 						|| RC.Controller.isLocked() && RC.Controller.isStateLocked(current_prop_state.getStatePath())
 						|| RC.Controller.isOnLockedPath(current_prop_state.getStatePath())
 						) return;
-					var idx = state.getOutputKeys().indexOf(this.getAttribute("output_key"));
-					state.getOutputMapping()[idx] = this.value;
+					var output_key = this.getAttribute("output_key");
+					var output_value = this.value;
+					var idx = state.getOutputKeys().indexOf(output_key);
+					var old_output_value = state.getOutputMapping()[idx];
+					state.getOutputMapping()[idx] = output_value;
 					if (UI.Statemachine.isDataflow()) UI.Statemachine.refreshView();
+					var behavior_path = current_prop_state.getStatePath();
+					ActivityTracer.addActivity(ActivityTracer.ACT_STATE_CHANGE,
+						"Changed output mapping of behavior " + current_prop_state.getStateName(),
+						function() { // undo
+							var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+							var idx = behavior_state.getOutputKeys().indexOf(output_key);
+							behavior_state.getOutputMapping()[idx] = old_output_value;
+							if (behavior_state == current_prop_state)
+								displayPropertiesForBehavior(current_prop_state);
+						},
+						function() { // redo
+							var behavior_state = Behavior.getStatemachine().getStateByPath(behavior_path);
+							var idx = behavior_state.getOutputKeys().indexOf(output_key);
+							behavior_state.getOutputMapping()[idx] = output_value;
+							if (behavior_state == current_prop_state)
+								displayPropertiesForBehavior(current_prop_state);
+						}
+					);
 				});
 				var input_field_td = document.createElement("td");
 				input_field_td.appendChild(input_field);

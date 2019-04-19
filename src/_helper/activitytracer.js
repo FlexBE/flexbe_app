@@ -72,6 +72,7 @@ ActivityTracer = new (function() {
 		} else {
 			RC.Controller.signalChanged();
 		}
+		if (update_callback != undefined) update_callback();
 	}
 
 	this.redo = function() {
@@ -90,6 +91,7 @@ ActivityTracer = new (function() {
 		} else {
 			RC.Controller.signalChanged();
 		}
+		if (update_callback != undefined) update_callback();
 	}
 
 	this.hasUnsavedChanges = function() {

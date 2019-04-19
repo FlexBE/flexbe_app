@@ -22,7 +22,7 @@ WS.BehaviorStateDefinition = function(manifest, outcomes, input_keys, output_key
 	manifest.params.forEach(param => {
 		parameters.push(param.name);
 		parameterDefaults.push(undefined); 
-		var defaultValue = (param.type == "text")? '"' + param.default + '"' : param.default;
+		var defaultValue = (param.type == "text" || param.type == "enum")? '"' + param.default + '"' : param.default;
 		var desc = "<div style='margin-bottom: 0.5em;'>Default: <i>" + defaultValue + "</i></div>" + param.label + ": " + param.hint;
 		var info = "";
 		if (param.type == "numeric") {

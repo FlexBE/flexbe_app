@@ -439,6 +439,7 @@ UI.RuntimeControl = new (function() {
 		document.getElementById("runtime_waiting_display").style.display = "none";
 		document.getElementById("runtime_offline_display").style.display = "none";
 		document.getElementById("runtime_no_behavior_display").style.display = "none";
+		ActivityTracer.setUpdateCallback();
 		setDocumentation(undefined);
 		if (R != undefined) {
 			R.remove();
@@ -729,6 +730,21 @@ UI.RuntimeControl = new (function() {
 	this.displayNoBehavior = function() {
 		hideDisplays();
 		document.getElementById("runtime_no_behavior_display").style.display = "inline";
+		var updateHistoryDisplay = function() {
+			var historyHTML = "";
+			var currentIdx = ActivityTracer.getCurrentIndex();
+			ActivityTracer.getActivityList().forEach((activity, idx) => {
+				if (activity == undefined) return;
+				var fontStyle = "";
+				if (idx > currentIdx) {
+					fontStyle = ' style="text-decoration: line-through;"';
+				}
+				historyHTML += "<li" + fontStyle + ">" + activity.description + "</li>";
+			});
+			document.getElementById("rc_save_history").innerHTML = "<ul>" + historyHTML + "</ul>";
+		};
+		updateHistoryDisplay();
+		ActivityTracer.setUpdateCallback(updateHistoryDisplay);
 	}
 
 	this.displayOutcomeRequest = function(outcome, target) {
