@@ -202,6 +202,7 @@ Checking = new (function() {
 			var sparams = state.getParameterValues();
 			for (var i = 0; i < sparams.length; i++) {
 				if (sparams[i] == "") return "parameter " + state.getParameters()[i] + " of state " + state.getStatePath() + " has empty value";
+				if (state instanceof BehaviorState && sparams[i] == undefined) continue;
 				if (!that.isValidExpressionSyntax(sparams[i], false)) return "parameter " + state.getParameters()[i] + " of state " + state.getStatePath() + " has invalid value";
 			}
 		}
@@ -211,6 +212,7 @@ Checking = new (function() {
 			var imap = state.getInputMapping();
 			for (var i = 0; i < imap.length; i++) {
 				if (imap[i] == "") return "input key " + state.getInputKeys()[i] + " of state " + state.getStatePath() + " has empty value";
+				if (state instanceof BehaviorState && imap[i] == undefined) continue;
 				if (!imap[i].match(python_varname_pattern)) return "input key " + state.getInputKeys()[i] + " of state " + state.getStatePath() + " has invalid value: " + imap[i];
 			}
 		}

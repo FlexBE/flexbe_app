@@ -1,4 +1,4 @@
-BehaviorState = function(be_name, be_definition, be_defkeys) {
+BehaviorState = function(be_name, be_definition) {
 	State.apply(this, [be_name, be_definition]);
 	var that = this;
 
@@ -6,7 +6,6 @@ BehaviorState = function(be_name, be_definition, be_defkeys) {
 	var behavior_manifest = be_definition.getBehaviorManifest();
 	var behavior_statemachine = be_definition.cloneBehaviorStatemachine();
 	behavior_statemachine.setBehavior(that);
-	var default_keys = be_defkeys;
 
 	this.getBehaviorName = function() {
 		return behavior_name;
@@ -20,21 +19,13 @@ BehaviorState = function(be_name, be_definition, be_defkeys) {
 		return behavior_manifest;
 	}
 
-	this.getDefaultKeys = function() {
-		return default_keys;
+	this.getParameterDefinition = function(param) {
+		return behavior_manifest.params.findElement(el => {
+			return el.name == param;
+		});
 	}
 
-	this.addDefaultKey = function(new_key) {
-		if (default_keys.contains(new_key)) return;
-		default_keys.push(new_key);
-	}
-
-	this.removeDefaultKey = function(key) {
-		if (!default_keys.contains(key)) return;
-		default_keys.remove(key);
-	}
-
-	this.getDefaultValue = function(key) {
+	this.getDefaultUserdataValue = function(key) {
 		var element = be_definition.getDefaultUserdata().findElement(function(el) {
 			return el.key == key;
 		});

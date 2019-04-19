@@ -178,7 +178,7 @@ Statemachine = function(sm_name, sm_definition) {
 			var added_keys = []
 			state.getInputMapping().forEach(function(key, i) {
 				if (added_keys.contains(key)) return;
-				if (state instanceof BehaviorState && state.getDefaultKeys().contains(state.getInputKeys()[i])) return;
+				if (state instanceof BehaviorState && key == undefined) return;
 				added_keys.push(key);
 				addDataEdgeForPredecessors(state, state, key, []);
 			});

@@ -30,7 +30,7 @@ Tools = new (function() {
 				new_state.setInitialState(new_state.getStateByName(s.getInitialState().getStateName()));
 			}
 		} else if (s instanceof BehaviorState) {
-			new_state = new BehaviorState(s.getBehaviorName(), WS.Behaviorlib.getByName(s.getBehaviorName()), s.getDefaultKeys().clone());
+			new_state = new BehaviorState(s.getBehaviorName(), WS.Behaviorlib.getByName(s.getBehaviorName()));
 			new_state.setStateName(s.getStateName());
 		} else if (s instanceof State) {
 			var state_def = WS.Statelib.getFromLib(s.getStateType());

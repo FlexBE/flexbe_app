@@ -298,15 +298,24 @@ IO.CodeGenerator = new (function() {
 
 		} else if (s instanceof BehaviorState) {
 			var defkeys_str = "";
-			var be_defkeys = s.getDefaultKeys();
-			if (be_defkeys.length > 0) {
-				var be_defkeys_str = []
-				for (var j = 0; j < be_defkeys.length; j++) {
-					be_defkeys_str.push("'"+be_defkeys[j]+"'");
-				}
-				defkeys_str = ", default_keys=[" + be_defkeys_str.join(',') + "]";
+			var be_defkeys_str = [];
+			for (var j = 0; j < s.getInputKeys().length; j++) {
+				if (s.getInputMapping()[j] != undefined) continue;
+				be_defkeys_str.push("'"+s.getInputKeys()[j]+"'");
 			}
-			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"self.use_behavior(" + s.getStateClass() + ", '" + s.getStatePath().substr(1) + "'" + defkeys_str + "),\n";
+			if (be_defkeys_str.length > 0) {
+				defkeys_str = ",\n"+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"default_keys=[" + be_defkeys_str.join(',') + "]";
+			}
+			var params_str = "";
+			var be_params_str = [];
+			for (var j = 0; j < s.getParameters().length; j++) {
+				if (s.getParameterValues()[j] == undefined) continue;
+				be_params_str.push("'"+s.getParameters()[j]+"': "+s.getParameterValues()[j]);
+			}
+			if (be_params_str.length > 0) {
+				params_str = ",\n"+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"parameters={" + be_params_str.join(', ') + "}";
+			}
+			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"self.use_behavior(" + s.getStateClass() + ", '" + s.getStatePath().substr(1) + "'" + defkeys_str + params_str + "),\n";
 
 		} else {
 			var class_key = (!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(s.getStateClass()))?
@@ -352,18 +361,21 @@ IO.CodeGenerator = new (function() {
 
 		// remapping
 		if (s.getInputKeys().length + s.getOutputKeys().length > 0) {
-			code += ",\n";
-			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"remapping={";
 			var remapping_strings = [];
 			for (var j=0; j<s.getInputKeys().length; ++j) {
+				if (s.getInputMapping()[j] == undefined) continue;
 				remapping_strings.push("'" + s.getInputKeys()[j] + "': '" + s.getInputMapping()[j] + "'");
 			}
 			for (var j=0; j<s.getOutputKeys().length; ++j) {
 				if (s.getInputKeys().contains(s.getOutputKeys()[j])) continue;
 				remapping_strings.push("'" + s.getOutputKeys()[j] + "': '" + s.getOutputMapping()[j] + "'");
 			}
-			code += remapping_strings.join(", ");
-			code += "}";
+			if (remapping_strings.length > 0) {
+				code += ",\n";
+				code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"remapping={";
+				code += remapping_strings.join(", ");
+				code += "}";
+			}
 		}
 		
 		code += ")\n\n";
