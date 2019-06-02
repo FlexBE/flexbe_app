@@ -2,6 +2,17 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Match update of flexbe_ci to xenial
+* Add dependency on libnss3 to package.xml (see `#35 <https://github.com/FlexBE/flexbe_app/issues/35>`_)
+* Improve support for activities
+* Merge remote-tracking branch 'origin/feature/sub_parameters' into develop
+* Various minor improvements
+* Allow to set parameters of included behaviors
+* Merge remote-tracking branch 'origin/master' into develop
+* Contributors: Philipp Schillinger
+
 2.1.5 (2019-04-09)
 ------------------
 * Merge remote-tracking branch 'origin/develop'
