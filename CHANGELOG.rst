@@ -2,8 +2,8 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.1 (2019-06-02)
+------------------
 * Match update of flexbe_ci to xenial
 * Add dependency on libnss3 to package.xml (see `#35 <https://github.com/FlexBE/flexbe_app/issues/35>`_)
 * Improve support for activities
