@@ -7,7 +7,7 @@ class TestReport(unittest.TestCase):
 	def test_report(self):
 		try:
 			with open("/tmp/flexbe_app_report.log", 'r') as f:
-				report = yaml.load(f)
+				report = yaml.safe_load(f)
 		except IOError:
 			return # skip test since there is no report to evaluate
 		for test_type, tests in report.items():
