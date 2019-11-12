@@ -72,7 +72,7 @@ UI.Settings = new (function() {
 			'collapse_error': false,
 			'collapse_hint': false,
 			'default_package': 'flexbe_behaviors',
-			'code_indentation': 0,
+			'code_indentation': 2,
 			'explicit_states': false,
 			'editor_command': 'gedit --new-window $FILE +$LINE',
 			'transition_mode': 1,
@@ -102,7 +102,7 @@ UI.Settings = new (function() {
 			document.getElementById("cb_collapse_error").checked = items.collapse_error;
 			collapse_hint = items.collapse_hint;
 			document.getElementById("cb_collapse_hint").checked = items.collapse_hint;
-			
+
 			default_package = items.default_package;
 			that.createBehaviorPackageSelect(document.getElementById("select_default_package"));
 			code_indentation = items.code_indentation;
@@ -375,7 +375,7 @@ UI.Settings = new (function() {
 				var content = JSON.stringify(config);
 				entry.createWriter(function(writer) {
 					writer.onerror = function(error) { T.logError("Error when exporting configuration: " + error); };
-					writer.onwriteend = function() { 
+					writer.onwriteend = function() {
 						if (!truncated) {
 							truncated = true;
 							this.truncate(this.position);
