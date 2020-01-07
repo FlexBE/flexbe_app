@@ -757,6 +757,11 @@ UI.RuntimeControl = new (function() {
 				drawStatusLabel("Onboard requested outcome: " + target.getStateName() + " > " + outcome);
 				updateDrawing();
 			}
+		} else {
+			if (R != undefined) {
+				drawStatusLabel("");
+				updateDrawing();
+			}
 		}
 	}
 
@@ -886,6 +891,8 @@ UI.RuntimeControl = new (function() {
 		if (!RC.Controller.isLocked()) {
 			that.displayLockBehavior();
 		}
+
+		outcome_request.target = undefined;
 		
 		if (status_label != undefined) {
 			status_label.remove();

@@ -41,7 +41,11 @@ RC.PubSub = new (function() {
 	}
 	var outcome_request_callback = function(msg) {
 		var target_state = Behavior.getStatemachine().getStateByPath(msg.target);
-		UI.RuntimeControl.displayOutcomeRequest(target_state.getOutcomes()[msg.outcome], target_state);
+		if (msg.outcome == 255) {
+			UI.RuntimeControl.displayOutcomeRequest('', undefined);  // clear previous request
+		} else {
+			UI.RuntimeControl.displayOutcomeRequest(target_state.getOutcomes()[msg.outcome], target_state);
+		}
 	}
 
 	var behavior_feedback_callback = function (msg){
