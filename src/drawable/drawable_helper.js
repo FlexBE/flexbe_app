@@ -152,6 +152,9 @@ Drawable.Helper = new (function() {
 	this.endFnc = function(evt) {
 		if (UI.Statemachine.isConnecting()) return;
 		var state = this.data("state");
+		var bbox = (UI.Statemachine.getDragIndicator().attr('width') > 1)?
+			UI.Statemachine.getDragIndicator().getBBox():
+			undefined;
 		var container = state.getContainer();
 		var state_name = state.getStateName();
 		var old_pos = state.getPosition();
@@ -188,6 +191,24 @@ Drawable.Helper = new (function() {
 				UI.Statemachine.refreshView();
 			}
 		);
+		if (!RC.Controller.isReadonly()) {
+			covered_transitions = UI.Statemachine.getAllDrawings().filter(function (element) {
+				return element instanceof Drawable.Transition &&
+					element.obj.getFrom().getStateName() != "INIT" &&
+					Raphael.isBBoxIntersect(bbox, element.drawing[1][1].getBBox()) &&
+					element.obj.getFrom().getStateName() != state.getStateName();
+			});
+			covered_transitions.forEach(function (element) {
+				var prev_target = element.obj.getTo();
+				UI.Statemachine.resetTransition(element.obj);
+				UI.Statemachine.connectTransition(state);
+				if (state.getOutcomesUnconnected().length > 0) {
+					UI.Statemachine.beginTransition(state, state.getOutcomesUnconnected()[0]);
+					UI.Statemachine.connectTransition(prev_target);
+				}
+			});
+			UI.Statemachine.refreshView();
+		}
 	}
 
 	// Raphael func
