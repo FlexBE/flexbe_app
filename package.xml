@@ -22,6 +22,13 @@
   <run_depend>actionlib</run_depend>
   <run_depend>rospack</run_depend>
 
+  <run_depend>flexbe_onboard</run_depend>
+  <run_depend>flexbe_mirror</run_depend>
+  <run_depend>flexbe_widget</run_depend>
+
+  <run_depend>std_msgs</run_depend>
+  <run_depend>flexbe_msgs</run_depend>
+
   <test_depend>rosunit</test_depend>
 
 </package>
