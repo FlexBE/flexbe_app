@@ -92,80 +92,138 @@ IO.PackageParser = new (function() {
 					var entry = path.join(folder_path, filename);
 					IO.Filesystem.readFile(entry, (content) => {
 						var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
-						var state_def = IO.StateParser.parseState(content, imports);
-						if (state_def != undefined) {
-							state_def.setFilePath(entry);
-							WS.Statelib.updateDef(state_def);
-							T.logInfo("Updating changed definition for state: " + state_def.getStateClass());
-							var update_states = Behavior.getStatemachine().traverseStates(function(state) {
-								return state.getStateClass() == state_def.getStateClass();
-							});
-							update_states.forEach(function (state) {
-								state.updateStateDefinition(state_def);
-								if (state.getContainer() == UI.Statemachine.getDisplayedSM() 
-									&& UI.Panels.StateProperties.isCurrentState(state)) {
-									UI.Panels.StateProperties.hide();
-									UI.Panels.StateProperties.displayStateProperties(state);
+						IO.StateParser.parseState(content, imports, state_def => {
+							if (state_def != undefined) {
+								state_def.setFilePath(entry);
+								WS.Statelib.updateDef(state_def);
+								T.logInfo("Updating changed definition for state: " + state_def.getStateClass());
+								var update_states = Behavior.getStatemachine().traverseStates(function(state) {
+									return state.getStateClass() == state_def.getStateClass();
+								});
+								update_states.forEach(function (state) {
+									state.updateStateDefinition(state_def);
+									if (state.getContainer() == UI.Statemachine.getDisplayedSM() 
+										&& UI.Panels.StateProperties.isCurrentState(state)) {
+										UI.Panels.StateProperties.hide();
+										UI.Panels.StateProperties.displayStateProperties(state);
+									}
+								});
+								if (UI.Menu.isPageStatemachine()) {
+									UI.Statemachine.refreshView();
 								}
-							});
-							if (UI.Menu.isPageStatemachine()) {
-								UI.Statemachine.refreshView();
+								RC.Controller.signalChanged();
 							}
-							RC.Controller.signalChanged();
-						}
+						});
 					});
 				}
 			}
 		);
 	}
 
-	this.parseStateFolder = function(folder, import_path) {
+	this.parseStates = function(pkg, progress_cb, done_cb) {
+		parseStateFolder(pkg['python_path'], undefined, progress_cb, done_cb);
+	}
+
+	var parseStateFolder = function(folder, import_path, progress_cb, done_cb) {
+		var state_defs = [];
 		IO.Filesystem.checkFileExists(folder, "__init__.py", function(exists) {
 			if (exists) {
 				import_path = import_path || path.dirname(folder);
 			}
 			IO.Filesystem.getFolderContent(folder, function(files) {
-				files.sort().forEach(function(entry, i) {
-					if(IO.Filesystem.isFolder(entry)) {
-						that.parseStateFolder(entry, import_path);
-					} else if (import_path != undefined) {
-						if (path.extname(entry) != ".py") return;
-						IO.Filesystem.readFile(entry, (content) => {
-							var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
-							var state_def = IO.StateParser.parseState(content, imports);
-							if (state_def != undefined) {
-								state_def.setFilePath(entry);
-								WS.Statelib.addToLib(state_def);
-								watchStateFolder(folder, import_path);
-							}
-						});
+				files = files.sort();
+				var processEntry = function(idx) {
+					if (idx >= files.length) {
+						progress_cb(1);
+						done_cb(state_defs);
+						return;
+					} else {
+						progress_cb(idx / files.length);
 					}
-				});
+					var entry = files[idx];
+					if(IO.Filesystem.isFolder(entry)) {
+						parseStateFolder(entry, import_path, progress_cb, new_state_defs => {
+							state_defs = state_defs.concat(new_state_defs);
+							processEntry(idx + 1);
+						});
+					} else if (import_path != undefined) {
+						if (path.extname(entry) == ".py") {
+							IO.Filesystem.readFile(entry, (content) => {
+								var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
+								IO.StateParser.parseState(content, imports, state_def => {
+									if (state_def != undefined) {
+										state_def.setFilePath(entry);
+										if (WS.Statelib.getFromLib(state_def.getStateType())) {
+											WS.Statelib.updateDef(state_def);
+										} else {
+											WS.Statelib.addToLib(state_def);
+										}
+										state_defs.push(state_def);
+										watchStateFolder(folder, import_path);
+									}
+									processEntry(idx + 1);
+								});
+							});
+						} else {
+							processEntry(idx + 1);
+						}
+					} else {
+						processEntry(idx + 1);
+					}
+				};
+				processEntry(0);
 			});
 		});
 	}
 
-	this.parseBehaviorFolder = function(folder, pkg_name, python_path) {
+	this.parseBehaviors = function(pkg, progress_cb, done_cb) {
+		parseBehaviorFolder(pkg['path'], pkg['name'], pkg['python_path'], progress_cb, done_cb);
+	}
+
+	var parseBehaviorFolder = function(folder, pkg_name, python_path, progress_cb, done_cb) {
+		var behavior_defs = [];
 		IO.Filesystem.getFolderContent(folder, function(files) {
-			files.sort().forEach(function(entry, i) {
-				if(IO.Filesystem.isFolder(entry)) {
-					that.parseBehaviorFolder(entry, pkg_name, python_path);
+			files = files.sort();
+			var processEntry = function(idx) {
+				if (idx >= files.length) {
+					progress_cb(1);
+					done_cb(behavior_defs);
+					return;
 				} else {
-					if (path.extname(entry) != ".xml" || path.basename(entry)[0] == '#') return;
-					IO.Filesystem.readFile(entry, (content) => {
-						var manifest = IO.ManifestParser.parseManifest(content, entry, python_path);
-						if (manifest != undefined) {
-							if (manifest.rosnode_name != pkg_name) {
-								T.logWarn("Ignoring behavior " + manifest.name + ": Manifest and code need to be in the same ROS package.");
-								return;
-							}
-							IO.BehaviorLoader.loadBehaviorInterface(manifest, function(ifc) {
-								WS.Behaviorlib.addToLib(new WS.BehaviorStateDefinition(manifest, ifc.smi_outcomes, ifc.smi_input, ifc.smi_output));
-							});
-						}
-					});
+					progress_cb(idx / files.length);
 				}
-			});
+				var entry = files[idx];
+				if(IO.Filesystem.isFolder(entry)) {
+					parseBehaviorFolder(entry, pkg_name, python_path, progress_cb, new_behavior_defs => {
+						behavior_defs = behavior_defs.concat(new_behavior_defs);
+						processEntry(idx + 1);
+					});
+				} else {
+					if (path.extname(entry) == ".xml" && path.basename(entry)[0] != '#') {
+						IO.Filesystem.readFile(entry, (content) => {
+							var manifest = IO.ManifestParser.parseManifest(content, entry, python_path);
+							if (manifest != undefined) {
+								if (manifest.rosnode_name != pkg_name) {
+									T.logWarn("Ignoring behavior " + manifest.name + ": Manifest and code need to be in the same ROS package.");
+									processEntry(idx + 1);
+									return;
+								}
+								IO.BehaviorLoader.loadBehaviorInterface(manifest, function(ifc) {
+									var behavior_def = new WS.BehaviorStateDefinition(manifest, ifc.smi_outcomes, ifc.smi_input, ifc.smi_output);
+									WS.Behaviorlib.addToLib(behavior_def);
+									behavior_defs.push(behavior_def);
+									processEntry(idx + 1);
+								});
+							} else {
+								processEntry(idx + 1);
+							}
+						});
+					} else {
+						processEntry(idx + 1);
+					}
+				}
+			};
+			processEntry(0);
 		});
 	}
 

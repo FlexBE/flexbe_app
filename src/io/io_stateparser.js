@@ -1,7 +1,7 @@
 IO.StateParser = new (function() {
 	var that = this;
 
-	this.parseState = function(content, import_path) {
+	this.parseState = function(content, import_path, callback) {
 		// Patterns
 			// Inherits from EventState, state description is directly below class definition.
 		var name_desc_pattern = /class (\w+)\(EventState\):(?:\n\r?\s+(?:'''|""")\n?\r?((?:\s*(?:.*?)\n?\r?\s*)*?)(?:'''|"""))?/i;
@@ -15,7 +15,10 @@ IO.StateParser = new (function() {
 		var monitor_pattern = /^\s*self\.monitor\(.+?,\s*["']([A-Z_0-9]+)["']\)/igm;
 
 		var name_desc_results = content.match(name_desc_pattern);
-		if (name_desc_results == null) return;
+		if (name_desc_results == null) {
+			callback(undefined);
+			return;
+		}
 		var state_class = name_desc_results[1];
 
 		var state_desc = "";
@@ -161,18 +164,21 @@ IO.StateParser = new (function() {
 			return s;
 		});
 
-		return new WS.StateDefinition(
-			state_class,
-			state_doc,
-			import_path,
-			state_params,
-			state_outcomes,
-			state_input,
-			state_output,
-			state_params_values,
-			state_autonomy,
-			class_vars
-		)
+		// not used due to significant performance impact of spawning processes
+		// that.loadState(content, import_path, state_defs => {
+			callback(new WS.StateDefinition(
+				state_class,
+				state_doc,
+				import_path,
+				state_params,
+				state_outcomes,
+				state_input,
+				state_output,
+				state_params_values,
+				state_autonomy,
+				class_vars
+			));
+		// });
 	}
 
 	var helper_splitOnTopCommas = function(code) {
@@ -204,6 +210,58 @@ IO.StateParser = new (function() {
 		}
 
 		return result;
+	}
+
+	this.loadState = function(content, import_path, callback) {
+		var spawn = require('child_process').spawn;
+		var impl = content + `
+import inspect
+import json
+from flexbe_core import EventState
+result = list()
+for name, cls in locals().items():
+	if getattr(cls, '__module__', None) != '__main__' \
+	or not inspect.isclass(cls) \
+	or not issubclass(cls, EventState):
+		continue
+	data = dict()
+	def __event_init(*args, **kwargs):
+		data['outcomes'] = kwargs.get('outcomes', [])
+		data['input_keys'] = kwargs.get('input_keys', [])
+		data['output_keys'] = kwargs.get('output_keys', [])
+		raise NotImplementedError()
+	EventState.__init__ = __event_init
+	data['class'] = name
+	data['doc'] = inspect.getdoc(cls)
+	argspec = inspect.getargspec(cls.__init__)
+	args = [arg for arg in argspec.args if arg != 'self']
+	argdefs = [repr(default) for default in list(argspec.defaults or [])]
+	defaults = [''] * (len(args) - len(argdefs)) + argdefs
+	data['params'] = {arg: default for arg, default in zip(args, defaults)}
+	try:
+		cls(*args)
+	except Exception as e:
+		pass
+	result.append(data)
+print json.dumps(result)
+`;
+		var loader = spawn('python', ['-c', impl]);
+		var buffer = "";
+		var error = "";
+		loader.stdout.on('data', (data) => {
+			buffer += data;
+		});
+		loader.stderr.on('data', (data) => {
+			error += data;
+		});
+		loader.on('close', (code) => {
+			if (error != "") {
+				T.logWarn("Cannot parse state in " + import_path + ":<br>&nbsp;&nbsp;" + error);
+				callback([]);
+			} else {
+				callback(JSON.parse(buffer));
+			}
+		});
 	}
 
 }) ();

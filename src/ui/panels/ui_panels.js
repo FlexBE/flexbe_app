@@ -65,6 +65,10 @@ UI.Panels = new (function() {
 		activePanel = panel;
 	}
 
+	this.isActivePanel = function(panel) {
+		return panel == activePanel;
+	}
+
 	this.hidePanelIfActive = function(panel) {
 		if (panel != activePanel) return;
 

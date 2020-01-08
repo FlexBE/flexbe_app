@@ -31,9 +31,9 @@ UI.Settings = new (function() {
 
 	var storeSettings = function() {
 		chrome.storage.local.set({
-			'ros_pkg_cache': [],
-			'state_pkg_cache': [],
-			'behavior_pkg_cache': [],
+			'ros_pkg_cache': ros_pkg_cache,
+			'state_pkg_cache': state_pkg_cache,
+			'behavior_pkg_cache': behavior_pkg_cache,
 			'runtime_timeout': runtime_timeout,
 			'stop_behaviors': stop_behaviors,
 			'collapse_info': collapse_info,
@@ -126,37 +126,55 @@ UI.Settings = new (function() {
 			document.getElementById("input_synthesis_system").value = items.synthesis_system;
 			updateSynthesisInterface();
 
-			IO.PackageParser.discover(ros_pkg_cache, (new_packages, added_states, added_behaviors) => {
-				ros_pkg_cache = ros_pkg_cache.concat(new_packages);
-				state_pkg_cache = state_pkg_cache.concat(added_states);
-				behavior_pkg_cache = behavior_pkg_cache.concat(added_behaviors);
-				storeSettings(); // to update cache
-				updateWorkspaceDisplay();
-
-				that.createBehaviorPackageSelect(document.getElementById("select_default_package"));
-				that.createBehaviorPackageSelect(document.getElementById("select_behavior_package"));
-				Behavior.setBehaviorPackage(document.getElementById('select_behavior_package').value);
-
-				// async
-				that.updateStatelib();
-				that.updateBehaviorlib();
-			});
+			IO.PackageParser.discover(ros_pkg_cache, that.packageDiscoverCallback);
 
 			that.setRosProperties('');
 		});
 	}
 
+	this.packageDiscoverCallback = function(new_packages, added_states, added_behaviors) {
+		ros_pkg_cache = ros_pkg_cache.concat(new_packages);
+		state_pkg_cache = state_pkg_cache.concat(added_states);
+		behavior_pkg_cache = behavior_pkg_cache.concat(added_behaviors);
+		storeSettings(); // to update cache
+		updateWorkspaceDisplay();
+
+		that.createBehaviorPackageSelect(document.getElementById("select_default_package"));
+		that.createBehaviorPackageSelect(document.getElementById("select_behavior_package"));
+		Behavior.setBehaviorPackage(document.getElementById('select_behavior_package').value);
+
+		// async
+		that.updateStatelib();
+		that.updateBehaviorlib();
+	}
+
 	this.updateStatelib = function() {
 		WS.Statelib.resetLib();
 		state_pkg_cache.forEach(state_pkg => {
-			IO.PackageParser.parseStateFolder(state_pkg['python_path']);
+			state_pkg['display'].setAttribute('style', 'background-color: white;');
+			IO.PackageParser.parseStates(state_pkg, (progress) => {
+				state_pkg['display'].setAttribute('style', 'background-image: linear-gradient(to right, #9d5, #9d5 ' + (progress * 100) + '%, white ' + (progress * 100) + '%, white);');
+				if (UI.Panels.isActivePanel(UI.Panels.ADD_STATE_PANEL)) {
+					UI.Panels.AddState.show();
+				}
+			}, () => {
+				state_pkg['display'].setAttribute('style', '');
+			});
 		});
 	}
 
 	this.updateBehaviorlib = function() {
 		WS.Behaviorlib.resetLib();
 		behavior_pkg_cache.forEach(behavior_pkg => {
-			IO.PackageParser.parseBehaviorFolder(behavior_pkg['path'], behavior_pkg['name'], behavior_pkg['python_path']);
+			behavior_pkg['display'].setAttribute('style', 'background-color: white;');
+			IO.PackageParser.parseBehaviors(behavior_pkg, (progress) => {
+				behavior_pkg['display'].setAttribute('style', 'background-image: linear-gradient(to right, #9d5, #9d5 ' + (progress * 100) + '%, white ' + (progress * 100) + '%, white);');
+				if (UI.Panels.isActivePanel(UI.Panels.SELECT_BEHAVIOR_PANEL)) {
+					UI.Panels.SelectBehavior.show();
+				}
+			}, () => {
+				behavior_pkg['display'].setAttribute('style', '');
+			});
 		});
 	}
 
@@ -293,6 +311,7 @@ UI.Settings = new (function() {
 			entry.setAttribute("class", "tag");
 			entry.setAttribute("title", pkg['path']);
 			entry.innerText = pkg['name'];
+			pkg['display'] = entry;
 			return entry;
 		}
 		var behavior_el = document.getElementById("workspace_behavior_packages");
@@ -549,8 +568,7 @@ UI.Settings = new (function() {
 		ros_pkg_cache = [];
 		state_pkg_cache = [];
 		behavior_pkg_cache = [];
-		storeSettings();
-
+		IO.PackageParser.discover(ros_pkg_cache, that.packageDiscoverCallback);
 	}
 
 

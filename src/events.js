@@ -128,6 +128,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('button_ros_connect').addEventListener('click', UI.Settings.rosConnectClicked);
 
+    document.getElementById('button_force_discover').addEventListener('click', UI.Settings.forceDiscoverClicked);
+
     document.getElementById('cb_synthesis_enabled').addEventListener('change', UI.Settings.synthesisEnabledClicked);
     document.getElementById('input_synthesis_topic').addEventListener('change', UI.Settings.synthesisTopicChanged);
     document.getElementById('input_synthesis_type').addEventListener('change', UI.Settings.synthesisTypeChanged);
