@@ -6,6 +6,7 @@ UI.Settings = new (function() {
 	var ros_pkg_cache;
 	var state_pkg_cache;
 	var behavior_pkg_cache;
+	var state_parser;
 
 	var runtime_timeout;
 	var stop_behaviors;
@@ -34,6 +35,7 @@ UI.Settings = new (function() {
 			'ros_pkg_cache': ros_pkg_cache,
 			'state_pkg_cache': state_pkg_cache,
 			'behavior_pkg_cache': behavior_pkg_cache,
+			'state_parser': state_parser,
 			'runtime_timeout': runtime_timeout,
 			'stop_behaviors': stop_behaviors,
 			'collapse_info': collapse_info,
@@ -62,6 +64,7 @@ UI.Settings = new (function() {
 			'ros_pkg_cache': [],
 			'state_pkg_cache': [],
 			'behavior_pkg_cache': [],
+			'state_parser': 'regex',
 			'runtime_timeout': 10,
 			'stop_behaviors': false,
 			'collapse_info': true,
@@ -84,6 +87,8 @@ UI.Settings = new (function() {
 			ros_pkg_cache = items.ros_pkg_cache;
 			state_pkg_cache = items.state_pkg_cache;
 			behavior_pkg_cache = items.behavior_pkg_cache;
+			state_parser = items.state_parser;
+			document.getElementById("select_state_parser").value = items.state_parser;
 
 			runtime_timeout = items.runtime_timeout;
 			document.getElementById("input_runtime_timeout").value = items.runtime_timeout;
@@ -564,11 +569,21 @@ UI.Settings = new (function() {
 	// Workspace
 	//===========
 
+	this.stateParserChanged = function() {
+		var el = document.getElementById('select_state_parser');
+		state_parser = el.value;
+		storeSettings();
+	}
+
 	this.forceDiscoverClicked = function() {
 		ros_pkg_cache = [];
 		state_pkg_cache = [];
 		behavior_pkg_cache = [];
 		IO.PackageParser.discover(ros_pkg_cache, that.packageDiscoverCallback);
+	}
+
+	this.getStateParser = function() {
+		return state_parser;
 	}
 
 

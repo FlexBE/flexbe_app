@@ -1,18 +1,134 @@
 IO.StateParser = new (function() {
 	var that = this;
+	var os = require('os');
+	var spawn = require('child_process').spawn;
+	var crypto = require('crypto');
+	var md5 = str => crypto.createHash('md5').update(str).digest('hex');
+
+////////////////////////////////
+// BEGIN Python implementation
+	var impl = `
+import sys
+import inspect
+import json
+from flexbe_core import EventState
+# for some reason need iter(..) call as in https://bugs.python.org/issue26290
+for data in iter(sys.stdin.readline, ""):
+	request = json.loads(data)
+	state_defs = []
+	result = {'id': request['id'], 'state_defs': state_defs}
+	try:
+		pkg = __import__(request['import_path'], fromlist=[request['import_path']])
+		def is_state(member):
+			return (inspect.isclass(member) and
+					member.__module__ == pkg.__name__ and
+					issubclass(member, EventState))
+		for name, cls in inspect.getmembers(pkg, is_state):
+			state_def = dict()
+			state_def['state_class'] = cls.__name__
+			state_def['state_doc'] = inspect.getdoc(cls)
+			argspec = inspect.getargspec(cls.__init__)
+			args = [arg for arg in argspec.args if arg != 'self']
+			argdefs = [repr(default) for default in list(argspec.defaults or [])]
+			state_def['state_params'] = args
+			state_def['state_params_values'] = [''] * (len(args) - len(argdefs)) + argdefs
+			def __event_init(*args, **kwargs):
+				state_def['state_outcomes'] = kwargs.get('outcomes', [])
+				state_def['state_autonomy'] = [0] * len(state_def['state_outcomes'])
+				state_def['state_input'] = kwargs.get('input_keys', [])
+				state_def['state_output'] = kwargs.get('output_keys', [])
+				raise NotImplementedError()  # prevent further instantiation to avoid side-effects
+			EventState.__init__ = __event_init
+			try:
+				cls(*args)
+			except Exception:
+				pass  # above will raise error, but in the best case, we updated state_def
+			state_def['class_vars'] = [n for n, t in cls.__dict__.items()
+				if not inspect.isfunction(t) and not n.startswith('__')]
+			state_defs.append(state_def)
+	except ImportError as e:
+		sys.stderr.write("Failed to import " + request['import_path'] + " (" + str(e) + ") ")
+		sys.stderr.flush()
+	except Exception as e:
+		sys.stderr.write("Failed to process " + request['import_path'] + " (" + str(e) + ") ")
+		sys.stderr.flush()
+	sys.stdout.write(json.dumps(result))
+	sys.stdout.flush()
+`;
+// END Python implementation
+//////////////////////////////
+
+	var i = 0;
+	var loader = undefined;
+	var buffer = "";
+	var parseCallbacks = [];
+
+	var spawnLoader = function() {
+		loader = spawn('python', ['-c', impl]);
+		loader.stdout.on('data', (data) => {
+			buffer += data;
+			var try_parse = true;
+			while (try_parse) {
+				try_parse = false;
+				try {
+					var [obj, idx] = json_parse_raw(buffer);
+					if (obj == null) obj = undefined;
+					if (idx != 0) {
+						buffer = buffer.slice(idx);
+						try_parse = true;
+						// process result
+						var entry = parseCallbacks.findElement(element => {
+							return element['id'] == obj['id'];
+						})
+						if (entry != undefined) {
+							parseCallbacks.remove(entry);
+							entry['callback'](obj['state_defs']);
+						}
+					}
+				} catch (err) {
+					try_parse = false;
+					console.log('State Parser Error:');
+					console.log(err);
+					if (err.hasOwnProperty('name') && err.name == "SyntaxError" && err.hasOwnProperty('at')) {
+						buffer.slice(err.at);
+						try_parse = true;
+					}
+				}
+			}
+		});
+		loader.stderr.on('data', (data) => {
+			T.logWarn("[State parser] " + data);
+		});
+		loader.on('close', () => {
+			loader = undefined;
+		});
+	}
+
+	this.close = function() {
+		if (loader == undefined) return;
+		loader.stdin.end();
+		loader.kill('SIGKILL');
+		loader = undefined;
+	}
 
 	this.parseState = function(content, import_path, callback) {
-		// Patterns
-			// Inherits from EventState, state description is directly below class definition.
+		if (UI.Settings.getStateParser() == 'regex') {
+			parseStateRegex(content, import_path, callback);
+		} else if (UI.Settings.getStateParser() == 'python') {
+			parseStatePython(content, import_path, callback);
+		} else {
+			T.logError('Unknown state parser: ' + UI.Settings.getStateParser());
+		}
+	}
+
+	var parseStateRegex = function(content, import_path, callback) {
+		// Patterns:
+		// Class inherits from EventState, state description is in the docstring.
 		var name_desc_pattern = /class (\w+)\(EventState\):(?:\n\r?\s+(?:'''|""")\n?\r?((?:\s*(?:.*?)\n?\r?\s*)*?)(?:'''|"""))?/i;
-			// Returns all params as list
+		// Return all params as list
 		var param_pattern = /def __init__\(self, ?([^)]+)\):/i;
-			// Extracts parameters of super class call, such as outcomes.
+		// Extract parameters of super class call, such as outcomes.
 		var super_pattern = /super\(.*\)\.__init__\(((?:.|\s)*?)\)\n/i;
-			// Has two matches: 1) key 2) list
-		var list_pattern = /(\w+)=\[(.*)\]/i;
-			// Finds conditions to be monitored
-		var monitor_pattern = /^\s*self\.monitor\(.+?,\s*["']([A-Z_0-9]+)["']\)/igm;
 
 		var name_desc_results = content.match(name_desc_pattern);
 		if (name_desc_results == null) {
@@ -20,58 +136,7 @@ IO.StateParser = new (function() {
 			return;
 		}
 		var state_class = name_desc_results[1];
-
-		var state_desc = "";
-		var argument_doc = [];
-		var last_argument = undefined;
-		if (name_desc_results[2] != undefined) {
-			var line_split = name_desc_results[2].trim().replace(/[\n\r]+/g, "\n\r").split(/[\n\r]+/g);
-			for (var i = 0; i < line_split.length; i++) {
-				var l = line_split[i].trim();
-				if (l.match(/^(--|>#|#>)/)) {
-					if (last_argument != undefined) argument_doc.push(last_argument);
-					var arg_split = l.match(/^(--|>#|#>)\s+([^\s]+)\s+([^\s]+)\s+(.+)$/);
-					if (arg_split == null || arg_split.length < 5) {
-						T.logWarn('Entry in ' + state_class + ' does not fit documentation format: ' + l);
-					} else {
-						last_argument = {
-							symbol: arg_split[1],
-							name: arg_split[2],
-							type: arg_split[3],
-							desc: arg_split[4]
-						};
-					}
-				} else if (l.startsWith("<=")) {
-					if (last_argument != undefined) argument_doc.push(last_argument);
-					var arg_split = l.match(/^(<=)\s+([^\s]+)\s+(.+)$/);
-					if (arg_split == null || arg_split.length < 4) {
-						T.logWarn('Entry in ' + state_class + ' does not fit documentation format: ' + l);
-					} else {
-						last_argument = {
-							symbol: arg_split[1],
-							name: arg_split[2],
-							type: "",
-							desc: arg_split[3]
-						};
-					}
-				} else if (last_argument != undefined) {
-					last_argument['desc'] += " " + l;
-				} else {
-					if (state_desc != "") state_desc += " ";
-					state_desc += l;
-				}
-			}
-			if (last_argument != undefined) argument_doc.push(last_argument);
-
-		} 
-		if (state_desc.match(/^\s*$/)) {
-			state_desc = "[no documentation]";
-		}
-		var state_doc = new WS.Documentation(state_desc);
-		for (var i = 0; i < argument_doc.length; i++) {
-			var a = argument_doc[i];
-			state_doc.addDescription(a['symbol'], a['name'], a['type'], a['desc']);
-		}
+		var state_doc = parseDocumentation(name_desc_results[2] || "");
 
 		var class_var_content = content.split(param_pattern)[0].split(/(?:"""|''')/);
 		class_var_content = class_var_content[class_var_content.length - 1].split(/[\n\r]+/g);
@@ -83,7 +148,6 @@ IO.StateParser = new (function() {
 				class_vars.push({name: class_var_match[1], value: class_var_match[2]});
 			}
 		}
-		
 
 		var param_results = content.match(param_pattern);
 		var state_params = [];
@@ -119,7 +183,7 @@ IO.StateParser = new (function() {
 					} else if (state_params.contains(outcome_list[j])) {
 						state_outcomes.push("$"+outcome_list[j]);
 					} else {
-						state_input.push("$?outcomes");
+						state_outcomes.push("$?outcomes");
 						state_params.push("?outcomes");
 						state_params_values.push('');
 						state_doc.addDescription('--', '?outcomes', "list", "This parameter has been added automatically. The outcomes of this state couldn't be parsed, please enter them manually.");
@@ -158,27 +222,113 @@ IO.StateParser = new (function() {
 			}
 		}
 
-		content.replace(monitor_pattern, function(s, key) {
-			state_outcomes.push(key.toLowerCase());
-			state_autonomy.push(2);
-			return s;
-		});
+		callback(new WS.StateDefinition(
+			state_class,
+			state_doc,
+			import_path,
+			state_params,
+			state_outcomes,
+			state_input,
+			state_output,
+			state_params_values,
+			state_autonomy,
+			class_vars
+		));
+	}
 
-		// not used due to significant performance impact of spawning processes
-		// that.loadState(content, import_path, state_defs => {
-			callback(new WS.StateDefinition(
-				state_class,
-				state_doc,
-				import_path,
-				state_params,
-				state_outcomes,
-				state_input,
-				state_output,
-				state_params_values,
-				state_autonomy,
-				class_vars
-			));
-		// });
+	var parseStatePython = function(content, import_path, callback) {
+		if (loader == undefined) spawnLoader();
+		var id = md5(import_path + content + i++);
+
+		var parseCallback = function(state_defs) {
+			if (state_defs.length > 0) {
+				var state_def = state_defs[0];  // only support one state per file
+				if (typeof state_def['state_outcomes'] == "string") {
+					state_def['state_outcomes'] = ['$' + state_def['state_outcomes']];
+					state_def['state_autonomy'] = [];
+				}
+				if (typeof state_def['state_input'] == "string")
+					state_def['state_input'] = ['$' + state_def['state_input']];
+				if (typeof state_def['state_output'] == "string")
+					state_def['state_output'] = ['$' + state_def['state_output']];
+				callback(new WS.StateDefinition(
+					state_def['state_class'],
+					parseDocumentation(state_def['state_doc']),
+					import_path,
+					[].concat(state_def['state_params']),
+					[].concat(state_def['state_outcomes']),
+					[].concat(state_def['state_input']),
+					[].concat(state_def['state_output']),
+					[].concat(state_def['state_params_values']),
+					[].concat(state_def['state_autonomy']),
+					[].concat(state_def['class_vars'])
+				));
+			} else {
+				callback(undefined);
+			}
+		}
+		parseCallbacks.push({
+			id: id,
+			callback: parseCallback
+		});
+		loader.stdin.write(JSON.stringify({
+			id: id,
+			import_path: import_path,
+			content: content
+		}) + os.EOL);
+	}
+
+	var parseDocumentation = function(docstring) {
+		var state_desc = "";
+		var argument_doc = [];
+		var last_argument = undefined;
+		var line_split = docstring.trim().replace(/[\n\r]+/g, "\n\r").split(/[\n\r]+/g);
+		for (var i = 0; i < line_split.length; i++) {
+			var l = line_split[i].trim();
+			if (l.match(/^(--|>#|#>)/)) {
+				if (last_argument != undefined) argument_doc.push(last_argument);
+				var arg_split = l.match(/^(--|>#|#>)\s+([^\s]+)\s+([^\s]+)\s+(.+)$/);
+				if (arg_split == null || arg_split.length < 5) {
+					T.logWarn('Entry in ' + state_class + ' does not fit documentation format: ' + l);
+				} else {
+					last_argument = {
+						symbol: arg_split[1],
+						name: arg_split[2],
+						type: arg_split[3],
+						desc: arg_split[4]
+					};
+				}
+			} else if (l.startsWith("<=")) {
+				if (last_argument != undefined) argument_doc.push(last_argument);
+				var arg_split = l.match(/^(<=)\s+([^\s]+)\s+(.+)$/);
+				if (arg_split == null || arg_split.length < 4) {
+					T.logWarn('Entry in ' + state_class + ' does not fit documentation format: ' + l);
+				} else {
+					last_argument = {
+						symbol: arg_split[1],
+						name: arg_split[2],
+						type: "",
+						desc: arg_split[3]
+					};
+				}
+			} else if (last_argument != undefined) {
+				last_argument['desc'] += " " + l;
+			} else {
+				if (state_desc != "") state_desc += " ";
+				state_desc += l;
+			}
+		}
+		if (last_argument != undefined) argument_doc.push(last_argument);
+
+		if (state_desc.match(/^\s*$/)) {
+			state_desc = "[no documentation]";
+		}
+		var state_doc = new WS.Documentation(state_desc);
+		for (var i = 0; i < argument_doc.length; i++) {
+			var a = argument_doc[i];
+			state_doc.addDescription(a['symbol'], a['name'], a['type'], a['desc']);
+		}
+		return state_doc;
 	}
 
 	var helper_splitOnTopCommas = function(code) {
@@ -210,58 +360,6 @@ IO.StateParser = new (function() {
 		}
 
 		return result;
-	}
-
-	this.loadState = function(content, import_path, callback) {
-		var spawn = require('child_process').spawn;
-		var impl = content + `
-import inspect
-import json
-from flexbe_core import EventState
-result = list()
-for name, cls in locals().items():
-	if getattr(cls, '__module__', None) != '__main__' \
-	or not inspect.isclass(cls) \
-	or not issubclass(cls, EventState):
-		continue
-	data = dict()
-	def __event_init(*args, **kwargs):
-		data['outcomes'] = kwargs.get('outcomes', [])
-		data['input_keys'] = kwargs.get('input_keys', [])
-		data['output_keys'] = kwargs.get('output_keys', [])
-		raise NotImplementedError()
-	EventState.__init__ = __event_init
-	data['class'] = name
-	data['doc'] = inspect.getdoc(cls)
-	argspec = inspect.getargspec(cls.__init__)
-	args = [arg for arg in argspec.args if arg != 'self']
-	argdefs = [repr(default) for default in list(argspec.defaults or [])]
-	defaults = [''] * (len(args) - len(argdefs)) + argdefs
-	data['params'] = {arg: default for arg, default in zip(args, defaults)}
-	try:
-		cls(*args)
-	except Exception as e:
-		pass
-	result.append(data)
-print json.dumps(result)
-`;
-		var loader = spawn('python', ['-c', impl]);
-		var buffer = "";
-		var error = "";
-		loader.stdout.on('data', (data) => {
-			buffer += data;
-		});
-		loader.stderr.on('data', (data) => {
-			error += data;
-		});
-		loader.on('close', (code) => {
-			if (error != "") {
-				T.logWarn("Cannot parse state in " + import_path + ":<br>&nbsp;&nbsp;" + error);
-				callback([]);
-			} else {
-				callback(JSON.parse(buffer));
-			}
-		});
 	}
 
 }) ();

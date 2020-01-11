@@ -568,17 +568,27 @@
 				Provides an overview of available state and behavior packages.
 			</font>
 			<table class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
+				<tr title="Parsing type for state packages. Regex: Interprets the source code based on regular expressions. Python: Uses Python to import and inspect the classes.">
+					<td width="150">State parser: </td>
+					<td><select id="select_state_parser">
+							<option value="regex">Regex</option>
+							<option value="python">Python</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input id="button_force_discover" type="button" value="Force Discover" title="Force discovery of new state or behavior packages. This is only required if you add the export statement to an already existing package." />
+					</td>
+				</tr>
+			</table>
+			<table class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
 				<tr><td>Behavior Packages:</td></tr>
 				<tr><td id="workspace_behavior_packages"><i>none</i></td></tr>
 			</table>
 			<table class="box_table" style="width: 100%; padding-right: 5px; margin-top: 5px">
 				<tr><td>State Packages:</td></tr>
 				<tr><td id="workspace_state_packages"><i>none</i></td></tr>
-				<tr>
-					<td colspan="2">
-						<input id="button_force_discover" type="button" value="Force Discover" title="Force discovery of new state or behavior packages. This is only required if you add the export statement to an already existing package." />
-					</td>
-				</tr>
 			</table>
 		</div>
 

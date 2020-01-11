@@ -128,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('button_ros_connect').addEventListener('click', UI.Settings.rosConnectClicked);
 
+    document.getElementById('select_state_parser').addEventListener('change', UI.Settings.stateParserChanged);
     document.getElementById('button_force_discover').addEventListener('click', UI.Settings.forceDiscoverClicked);
 
     document.getElementById('cb_synthesis_enabled').addEventListener('change', UI.Settings.synthesisEnabledClicked);
@@ -176,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         RC.PubSub.shutdown();
         ROS.shutdown();
         IO.PackageParser.stopWatching();
+		IO.StateParser.close();
     });
 
     nw.App.on('open', () => {

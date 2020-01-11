@@ -147,7 +147,7 @@ IO.PackageParser = new (function() {
 							processEntry(idx + 1);
 						});
 					} else if (import_path != undefined) {
-						if (path.extname(entry) == ".py") {
+						if (path.extname(entry) == ".py" && path.basename(entry) != "__init__.py") {
 							IO.Filesystem.readFile(entry, (content) => {
 								var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
 								IO.StateParser.parseState(content, imports, state_def => {
