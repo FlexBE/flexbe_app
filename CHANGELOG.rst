@@ -2,8 +2,8 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.2 (2020-01-11)
+------------------
 * Add python-based state parser alternative (see `team-vigir/flexbe_behavior_engine#93 <https://github.com/team-vigir/flexbe_behavior_engine/issues/93>`_)
 * Implement a quick connect when dropping a state onto a transition
 * Add internal dependencies (see `#39 <https://github.com/FlexBE/flexbe_app/issues/39>`_)
