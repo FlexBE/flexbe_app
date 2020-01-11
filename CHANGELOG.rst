@@ -2,6 +2,16 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add python-based state parser alternative (see `team-vigir/flexbe_behavior_engine#93 <https://github.com/team-vigir/flexbe_behavior_engine/issues/93>`_)
+* Implement a quick connect when dropping a state onto a transition
+* Add internal dependencies (see `#39 <https://github.com/FlexBE/flexbe_app/issues/39>`_)
+* Enable package cache and track update progress
+* Clear outcome request on transition and explicit message
+* Robustify package parser against malformed package.xml (see `#37 <https://github.com/FlexBE/flexbe_app/issues/37>`_)
+* Contributors: Philipp Schillinger
+
 2.2.1 (2019-06-02)
 ------------------
 * Match update of flexbe_ci to xenial
