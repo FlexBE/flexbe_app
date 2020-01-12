@@ -289,7 +289,7 @@ for data in iter(sys.stdin.readline, ""):
 				if (last_argument != undefined) argument_doc.push(last_argument);
 				var arg_split = l.match(/^(--|>#|#>)\s+([^\s]+)\s+([^\s]+)\s+(.+)$/);
 				if (arg_split == null || arg_split.length < 5) {
-					T.logWarn('Entry in ' + state_class + ' does not fit documentation format: ' + l);
+					T.logWarn('Entry does not fit documentation format: ' + l);
 				} else {
 					last_argument = {
 						symbol: arg_split[1],
@@ -302,7 +302,7 @@ for data in iter(sys.stdin.readline, ""):
 				if (last_argument != undefined) argument_doc.push(last_argument);
 				var arg_split = l.match(/^(<=)\s+([^\s]+)\s+(.+)$/);
 				if (arg_split == null || arg_split.length < 4) {
-					T.logWarn('Entry in ' + state_class + ' does not fit documentation format: ' + l);
+					T.logWarn('Entry does not fit documentation format: ' + l);
 				} else {
 					last_argument = {
 						symbol: arg_split[1],

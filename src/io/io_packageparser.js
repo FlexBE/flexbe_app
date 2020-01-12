@@ -149,20 +149,29 @@ IO.PackageParser = new (function() {
 					} else if (import_path != undefined) {
 						if (path.extname(entry) == ".py" && path.basename(entry) != "__init__.py") {
 							IO.Filesystem.readFile(entry, (content) => {
-								var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
-								IO.StateParser.parseState(content, imports, state_def => {
-									if (state_def != undefined) {
-										state_def.setFilePath(entry);
-										if (WS.Statelib.getFromLib(state_def.getStateType())) {
-											WS.Statelib.updateDef(state_def);
-										} else {
-											WS.Statelib.addToLib(state_def);
+								try {
+									var imports = entry.replace(import_path+"/", "").replace(/.py$/i, "").replace(/[\/]/g, ".");
+									IO.StateParser.parseState(content, imports, state_def => {
+										try {
+											if (state_def != undefined) {
+												state_def.setFilePath(entry);
+												if (WS.Statelib.getFromLib(state_def.getStateType())) {
+													WS.Statelib.updateDef(state_def);
+												} else {
+													WS.Statelib.addToLib(state_def);
+												}
+												state_defs.push(state_def);
+												watchStateFolder(folder, import_path);
+											}
+										} catch (error) {
+											console.error(error);
 										}
-										state_defs.push(state_def);
-										watchStateFolder(folder, import_path);
-									}
+										processEntry(idx + 1);
+									});
+								} catch (error) {
+									console.error(error);
 									processEntry(idx + 1);
-								});
+								}
 							});
 						} else {
 							processEntry(idx + 1);
