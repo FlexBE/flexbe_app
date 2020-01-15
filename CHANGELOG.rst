@@ -2,6 +2,12 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Increment nwjs version
+* Fix documentation format warnings (see `#48 <https://github.com/FlexBE/flexbe_app/issues/48>`_)
+* Contributors: Philipp Schillinger
+
 2.2.2 (2020-01-11)
 ------------------
 * Add python-based state parser alternative (see `team-vigir/flexbe_behavior_engine#93 <https://github.com/team-vigir/flexbe_behavior_engine/issues/93>`_)
