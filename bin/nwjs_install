@@ -4,7 +4,7 @@ TEMPFILE="nwjs.tar.gz"
 mkdir -p ../nwjs
 cd ../nwjs
 
-VERSION="v0.34.1" # verified working, to be incremented explicitly
+VERSION="v0.43.5" # verified working, to be incremented explicitly
 
 # check if nw is already existing and up-to-date, abort if so
 if [ -f nw ]; then
