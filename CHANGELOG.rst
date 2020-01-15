@@ -2,8 +2,8 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.3 (2020-01-15)
+------------------
 * Increment nwjs version
 * Fix documentation format warnings (see `#48 <https://github.com/FlexBE/flexbe_app/issues/48>`_)
 * Contributors: Philipp Schillinger
