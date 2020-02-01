@@ -195,6 +195,7 @@ Drawable.Helper = new (function() {
 			covered_transitions = UI.Statemachine.getAllDrawings().filter(function (element) {
 				return element instanceof Drawable.Transition &&
 					element.obj.getFrom().getStateName() != "INIT" &&
+					element.drawing[1][1] != undefined &&
 					Raphael.isBBoxIntersect(bbox, element.drawing[1][1].getBBox()) &&
 					element.obj.getFrom().getStateName() != state.getStateName();
 			});
