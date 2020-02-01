@@ -128,7 +128,7 @@ for data in iter(sys.stdin.readline, ""):
 		// Return all params as list
 		var param_pattern = /def __init__\(self, ?([^)]+)\):/i;
 		// Extract parameters of super class call, such as outcomes.
-		var super_pattern = /super\(.*\)\.__init__\(((?:.|\s)*?)\)\n/i;
+		var super_pattern = /super\(.*\)\.__init__\(((?:.|\s)*?)\)/i;
 
 		var name_desc_results = content.match(name_desc_pattern);
 		if (name_desc_results == null) {
