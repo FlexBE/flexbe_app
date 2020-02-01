@@ -279,8 +279,8 @@ for data in iter(sys.stdin.readline, ""):
 	}
 
 	var parseDocumentation = function(docstring) {
-	    if (typeof docstring != "string" || docstring == "")
-	        return new WS.Documentation("[no documentation]");
+		if (typeof docstring != "string" || docstring == "")
+			return new WS.Documentation("[no documentation]");
 		var state_desc = "";
 		var argument_doc = [];
 		var last_argument = undefined;
