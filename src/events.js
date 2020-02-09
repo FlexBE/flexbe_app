@@ -209,6 +209,10 @@ document.addEventListener('DOMContentLoaded', function() {
             allow_close = confirm(txt);
         }
         if (allow_close) {
+            RC.PubSub.shutdown();
+            ROS.shutdown();
+            IO.PackageParser.stopWatching();
+            IO.StateParser.close();
             this.close(true);
         }
     });
