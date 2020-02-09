@@ -342,6 +342,9 @@ UI.Settings = new (function() {
 			}]
 		}, function(entry) {
 			if (chrome.runtime.lastError) {
+				if (chrome.runtime.lastError.message.lastIndexOf('User', 0) != 0) {
+					T.logError(chrome.runtime.lastError.message)
+				}
 				return;
 			}
 			UI.Panels.setActivePanel(UI.Panels.NO_PANEL);
@@ -368,6 +371,9 @@ UI.Settings = new (function() {
 			}]
 		}, function(entry) {
 			if (chrome.runtime.lastError) {
+				if (chrome.runtime.lastError.message.lastIndexOf('User', 0) != 0) {
+					T.logError(chrome.runtime.lastError.message)
+				}
 				return;
 			}
 			chrome.storage.local.get(null, function(config) {
