@@ -342,8 +342,8 @@ UI.Settings = new (function() {
 			}]
 		}, function(entry) {
 			if (chrome.runtime.lastError) {
-			    if (chrome.runtime.lastError.message.lastIndexOf('User', 0) != 0) {
-			        T.logError(chrome.runtime.lastError.message)
+				if (chrome.runtime.lastError.message.lastIndexOf('User', 0) != 0) {
+					T.logError(chrome.runtime.lastError.message)
 				}
 				return;
 			}
@@ -371,8 +371,8 @@ UI.Settings = new (function() {
 			}]
 		}, function(entry) {
 			if (chrome.runtime.lastError) {
-			    if (chrome.runtime.lastError.message.lastIndexOf('User', 0) != 0) {
-			        T.logError(chrome.runtime.lastError.message)
+				if (chrome.runtime.lastError.message.lastIndexOf('User', 0) != 0) {
+					T.logError(chrome.runtime.lastError.message)
 				}
 				return;
 			}
