@@ -40,7 +40,7 @@ for data in iter(sys.stdin.readline, ""):
 				raise NotImplementedError()  # prevent further instantiation to avoid side-effects
 			EventState.__init__ = __event_init
 			try:
-				cls(*state_def['state_params_values'])
+				cls(*args)  # pass variable names for resolving symbols later
 			except NotImplementedError:  # this error type is expected
 				pass  # we do nothing because state_def has been updated already
 			except Exception as e:  # any other error is passed onwards
