@@ -40,9 +40,14 @@ for data in iter(sys.stdin.readline, ""):
 				raise NotImplementedError()  # prevent further instantiation to avoid side-effects
 			EventState.__init__ = __event_init
 			try:
-				cls(*args)
-			except Exception:
-				pass  # above will raise error, but in the best case, we updated state_def
+				cls(*state_def['state_params_values'])
+			except NotImplementedError:  # this error type is expected
+				pass  # we do nothing because state_def has been updated already
+			except Exception as e:  # any other error is passed onwards
+				raise Exception(
+					"Cannot instantiate state '%s' to determine interface, "
+					"consider removing any code before 'super' in '__init__'. "
+					"Error: %s" % (cls.__name__, str(e)))
 			state_def['class_vars'] = [n for n, t in cls.__dict__.items()
 				if not inspect.isfunction(t) and not n.startswith('__')]
 			state_defs.append(state_def)
@@ -255,13 +260,13 @@ for data in iter(sys.stdin.readline, ""):
 					state_def['state_class'],
 					parseDocumentation(state_def['state_doc']),
 					import_path,
-					[].concat(state_def['state_params']),
-					[].concat(state_def['state_outcomes']),
-					[].concat(state_def['state_input']),
-					[].concat(state_def['state_output']),
-					[].concat(state_def['state_params_values']),
-					[].concat(state_def['state_autonomy']),
-					[].concat(state_def['class_vars'])
+					[].concat(state_def['state_params'] || []),
+					[].concat(state_def['state_outcomes'] || []),
+					[].concat(state_def['state_input'] || []),
+					[].concat(state_def['state_output'] || []),
+					[].concat(state_def['state_params_values'] || []),
+					[].concat(state_def['state_autonomy'] || []),
+					[].concat(state_def['class_vars'] || [])
 				));
 			} else {
 				callback(undefined);
