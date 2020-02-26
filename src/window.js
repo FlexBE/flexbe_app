@@ -2,7 +2,7 @@ window.onload = function() {
 	var gui = require('nw.gui');
 
 	Behavior.resetBehavior();
-	
+
 	// Initialize gui panel
 	UI.Statemachine.initialize();
 	UI.Menu.toDashboardClicked();
@@ -11,7 +11,7 @@ window.onload = function() {
 	UI.Dashboard.addBehaviorOutcome('failed');
 	ActivityTracer.resetActivities();
 	UI.RuntimeControl.displayLockBehavior();
-	
+
 	RC.Controller.initialize();
 
 	// Initialize runtime control
@@ -29,6 +29,12 @@ window.onload = function() {
 	if (gui.App.argv.contains('--run-tests')) {
 		setTimeout(() => {
 			TestReport.runAllTests(status =>  gui.App.quit());
+		}, 5 * 1000);
+	}
+
+	else if (gui.App.argv.contains('--check-behaviors')) {
+		setTimeout(() => {
+			CheckBehaviorsReport.checkAllBehaviors(gui.App.quit);
 		}, 5 * 1000);
 	}
 }
