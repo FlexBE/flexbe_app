@@ -6,7 +6,7 @@
 	<script src="ext/d3.min.js"></script>
 	<script src="ext/json_parse_raw.js"></script>
 	<script src="ext/yaml.min.js"></script>
-	
+
 	<script src="window.js"></script>
 
 	<script src="events.js"></script>
@@ -78,6 +78,7 @@
 	<script src="_test/scripts.js"></script>
 	<script src="_test/testreport.js"></script>
 	<script src="_test/statelib.test.js"></script>
+	<script src="_test/checkbehaviorsreport.js"></script>
 
 	<link rel="stylesheet" href="style/main.css" type="text/css" />
 	<link rel="stylesheet" href="style/dashboard.css" type="text/css" />
@@ -113,7 +114,7 @@
 			<div class="category_button" id="button_to_se"><img src="img/se.png" width="32" height="32" /> Configuration</div>
 		</td><td id="title_button_panel">
 
-		</td></tr></table>	
+		</td></tr></table>
 	</div>
 
 	<div id="flexbe_about" title="About FlexBE">
@@ -166,7 +167,7 @@
 
 	<div id="properties_autocomplete" class="sidepanel_autocomplete" style="display: none;" idx="0"></div>
 
-	<div id="dashboard"> 
+	<div id="dashboard">
 
 		<div class="box">
 			<h1>Overview</h1>
@@ -205,13 +206,13 @@
 			<table class="box_table"><tr><td>
 				<input id="input_db_variable_key_add" type="text" class="input_field" />
 			</td><td>
-				&nbsp;&nbsp;=&nbsp; 
+				&nbsp;&nbsp;=&nbsp;
 			</td><td width="60%">
 				<input id="input_db_variable_value_add" type="text" class="input_field" />
 			</td><td>
 				<input id="button_db_variable_add" type="button" value="Add" />
 			</td></tr></table>
-			
+
 		</div>
 
 		<div class="box">
@@ -221,7 +222,7 @@
 			<table class="box_table"><tr><td>
 				<input id="input_db_userdata_key_add" type="text" class="input_field" />
 			</td><td>
-				&nbsp;&nbsp;=&nbsp; 
+				&nbsp;&nbsp;=&nbsp;
 			</td><td>
 				<input id="input_db_userdata_value_add" type="text" class="input_field" />
 			</td><td>
@@ -637,25 +638,25 @@
 			<div id="panel_prop_parameters" class="sidepanel_category">
 				<b>Parameters</b>
 				<table id="panel_prop_parameters_content" class="sidepanel_table">
-					
+
 				</table>
 			</div>
 			<div id="panel_prop_autonomy" class="sidepanel_category">
 				<b>Required Autonomy Levels</b>
 				<table id="panel_prop_autonomy_content" class="sidepanel_table">
-					
+
 				</table>
 			</div>
 			<div id="panel_prop_input_keys" class="sidepanel_category">
 				<b>Input Key Mapping</b>
 				<table id="panel_prop_input_keys_content" class="sidepanel_table">
-					
+
 				</table>
 			</div>
 			<div id="panel_prop_output_keys" class="sidepanel_category">
 				<b>Output Key Mapping</b>
 				<table id="panel_prop_output_keys_content" class="sidepanel_table">
-					
+
 				</table>
 			</div>
 
@@ -683,26 +684,26 @@
 			<div id="panel_prop_be_parameters" class="sidepanel_category">
 				<b>Parameters</b>
 				<table id="panel_prop_be_parameters_content" class="sidepanel_table">
-					
+
 				</table>
 			</div>
 
 			<div id="panel_prop_be_autonomy" class="sidepanel_category">
 				<b>Required Autonomy Levels</b>
 				<table id="panel_prop_be_autonomy_content" class="sidepanel_table">
-					
+
 				</table>
 			</div>
 			<div id="panel_prop_be_input_keys" class="sidepanel_category">
 				<b>Input Key Mapping</b>
 				<table id="panel_prop_be_input_keys_content" class="sidepanel_table">
-					
+
 				</table>
 			</div>
 			<div id="panel_prop_be_output_keys" class="sidepanel_category">
 				<b>Output Key Mapping</b>
 				<table id="panel_prop_be_output_keys_content" class="sidepanel_table">
-					
+
 				</table>
 			</div>
 
@@ -716,7 +717,7 @@
 				<input id="input_prop_sm_name" class="inline_title_text_edit" type="text" />
 			</div>
 			<div style="font-style: italic; padding: 0px 5px; margin-top: 5px; color: gray;">
-				Type: 
+				Type:
 				<select id="select_container_type">
 					<option value="statemachine">Statemachine</option>
 					<option value="concurrency">Concurrency</option>
@@ -754,7 +755,7 @@
 			<div id="panel_prop_sm_autonomy" class="sidepanel_category">
 				<b>Outcomes</b>
 				<table id="panel_prop_sm_outcomes_content" class="sidepanel_table">
-					
+
 				</table>
 				<table class="sidepanel_table"><tr><td>
 					<input id="input_prop_outcome_add" type="text" class="input_field" />
@@ -765,7 +766,7 @@
 			<div id="panel_prop_sm_input_keys" class="sidepanel_category">
 				<b>Input Keys</b>
 				<table id="panel_prop_sm_input_keys_content" class="sidepanel_table">
-					
+
 				</table>
 				<table class="sidepanel_table"><tr><td>
 					<input id="input_prop_input_key_add" type="text" class="input_field" />
@@ -776,7 +777,7 @@
 			<div id="panel_prop_sm_output_keys" class="sidepanel_category">
 				<b>Output Keys</b>
 				<table id="panel_prop_sm_output_keys_content" class="sidepanel_table">
-					
+
 				</table>
 				<table class="sidepanel_table"><tr><td>
 					<input id="input_prop_output_key_add" type="text" class="input_field" />
@@ -829,7 +830,7 @@
 		<div class="sidepanel_title_text">
 			Select Behavior
 		</div>
-		
+
 		<div class="sidepanel_category">
 			<table class="sidepanel_table">
 				<tr>
@@ -851,7 +852,7 @@
 	</div>
 
 	<div id="terminal">
-		
+
 	</div>
 
 	<div class="emptypage">
@@ -859,7 +860,7 @@
 	</div>
 
 	<div id="add_state_panel" style="display: none; position: absolute; top: 100px; left: 100px; background-color: white; border: 1px solid black;">
-		
+
 	</div>
 
 	<div id="tool_overlay">

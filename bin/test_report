@@ -2,19 +2,44 @@
 import yaml
 import unittest
 
+
+def generate_test(test_type, test_data):
+    def test_method(self):
+        test_function = getattr(self, test_type)
+        if isinstance(test_data, list):
+            test_function(*test_data)
+        else:
+            test_function(test_data)
+    return test_method
+
+
 class TestReport(unittest.TestCase):
 
-	def test_report(self):
-		try:
-			with open("/tmp/flexbe_app_report.log", 'r') as f:
-				report = yaml.load(f)
-		except IOError:
-			return # skip test since there is no report to evaluate
-		for test_type, tests in report.items():
-			for test_name, test_data in tests.items():
-				if test_type == "assertTrue":
-					self.assertTrue(test_data, test_name)
+    def test_report(self):
+        try:
+            with open("/tmp/flexbe_app_report.log", 'r') as f:
+                report = yaml.load(f)
+        except IOError:
+            return  # skip test since there is no report to evaluate
+        for test_type, tests in report.items():
+            for test_name, test_data in tests.items():
+                if test_type == "assertTrue":
+                    self.assertTrue(test_data, test_name)
+
 
 if __name__ == '__main__':
+    try:
+        with open("/tmp/flexbe_app_behavior_report.log", 'r') as f:
+            report = yaml.safe_load(f)
+    except IOError:
+        pass  # add no tests because there is no report to evaluate
+    else:
+        for test_type, tests in report.items():
+            for test_name, test_data in tests.items():
+                function_name = "test_%s_%s" % (test_name, test_type)
+                test_function = generate_test(test_type, test_data)
+                test_function.__name__ = function_name
+                setattr(TestReport, function_name, test_function)
+
     import rosunit
     rosunit.unitrun("flexbe_app", "test_report", TestReport)
