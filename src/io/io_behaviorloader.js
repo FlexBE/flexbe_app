@@ -5,15 +5,26 @@ IO.BehaviorLoader = new (function() {
 
 
 	var parseCode = function(file_content, manifest_data, callback) {
+		callback = callback || console.error;
 		var parsingResult;
 		try {
 			parsingResult = IO.CodeParser.parseCode(file_content);
 			T.logInfo("Code parsing completed.");
 		} catch (err) {
-			T.logError("Code parsing failed: " + err);
+			var error_string = "Code parsing failed: " + err;
+			T.logError(error_string);
+			callback(error_string);
+			return;
 		}
-		applyParsingResult(parsingResult, manifest_data);
-		T.logInfo("Behavior " + parsingResult.behavior_name + " loaded.");
+		try {
+			applyParsingResult(parsingResult, manifest_data);
+			T.logInfo("Behavior " + parsingResult.behavior_name + " loaded.");
+		} catch (err) {
+			var error_string = "Code parsing failed: " + err;
+			T.logError(error_string);
+			callback(error_string);
+			return;
+		}
 
 		var error_string = Checking.checkBehavior();
 		if (error_string != undefined) {
@@ -21,7 +32,7 @@ IO.BehaviorLoader = new (function() {
 			T.logError(error_string);
 			RC.Controller.signalChanged();
 		}
-		callback(error_string)
+		callback(error_string);
 	}
 
 	var applyParsingResult = function(result, manifest) {
@@ -56,9 +67,6 @@ IO.BehaviorLoader = new (function() {
 	}
 
 	this.loadBehavior = function(manifest, callback) {
-		if (!(typeof callback === 'function')) {
-			callback = function(p) {};
-		}
 		T.clearLog();
 		UI.Panels.Terminal.show();
 
