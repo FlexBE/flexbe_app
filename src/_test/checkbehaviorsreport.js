@@ -15,7 +15,7 @@ CheckBehaviorsReport = new (function() {
                 IO.BehaviorLoader.loadBehavior(m, function(error_string) {
                     console.log(error_string);
                     if (error_string != undefined) {
-                        report.assertTrue["behavior_"+behavior] = false;
+                        report.assertTrue["behavior_"+behavior] = [false, error_string];
                         console.log(behavior+" is false");
                     }
                     else{
