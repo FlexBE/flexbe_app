@@ -12,11 +12,10 @@ IO.PackageParser = new (function() {
 		var add_behaviors = [];
 
 		ROS.getPackageList((pkg_list) => {
-			pkg_cache.forEach(entry => { pkg_list.remove(entry); });
+			pkg_list = pkg_list.filter(entry => pkg_cache.findElement(cached => cached['name'] == entry['name']) == undefined);
 			var pkg_count = pkg_list.length;
 			if (pkg_count > 0) {
-				//T.logInfo("Checking "+pkg_count+" newly detected ROS packages for states and behaviors...");
-				T.logInfo("Checking "+pkg_count+" ROS packages for states and behaviors...");
+				T.logInfo("Checking "+pkg_count+" ROS packages for states and behaviors  ("+pkg_cache.length+" in cache)...");
 			} else {
 				T.logInfo("No new ROS packages detected ("+pkg_cache.length+" in cache).");
 			}
