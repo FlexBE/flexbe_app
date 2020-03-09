@@ -235,7 +235,8 @@ for data in iter(sys.stdin.readline, ""):
 			state_output,
 			state_params_values,
 			state_autonomy,
-			class_vars
+			class_vars,
+			""  // Errors, but regex parser doesn't detect errors
 		));
 	}
 
@@ -264,7 +265,8 @@ for data in iter(sys.stdin.readline, ""):
 					[].concat(state_def['state_output']),
 					[].concat(state_def['state_params_values']),
 					[].concat(state_def['state_autonomy']),
-					[].concat(state_def['class_vars'])
+					[].concat(state_def['class_vars'],
+					state_def['errors'])
 				));
 			} else {
 				callback(undefined);
