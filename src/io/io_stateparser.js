@@ -41,8 +41,11 @@ for data in iter(sys.stdin.readline, ""):
 			EventState.__init__ = __event_init
 			try:
 				cls(*args)
-			except Exception:
-				pass  # above will raise error, but in the best case, we updated state_def
+			except NotImplementedError:
+				pass  # above will raise NotImplementedError by design, but in the best case, we updated state_def
+			except Exception as e:   # In any other case, the user messed up perhaps?
+				import traceback
+				state_def['error'] = traceback.format_exc(e)
 			state_def['class_vars'] = [n for n, t in cls.__dict__.items()
 				if not inspect.isfunction(t) and not n.startswith('__')]
 			state_defs.append(state_def)
