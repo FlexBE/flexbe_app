@@ -266,7 +266,7 @@ for data in iter(sys.stdin.readline, ""):
 					[].concat(state_def['state_params_values']),
 					[].concat(state_def['state_autonomy']),
 					[].concat(state_def['class_vars'],
-					state_def['errors'])
+					state_def['error'])
 				));
 			} else {
 				callback(undefined);
