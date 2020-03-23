@@ -270,7 +270,7 @@ for data in iter(sys.stdin.readline, ""):
 						state_def['error'])
 					));
 				} else { 
-					console.error("Error in " + state_def['state_class'] + ": " + state_def['error']);
+					T.logError("Error in " + state_def['state_class'] + ": " + state_def['error']);
 					callback(undefined)
 				}
 			} else {
