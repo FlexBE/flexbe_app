@@ -41,8 +41,11 @@ for data in iter(sys.stdin.readline, ""):
 			EventState.__init__ = __event_init
 			try:
 				cls(*args)
-			except Exception:
-				pass  # above will raise error, but in the best case, we updated state_def
+			except NotImplementedError:
+				pass  # above will raise NotImplementedError by design, but in the best case, we updated state_def
+			except Exception as e:   # In any other case, the user messed up perhaps?
+				import traceback
+				state_def['error'] = traceback.format_exc(e)
 			state_def['class_vars'] = [n for n, t in cls.__dict__.items()
 				if not inspect.isfunction(t) and not n.startswith('__')]
 			state_defs.append(state_def)
@@ -232,7 +235,8 @@ for data in iter(sys.stdin.readline, ""):
 			state_output,
 			state_params_values,
 			state_autonomy,
-			class_vars
+			class_vars,
+			""  // Errors, but regex parser doesn't detect errors
 		));
 	}
 
@@ -251,18 +255,24 @@ for data in iter(sys.stdin.readline, ""):
 					state_def['state_input'] = ['$' + state_def['state_input']];
 				if (typeof state_def['state_output'] == "string")
 					state_def['state_output'] = ['$' + state_def['state_output']];
-				callback(new WS.StateDefinition(
-					state_def['state_class'],
-					parseDocumentation(state_def['state_doc']),
-					import_path,
-					[].concat(state_def['state_params']),
-					[].concat(state_def['state_outcomes']),
-					[].concat(state_def['state_input']),
-					[].concat(state_def['state_output']),
-					[].concat(state_def['state_params_values']),
-					[].concat(state_def['state_autonomy']),
-					[].concat(state_def['class_vars'])
-				));
+				if(!state_def.hasOwnProperty('error')) {
+					callback(new WS.StateDefinition(
+						state_def['state_class'],
+						parseDocumentation(state_def['state_doc']),
+						import_path,
+						[].concat(state_def['state_params']),
+						[].concat(state_def['state_outcomes']),
+						[].concat(state_def['state_input']),
+						[].concat(state_def['state_output']),
+						[].concat(state_def['state_params_values']),
+						[].concat(state_def['state_autonomy']),
+						[].concat(state_def['class_vars'],
+						state_def['error'])
+					));
+				} else { 
+					T.logError("Error in " + state_def['state_class'] + ": " + state_def['error']);
+					callback(undefined)
+				}
 			} else {
 				callback(undefined);
 			}
