@@ -21,6 +21,7 @@
   <run_depend>genpy</run_depend>
   <run_depend>actionlib</run_depend>
   <run_depend>rospack</run_depend>
+  <run_depend>rospy_message_converter</run_depend>
 
   <run_depend>flexbe_onboard</run_depend>
   <run_depend>flexbe_mirror</run_depend>

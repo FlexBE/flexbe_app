@@ -23,14 +23,14 @@ import yaml
 
 def feedback_cb(msg):
 	comm = dict()
-	comm['msg'] = yaml.load(genpy.message.strify_message(msg))
+	comm['msg'] = yaml.safe_load(genpy.message.strify_message(msg))
 	comm['type'] = "`+TYPE_FEEDBACK+`"
 	sys.stdout.write(json.dumps(comm))
 	sys.stdout.flush()
 
 def result_cb(state, msg):
 	comm = dict()
-	comm['msg'] = yaml.load(genpy.message.strify_message(msg))
+	comm['msg'] = yaml.safe_load(genpy.message.strify_message(msg))
 	comm['state'] = str(state)
 	comm['type'] = "`+TYPE_RESULT+`"
 	sys.stdout.write(json.dumps(comm))
@@ -142,7 +142,7 @@ while not rospy.is_shutdown():
 			if (timer != undefined) clearTimeout(timer);
 			timer = setTimeout(timeout_cb, timeout);
 		}
-		
+
 	}
 
 	that.close = function() {

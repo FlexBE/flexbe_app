@@ -2,9 +2,9 @@ Checking = new (function() {
 	var that = this;
 
 	var python_varname_pattern = /^[a-z_][a-z0-9_]*$/i;
-	var python_reserved_list = ["and", "assert", "break", "class", "continue", "def", "del", "elif", 
-	         "else", "except", "exec", "finally", "for", "from", "global", "if", 
-	         "import", "in", "is", "lambda", "not", "or", "pass", "print", 
+	var python_reserved_list = ["and", "assert", "break", "class", "continue", "def", "del", "elif",
+	         "else", "except", "exec", "finally", "for", "from", "global", "if",
+	         "import", "in", "is", "lambda", "not", "or", "pass", "print",
 	         "raise", "return", "try", "while", "yield"];
 
 	this.checkBehavior = function() {
@@ -236,8 +236,15 @@ Checking = new (function() {
 				available_userdata = available_userdata.concat(Behavior.getDefaultUserdata().map(function(el) { return el.key; }));
 			}
 			if (!available_userdata.contains(sm_dataflow[i].getOutcome())) {
-				if (!UI.Statemachine.isDataflow()) UI.Statemachine.toggleDataflow();
-				return "input key " + sm_dataflow[i].getOutcome() + " of state " + state.getStatePath() + " could be undefined";
+				var idx = state.getParameters().indexOf(sm_dataflow[i].getOutcome())
+				if (idx >= 0 && state.getParameterValues()[idx] != "None") {
+					T.logWarn("input key " + sm_dataflow[i].getOutcome() + " of state " + state.getStatePath() + " is overwritten by parameter with same name");
+					continue;
+				}
+				else {
+					if (!UI.Statemachine.isDataflow()) UI.Statemachine.toggleDataflow();
+					return "input key " + sm_dataflow[i].getOutcome() + " of state " + state.getStatePath() + " could be undefined";
+				}
 			}
 		}
 
@@ -277,7 +284,7 @@ Checking = new (function() {
 
 		var close_stack = [];
 		var dot_last = false;
-		
+
 		for (var i = 0; i < expr.length; i++) {
 			var c = expr[i];
 			if (dot_last && !c.match(/[a-z_0-9]/i)) return false;
