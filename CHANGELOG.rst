@@ -2,8 +2,8 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.2.2 (2019-11-07)
-------------------
+Forthcoming
+-----------
 * Merge pull request `#1 <https://github.com/mojin-robotics/flexbe_app/issues/1>`_ from benmaidel/fix/rosmsg_to_json
   Fixes and improvements
 * consider state as valid if input_key is same as parameter and parameter is set
