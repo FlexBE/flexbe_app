@@ -1,6 +1,6 @@
 {
   "name": "FlexBE App",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "main": "src/main.js",
   "window": {
     "icon": "src/img/icon-128.png",
