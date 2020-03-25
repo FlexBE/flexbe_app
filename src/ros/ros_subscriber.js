@@ -12,9 +12,10 @@ import importlib
 import json
 import genpy
 import yaml
+from rospy_message_converter import json_message_converter
 
 def callback(msg):
-	sys.stdout.write(json.dumps(yaml.load(genpy.message.strify_message(msg))))
+	sys.stdout.write(json_message_converter.convert_ros_message_to_json(msg))
 	sys.stdout.flush()
 
 topic = sys.argv[1]
