@@ -2,8 +2,8 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.4 (2020-03-25)
+------------------
 * Revert nwjs version increment because of Travis failure due to Chromium bug
   (see https://crbug.com/1025266)
 * Increment nwjs version after file chooser fix
