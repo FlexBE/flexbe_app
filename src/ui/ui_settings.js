@@ -6,6 +6,7 @@ UI.Settings = new (function() {
 	var ros_pkg_cache;
 	var state_pkg_cache;
 	var behavior_pkg_cache;
+	var pkg_cache_enabled;
 	var state_parser;
 
 	var runtime_timeout;
@@ -35,6 +36,7 @@ UI.Settings = new (function() {
 			'ros_pkg_cache': ros_pkg_cache,
 			'state_pkg_cache': state_pkg_cache,
 			'behavior_pkg_cache': behavior_pkg_cache,
+			'pkg_cache_enabled': pkg_cache_enabled,
 			'state_parser': state_parser,
 			'runtime_timeout': runtime_timeout,
 			'stop_behaviors': stop_behaviors,
@@ -64,6 +66,7 @@ UI.Settings = new (function() {
 			'ros_pkg_cache': [],
 			'state_pkg_cache': [],
 			'behavior_pkg_cache': [],
+			'pkg_cache_enabled': true,
 			'state_parser': 'regex',
 			'runtime_timeout': 10,
 			'stop_behaviors': false,
@@ -87,6 +90,8 @@ UI.Settings = new (function() {
 			ros_pkg_cache = items.ros_pkg_cache;
 			state_pkg_cache = items.state_pkg_cache;
 			behavior_pkg_cache = items.behavior_pkg_cache;
+			pkg_cache_enabled = items.pkg_cache_enabled;
+			document.getElementById("cb_pkg_cache_enabled").checked = items.pkg_cache_enabled;
 			state_parser = items.state_parser;
 			document.getElementById("select_state_parser").value = items.state_parser;
 
@@ -131,16 +136,25 @@ UI.Settings = new (function() {
 			document.getElementById("input_synthesis_system").value = items.synthesis_system;
 			updateSynthesisInterface();
 
+			if (pkg_cache_enabled) {
+				// always remove state and behavior packages from cache to force parsing them again
+				ros_pkg_cache = ros_pkg_cache.filter(pkg => (
+					!state_pkg_cache.findElement(state_pkg => state_pkg.name == pkg.name) &&
+					!behavior_pkg_cache.findElement(behavior_pkg => behavior_pkg.name == pkg.name)
+				));
+			} else {
+				ros_pkg_cache = [];
+			}
 			IO.PackageParser.discover(ros_pkg_cache, that.packageDiscoverCallback);
 
 			that.setRosProperties('');
 		});
 	}
 
-	this.packageDiscoverCallback = function(new_packages, added_states, added_behaviors) {
-		ros_pkg_cache = ros_pkg_cache.concat(new_packages);
-		state_pkg_cache = state_pkg_cache.concat(added_states);
-		behavior_pkg_cache = behavior_pkg_cache.concat(added_behaviors);
+	this.packageDiscoverCallback = function(updated_cache, discovered_state_pkgs, discovered_behavior_pkgs) {
+		ros_pkg_cache = pkg_cache_enabled? updated_cache : [];
+		state_pkg_cache = discovered_state_pkgs;
+		behavior_pkg_cache = discovered_behavior_pkgs;
 		storeSettings(); // to update cache
 		updateWorkspaceDisplay();
 
@@ -331,6 +345,7 @@ UI.Settings = new (function() {
 			var entry = createEntry(state_pkg);
 			state_el.appendChild(entry);
 		});
+		document.getElementById("num_pkg_cache").innerText = ros_pkg_cache.length;
 	}
 
 	this.importConfiguration = function() {
@@ -578,6 +593,11 @@ UI.Settings = new (function() {
 	this.stateParserChanged = function() {
 		var el = document.getElementById('select_state_parser');
 		state_parser = el.value;
+		storeSettings();
+	}
+
+	this.pkgCacheEnabledClicked = function(evt) {
+		pkg_cache_enabled = evt.target.checked;
 		storeSettings();
 	}
 

@@ -12,17 +12,23 @@ IO.PackageParser = new (function() {
 		var add_behaviors = [];
 
 		ROS.getPackageList((pkg_list) => {
-			pkg_list = pkg_list.filter(entry => pkg_cache.findElement(cached => cached['name'] == entry['name']) == undefined);
+			// remove missing packages from cache
+			pkg_cache = pkg_cache.filter(cached => pkg_list.findElement(entry => cached.name == entry.name) != undefined);
+			// remove cached packages from detected ones
+			pkg_list = pkg_list.filter(entry => pkg_cache.findElement(cached => cached.name == entry.name) == undefined);
+			// all remaining packages are new and should be parsed
 			var pkg_count = pkg_list.length;
 			if (pkg_count > 0) {
 				T.logInfo("Checking "+pkg_count+" ROS packages for states and behaviors  ("+pkg_cache.length+" in cache)...");
 			} else {
 				T.logInfo("No new ROS packages detected ("+pkg_cache.length+" in cache).");
 			}
+			pkg_cache = pkg_cache.concat(pkg_list);
+
 			var processEntry = function(idx) {
 				var entry = pkg_list[idx];
 				if (idx >= pkg_count) {
-					callback(pkg_list, add_states, add_behaviors);
+					callback(pkg_cache, add_states, add_behaviors);
 				} else {
 					checkForRelevance(entry['path'], (has_states, has_behaviors) => {
 						if (has_states || has_behaviors) {
