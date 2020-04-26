@@ -101,9 +101,9 @@ IO.PackageParser = new (function() {
 							if (state_def != undefined) {
 								state_def.setFilePath(entry);
 								WS.Statelib.updateDef(state_def);
-								T.logInfo("Updating changed definition for state: " + state_def.getStateClass());
+								T.logInfo("Updating changed definition for state: " + state_def.getStateType());
 								var update_states = Behavior.getStatemachine().traverseStates(function(state) {
-									return state.getStateClass() == state_def.getStateClass();
+									return state.getStateType() == state_def.getStateType();
 								});
 								update_states.forEach(function (state) {
 									state.updateStateDefinition(state_def);

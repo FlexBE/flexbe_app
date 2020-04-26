@@ -19,6 +19,7 @@ for data in iter(sys.stdin.readline, ""):
 	result = {'id': request['id'], 'state_defs': state_defs}
 	try:
 		pkg = __import__(request['import_path'], fromlist=[request['import_path']])
+		del sys.modules[pkg.__name__]  # prevent module caching (to allow state reloading)
 		def is_state(member):
 			return (inspect.isclass(member) and
 					member.__module__ == pkg.__name__ and
