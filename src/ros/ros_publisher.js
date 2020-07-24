@@ -3,6 +3,7 @@ ROS.Publisher = function(topic, msg_type, latched=false) {
 	var os = require('os');
 	var sys = require('sys');
 	var spawn = require('child_process').spawn;
+	var python = 'python' + (process.env.ROS_PYTHON_VERSION != undefined? process.env.ROS_PYTHON_VERSION : '');
 
 	var LATCHED = "latched";
 ////////////////////////////////
@@ -43,7 +44,7 @@ while not rospy.is_shutdown():
 // END Python implementation
 //////////////////////////////
 
-	var pub = spawn('python', ['-c', impl, topic, msg_type, latched? LATCHED : "_"]);
+	var pub = spawn(python, ['-c', impl, topic, msg_type, latched? LATCHED : "_"]);
 
 	pub.stdout.on('data', (data) => {
 		T.logInfo('[PUB:'+topic+'] ' + data);

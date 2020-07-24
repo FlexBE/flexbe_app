@@ -2,6 +2,7 @@ ROS.Subscriber = function(topic, msg_type, callback) {
 	var that = this;
 	var sys = require('sys');
 	var spawn = require('child_process').spawn;
+	var python = 'python' + (process.env.ROS_PYTHON_VERSION != undefined? process.env.ROS_PYTHON_VERSION : '');
 
 ////////////////////////////////
 // BEGIN Python implementation
@@ -34,7 +35,7 @@ rospy.spin()
 // END Python implementation
 //////////////////////////////
 
-	var sub = spawn('python', ['-c', impl, topic, msg_type]);
+	var sub = spawn(python, ['-c', impl, topic, msg_type]);
 
 	var buffer = "";
 
