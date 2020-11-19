@@ -2,8 +2,8 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.3.0 (2020-11-19)
+------------------
 * Merge remote-tracking branch 'origin/feature/python3_support' into develop
 * Add support for python3
 * Use correct state prefix in autocompletion
