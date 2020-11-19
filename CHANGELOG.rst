@@ -2,6 +2,18 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge remote-tracking branch 'origin/feature/python3_support' into develop
+* Add support for python3
+* Use correct state prefix in autocompletion
+  (fix `#65 <https://github.com/FlexBE/flexbe_app/issues/65>`_)
+* Prevent module caching in Python parser to fix state reloading
+  (see `#61 <https://github.com/FlexBE/flexbe_app/issues/61>`_)
+* Sort input-dependent elements for more deterministic code generation
+  (see #`team-vigir/flexbe_behavior_engine#111 <https://github.com/team-vigir/flexbe_behavior_engine/issues/111>`_)
+* Contributors: Philipp Schillinger
+
 2.2.4 (2020-03-25)
 ------------------
 * Revert nwjs version increment because of Travis failure due to Chromium bug
