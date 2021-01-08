@@ -1,4 +1,4 @@
-<package>
+<package format="2">
   <name>flexbe_app</name>
   <version>2.2.3</version>
   <description>
@@ -14,21 +14,17 @@
 
   <build_depend>curl</build_depend>
   <build_depend>rostest</build_depend>
-
-  <run_depend>libnss3-dev</run_depend>
-
-  <run_depend>rospy</run_depend>
-  <run_depend>genpy</run_depend>
-  <run_depend>actionlib</run_depend>
-  <run_depend>rospack</run_depend>
-  <run_depend>rospy_message_converter</run_depend>
-
-  <run_depend>flexbe_onboard</run_depend>
-  <run_depend>flexbe_mirror</run_depend>
-  <run_depend>flexbe_widget</run_depend>
-
-  <run_depend>std_msgs</run_depend>
-  <run_depend>flexbe_msgs</run_depend>
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>flexbe_mirror</exec_depend>
+  <exec_depend>flexbe_msgs</exec_depend>
+  <exec_depend>flexbe_onboard</exec_depend>
+  <exec_depend>flexbe_widget</exec_depend>
+  <exec_depend>genpy</exec_depend>
+  <exec_depend>libnss3-dev</exec_depend>
+  <exec_depend>rospack</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>rospy_message_converter</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
 
   <test_depend>rosunit</test_depend>
 
