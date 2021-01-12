@@ -461,6 +461,9 @@
 
 	<div id="settings">
 
+		<input style="display:none;" id="file_dialog_import" type="file" accept=".json" />
+		<input style="display:none;" id="file_dialog_export" type="file" accept=".json" nwsaveas="flexbe_config.json" />
+
 		<div class="box">
 			<h1>Runtime Settings</h1>
 			<font style="color: gray">
@@ -577,9 +580,13 @@
 						</select>
 					</td>
 				</tr>
+				<tr title="If enabled, ROS packages are cached to not parse their package.xml on each start. State and behavior packages will always be parsed again.">
+					<td width="150">Cache packages: </td>
+					<td><input id="cb_pkg_cache_enabled" type="checkbox" /> (<i id="num_pkg_cache">?</i> ROS packages in cache)</td>
+				</tr>
 				<tr>
 					<td colspan="2">
-						<input id="button_force_discover" type="button" value="Force Discover" title="Force discovery of new state or behavior packages. This is only required if you add the export statement to an already existing package." />
+						<input id="button_force_discover" type="button" value="Force Discover" title="Clear cache and force discovery of new state or behavior packages. This should only be required if you add the export statement to an already existing package." />
 					</td>
 				</tr>
 			</table>

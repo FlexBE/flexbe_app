@@ -2,10 +2,12 @@ UI.Settings = new (function() {
 	var that = this;
 
 	var App = require('nw.gui').App;
+	var path = require('path');
 
 	var ros_pkg_cache;
 	var state_pkg_cache;
 	var behavior_pkg_cache;
+	var pkg_cache_enabled;
 	var state_parser;
 
 	var runtime_timeout;
@@ -35,6 +37,7 @@ UI.Settings = new (function() {
 			'ros_pkg_cache': ros_pkg_cache,
 			'state_pkg_cache': state_pkg_cache,
 			'behavior_pkg_cache': behavior_pkg_cache,
+			'pkg_cache_enabled': pkg_cache_enabled,
 			'state_parser': state_parser,
 			'runtime_timeout': runtime_timeout,
 			'stop_behaviors': stop_behaviors,
@@ -64,6 +67,7 @@ UI.Settings = new (function() {
 			'ros_pkg_cache': [],
 			'state_pkg_cache': [],
 			'behavior_pkg_cache': [],
+			'pkg_cache_enabled': true,
 			'state_parser': 'regex',
 			'runtime_timeout': 10,
 			'stop_behaviors': false,
@@ -87,6 +91,8 @@ UI.Settings = new (function() {
 			ros_pkg_cache = items.ros_pkg_cache;
 			state_pkg_cache = items.state_pkg_cache;
 			behavior_pkg_cache = items.behavior_pkg_cache;
+			pkg_cache_enabled = items.pkg_cache_enabled;
+			document.getElementById("cb_pkg_cache_enabled").checked = items.pkg_cache_enabled;
 			state_parser = items.state_parser;
 			document.getElementById("select_state_parser").value = items.state_parser;
 
@@ -131,16 +137,25 @@ UI.Settings = new (function() {
 			document.getElementById("input_synthesis_system").value = items.synthesis_system;
 			updateSynthesisInterface();
 
+			if (pkg_cache_enabled) {
+				// always remove state and behavior packages from cache to force parsing them again
+				ros_pkg_cache = ros_pkg_cache.filter(pkg => (
+					!state_pkg_cache.findElement(state_pkg => state_pkg.name == pkg.name) &&
+					!behavior_pkg_cache.findElement(behavior_pkg => behavior_pkg.name == pkg.name)
+				));
+			} else {
+				ros_pkg_cache = [];
+			}
 			IO.PackageParser.discover(ros_pkg_cache, that.packageDiscoverCallback);
 
 			that.setRosProperties('');
 		});
 	}
 
-	this.packageDiscoverCallback = function(new_packages, added_states, added_behaviors) {
-		ros_pkg_cache = ros_pkg_cache.concat(new_packages);
-		state_pkg_cache = state_pkg_cache.concat(added_states);
-		behavior_pkg_cache = behavior_pkg_cache.concat(added_behaviors);
+	this.packageDiscoverCallback = function(updated_cache, discovered_state_pkgs, discovered_behavior_pkgs) {
+		ros_pkg_cache = pkg_cache_enabled? updated_cache : [];
+		state_pkg_cache = discovered_state_pkgs;
+		behavior_pkg_cache = discovered_behavior_pkgs;
 		storeSettings(); // to update cache
 		updateWorkspaceDisplay();
 
@@ -331,66 +346,48 @@ UI.Settings = new (function() {
 			var entry = createEntry(state_pkg);
 			state_el.appendChild(entry);
 		});
+		document.getElementById("num_pkg_cache").innerText = ros_pkg_cache.length;
 	}
 
 	this.importConfiguration = function() {
-		chrome.fileSystem.chooseEntry({
-			type: 'openFile',
-			accepts: [{
-				description: 'Configuration (.json)',
-				extensions: ['json']
-			}]
-		}, function(entry) {
-			if (chrome.runtime.lastError) {
-				if (chrome.runtime.lastError.message.lastIndexOf('User', 0) != 0) {
-					T.logError(chrome.runtime.lastError.message)
-				}
-				return;
-			}
-			UI.Panels.setActivePanel(UI.Panels.NO_PANEL);
-			entry.file(function(file) {
-				var reader = new FileReader();
-				reader.onload = function(event) {
-					var config = JSON.parse(event.target.result);
+		var dialog = document.getElementById("file_dialog_import");
+		dialog.addEventListener("change", function(evt) {
+			if (this.value == '') return;
+			try {
+				IO.Filesystem.readFile(this.value, function(content) {
+					if (content == undefined) return;  // error reported by readFile
+					var config = JSON.parse(content);
 					chrome.storage.local.set(config, function() {
 						that.restoreSettings();
 					});
-				};
-				reader.readAsText(file);
-			});
-		});
+				});
+			} catch (err) {
+				T.logError('Failed to import configuration: ' + err);
+			}
+			this.value = '';  // reset in case the same file should be selected again
+		}, false);
+		dialog.click();
 	}
 
 	this.exportConfiguration = function() {
-		chrome.fileSystem.chooseEntry({
-			type: 'saveFile',
-			suggestedName: 'flexbe_config.json',
-			accepts: [{
-				description: 'Configuration (.json)',
-				extensions: ['json']
-			}]
-		}, function(entry) {
-			if (chrome.runtime.lastError) {
-				if (chrome.runtime.lastError.message.lastIndexOf('User', 0) != 0) {
-					T.logError(chrome.runtime.lastError.message)
-				}
-				return;
+		var dialog = document.getElementById("file_dialog_export");
+		dialog.addEventListener("change", function(evt) {
+			if (this.value == '') return;
+			try {
+				var folder_path = path.dirname(this.value);
+				var file_name = path.basename(this.value);
+				chrome.storage.local.get(null, function(config) {
+					config.ros_pkg_cache = [];
+					config.state_pkg_cache = [];
+					config.behavior_pkg_cache = [];
+					IO.Filesystem.createFile(folder_path, file_name, JSON.stringify(config));
+				});
+			} catch (err) {
+				T.logError('Failed to export configuration: ' + err);
 			}
-			chrome.storage.local.get(null, function(config) {
-				var truncated = false;
-				var content = JSON.stringify(config);
-				entry.createWriter(function(writer) {
-					writer.onerror = function(error) { T.logError("Error when exporting configuration: " + error); };
-					writer.onwriteend = function() {
-						if (!truncated) {
-							truncated = true;
-							this.truncate(this.position);
-						}
-					};
-					writer.write(new Blob([content], {type: 'text/plain'}));
-				}, function(e) { T.logError("Error when exporting configuration: " + error); });
-			});
-		});
+			this.value = '';  // reset in case the same file should be selected again
+		}, false);
+		dialog.click();
 	}
 
 
@@ -578,6 +575,11 @@ UI.Settings = new (function() {
 	this.stateParserChanged = function() {
 		var el = document.getElementById('select_state_parser');
 		state_parser = el.value;
+		storeSettings();
+	}
+
+	this.pkgCacheEnabledClicked = function(evt) {
+		pkg_cache_enabled = evt.target.checked;
 		storeSettings();
 	}
 

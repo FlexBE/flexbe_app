@@ -2,6 +2,7 @@ IO.StateParser = new (function() {
 	var that = this;
 	var os = require('os');
 	var spawn = require('child_process').spawn;
+	var python = 'python' + (process.env.ROS_PYTHON_VERSION != undefined? process.env.ROS_PYTHON_VERSION : '');
 	var crypto = require('crypto');
 	var md5 = str => crypto.createHash('md5').update(str).digest('hex');
 
@@ -19,6 +20,7 @@ for data in iter(sys.stdin.readline, ""):
 	result = {'id': request['id'], 'state_defs': state_defs}
 	try:
 		pkg = __import__(request['import_path'], fromlist=[request['import_path']])
+		del sys.modules[pkg.__name__]  # prevent module caching (to allow state reloading)
 		def is_state(member):
 			return (inspect.isclass(member) and
 					member.__module__ == pkg.__name__ and
@@ -69,7 +71,7 @@ for data in iter(sys.stdin.readline, ""):
 	var parseCallbacks = [];
 
 	var spawnLoader = function() {
-		loader = spawn('python', ['-c', impl]);
+		loader = spawn(python, ['-c', impl]);
 		loader.stdout.on('data', (data) => {
 			buffer += data;
 			var try_parse = true;

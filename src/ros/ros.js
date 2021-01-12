@@ -4,6 +4,7 @@ ROS = new (function() {
 	var os = require('os');
 	var sys = require('sys');
 	var spawn = require('child_process').spawn;
+	var python = 'python' + (process.env.ROS_PYTHON_VERSION != undefined? process.env.ROS_PYTHON_VERSION : '');
 
 ////////////////////////////////
 // BEGIN Python implementation
@@ -25,7 +26,7 @@ rospy.spin()
 	var ros_proc = undefined;
 
 	that.init = function(callback) {
-		ros_proc = spawn('python', ['-c', init_impl]);
+		ros_proc = spawn(python, ['-c', init_impl]);
 		ros_proc.stdout.on('data', data => {
 			data = String(data);
 			if (data.endsWith("connected")) {
@@ -104,7 +105,7 @@ rospy.spin()
 					callback(python_path);
 				});
 			} else {
-				var proc = spawn('python', ['-c', `import importlib; print(importlib.import_module('` + package_name + `').__path__[-1])`]);
+				var proc = spawn(python, ['-c', `import importlib; print(importlib.import_module('` + package_name + `').__path__[-1])`]);
 				var path_data = '';
 				proc.stdout.on('data', data => {
 					path_data += data;
