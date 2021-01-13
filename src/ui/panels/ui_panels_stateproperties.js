@@ -45,15 +45,18 @@ UI.Panels.StateProperties = new (function() {
 		});
 	}
 
-	var addAutocomplete = function(el, state_class, mode, state, additional_keywords) {
+	var addAutocomplete = function(el, state_type, mode, state, additional_keywords) {
 		var additional_keywords = additional_keywords || [];
-		if (state_class != undefined) {
-			var class_vars = WS.Statelib.getFromLib(state_class).getClassVariables();
+		if (state_type != undefined) {
+			var state_def = WS.Statelib.getFromLib(state_type);
+			var state_prefix = (!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(state_def.getStateClass()))?
+				state_def.getStateClass() : state_def.getStatePackage() + "__" + state_def.getStateClass();
+			var class_vars = state_def.getClassVariables();
 			for (var i = 0; i < class_vars.length; i++) {
 				var v = class_vars[i];
-				additional_keywords.push({text: v.name, hint: "", fill: state_class + "." + v.name});
+				additional_keywords.push({text: v.name, hint: "", fill: state_prefix + "." + v.name});
 			}
-			additional_keywords.push({text: state_class, hint: "", fill: state_class + "."});
+			additional_keywords.push({text: state_def.getStateClass(), hint: "", fill: state_prefix + "."});
 		}
 
 		el.addEventListener('keyup', function(evt) {

@@ -3,6 +3,7 @@ ROS.ActionClient = function(topic, action_type) {
 	var os = require('os');
 	var sys = require('sys');
 	var spawn = require('child_process').spawn;
+	var python = 'python' + (process.env.ROS_PYTHON_VERSION != undefined? process.env.ROS_PYTHON_VERSION : '');
 
 	var feedback_cb = undefined;
 	var result_cb = undefined;
@@ -64,7 +65,7 @@ while not rospy.is_shutdown():
 // END Python implementation
 //////////////////////////////
 
-	var client = spawn('python', ['-c', impl, topic, action_type]);
+	var client = spawn(python, ['-c', impl, topic, action_type]);
 
 	var buffer = "";
 

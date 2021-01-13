@@ -2,6 +2,55 @@
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.3.0 (2020-11-19)
+------------------
+* Merge remote-tracking branch 'origin/feature/python3_support' into develop
+* Add support for python3
+* Use correct state prefix in autocompletion
+  (fix `#65 <https://github.com/FlexBE/flexbe_app/issues/65>`_)
+* Prevent module caching in Python parser to fix state reloading
+  (see `#61 <https://github.com/FlexBE/flexbe_app/issues/61>`_)
+* Sort input-dependent elements for more deterministic code generation
+  (see #`team-vigir/flexbe_behavior_engine#111 <https://github.com/team-vigir/flexbe_behavior_engine/issues/111>`_)
+* Contributors: Philipp Schillinger
+
+2.2.4 (2020-03-25)
+------------------
+* Revert nwjs version increment because of Travis failure due to Chromium bug
+  (see https://crbug.com/1025266)
+* Increment nwjs version after file chooser fix
+* Use HTML file chooser instead of Chrome file API for settings import and export
+  (see `#52 <https://github.com/FlexBE/flexbe_app/issues/52>`_)
+* Improve cache for workspace switching and allow to disable it
+* Fix detection of new packages
+* Merge branch 'benmaidel-feature/cmd_option_checkbehaviors' into develop
+* Always run all behavior check tests and print error message
+* Robustify behavior loading for generating behavior check reports
+* Close window-related sub-processes also when only closing the window
+  (see `team-vigir/flexbe_behavior_engine#105 <https://github.com/team-vigir/flexbe_behavior_engine/issues/105>`_)
+* Merge remote-tracking branch 'origin/fix/handle_closed_window' into develop
+* add --check-behavior command line option
+* Fix support for symbolic references in Python parser
+* Robustify Python parser against instantiation failures
+  (see `team-vigir/flexbe_behavior_engine#99 <https://github.com/team-vigir/flexbe_behavior_engine/issues/99>`_)
+* Close window-related sub-processes also when only closing the window
+  (see `team-vigir/flexbe_behavior_engine#105 <https://github.com/team-vigir/flexbe_behavior_engine/issues/105>`_)
+* Merge branch 'cheffe112-bugfix-import-config' into develop
+* Fix mixed indentation
+* reverting nw.js to last known-to-work version
+  From nw.js 0.42.4, the import/export configuration functionality throws an "Invalid calling page. This function can't be called from a background page." error. This has been reported for nw.js already on https://github.com/nwjs/nw.js/issues/7349.
+  Hence, the import/export functionality is currently unusable with nw.js >0.42.3 as integrated in b93078fd6705445bf6183af40598619243800b1e.
+* throw error if importing/exporting configuration crashes
+* Explicitly spawn window on center position because default changed
+* Allow comment after super-call in regex state parser
+  (see `team-vigir/flexbe_behavior_engine#98 <https://github.com/team-vigir/flexbe_behavior_engine/issues/98>`_)
+* Check for undefined transition label (fix `team-vigir/flexbe_behavior_engine#100 <https://github.com/team-vigir/flexbe_behavior_engine/issues/100>`_)
+* Merge branch 'cheffe112-bugfix-python-parsing' into develop
+* Fix mixed indentation
+* bugfix: avoid crash during Python state parsing on empty documentation string
+  The Python state parsing feature introduced in 4f20227ef900ca32e78414c190fb464d964666e5 used to crash when no docstring is provided in a state definition, hence stalling the parsing procedure. This commit returns the default label "[no documentation]" on a missing docstring.
+* Contributors: Benjamin Maidel, Philipp Schillinger, Tobias Doernbach
+
 2.2.3 (2020-01-15)
 ------------------
 * Increment nwjs version
