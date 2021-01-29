@@ -36,7 +36,23 @@ fi
 
 # ready to go
 echo "Downloading nwjs..."
-curl -s -o $TEMPFILE https://dl.nwjs.io/$VERSION/nwjs-$VERSION-$OS-$ARCH.tar.gz
+set +e
+main_uri="https://dl.nwjs.io/$VERSION/nwjs-$VERSION-$OS-$ARCH.tar.gz"
+curl -sL -o $TEMPFILE $main_uri
+status=$?
+if [ $status -ne 0 ] ; then
+	echo "Failed to download '$main_uri': $status"
+	echo "Using mirror instead..."
+	mirror_uri="https://npm.taobao.org/mirrors/nwjs/$VERSION/nwjs-$VERSION-$OS-$ARCH.tar.gz"
+	curl -sL -o $TEMPFILE $mirror_uri
+	status=$?
+	if [ $status -ne 0 ] ; then
+		echo "Failed to download '$mirror_uri': $status"
+		exit "$status"
+	fi
+fi
+set -e
+echo -e "Successfully downloaded nwjs!"
 
 echo "Unpacking..."
 tar -xzf $TEMPFILE --strip-components 1
@@ -48,4 +64,4 @@ if [ -f nwjs_old/nw ]; then
 	rm -rf nwjs_old
 fi
 
-echo -e "Successfully downloaded nwjs!"
+echo -e "Successfully installed nwjs!"
