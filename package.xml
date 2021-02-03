@@ -21,7 +21,6 @@
   <exec_depend>flexbe_widget</exec_depend>
   <exec_depend>genpy</exec_depend>
   <exec_depend>gtk3</exec_depend>  <!-- needed by libnw.so -->
-  <exec_depend>libatspi2.0-dev</exec_depend>  <!-- needed by libnw.so -->
   <exec_depend>libnss3-dev</exec_depend>
   <exec_depend>rospack</exec_depend>
   <exec_depend>rospy</exec_depend>
