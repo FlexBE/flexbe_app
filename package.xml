@@ -15,7 +15,10 @@
   <build_depend>curl</build_depend>
   <build_depend>rostest</build_depend>
 
+  <run_depend>libasound2-dev</run_depend>
+  <run_depend>libgtk-3-dev</run_depend>
   <run_depend>libnss3-dev</run_depend>
+  <run_depend>libxss1</run_depend>
 
   <run_depend>rospy</run_depend>
   <run_depend>genpy</run_depend>
