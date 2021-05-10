@@ -105,7 +105,7 @@ rospy.spin()
 					callback(python_path);
 				});
 			} else {
-				var proc = spawn(python, ['-c', `import importlib; print(importlib.import_module('` + package_name + `').__path__[-1])`]);
+				var proc = spawn(python, ['-c', `import importlib; temp = importlib.import_module('` + package_name + `').__path__; print(temp[len(temp) - 2])`]);
 				var path_data = '';
 				proc.stdout.on('data', data => {
 					path_data += data;
