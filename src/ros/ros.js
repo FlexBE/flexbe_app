@@ -93,10 +93,12 @@ rospy.spin()
 
 	that.getPackagePythonPath = function(package_name, callback) {
 		var python_path = undefined;
+		var temp_package_path = undefined;
 		that.getPackageList((package_cache) => {
 			for (var i=0; i<package_cache.length; i++) {
 				if (package_cache[i]['name'] == package_name) {
 					python_path = package_cache[i]['python_path'];
+					temp_package_path = package_cache[i]['path'];
 					break;
 				}
 			}
@@ -105,7 +107,7 @@ rospy.spin()
 					callback(python_path);
 				});
 			} else {
-				var proc = spawn(python, ['-c', `import importlib; print(importlib.import_module('` + package_name + `').__path__[-1])`]);
+				var proc = spawn(python, ['-c', `import importlib; temp = importlib.import_module('` + package_name + `').__path__; path_index = next((i for i, x in enumerate(temp) if ('`+ temp_package_path +`' in x)), -1); print(temp[path_index])`]);
 				var path_data = '';
 				proc.stdout.on('data', data => {
 					path_data += data;
