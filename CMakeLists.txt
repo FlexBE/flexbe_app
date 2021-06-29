@@ -21,7 +21,7 @@ install(PROGRAMS
     bin/nwjs_install
     bin/run_app
     bin/shortcut
-    flexbe.desktop
+    bin/test_report
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(FILES
