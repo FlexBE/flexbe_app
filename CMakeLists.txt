@@ -15,8 +15,7 @@ find_package(catkin REQUIRED)
 # DEPENDS - Non-catkin CMake projects that this project depends on
 # CFG_EXTRAS - Additional configuration options 
 catkin_package(
-    INCLUDE_DIRS src
-    LIBRARIES ${PROJECT_NAME})
+    INCLUDE_DIRS src)
 
 # use add_library() or add_executable() as required
 #add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})
@@ -40,20 +39,22 @@ endif()
 ## Install ##
 #############
 
-INSTALL(PROGRAMS
+install(PROGRAMS
+    bin/nwjs_install
     bin/run_app
     bin/shortcut
+    flexbe.desktop
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-INSTALL(FILES
+install(FILES
     package.json
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-INSTALL(DIRECTORY
+install(DIRECTORY
     src
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-INSTALL(DIRECTORY
+install(DIRECTORY
     nwjs
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
     USE_SOURCE_PERMISSIONS
