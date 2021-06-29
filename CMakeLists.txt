@@ -3,9 +3,7 @@ project(flexbe_app)
 
 find_package(catkin REQUIRED)
 
-catkin_package(
-    INCLUDE_DIRS src)
-
+catkin_package()
 
 add_custom_command(OUTPUT nwjs
   COMMAND bin/nwjs_install
