@@ -264,7 +264,7 @@ IO.CodeParser = new (function() {
 	}
 
 
-	var parseCreateSection = function(code, only_interface) {
+	var parseCreateSection = function(code, only_interface, state_type_imports) {
 		// get root sm var name
 		var root_sm_name_result = code.match(return_sm_pattern);
 		if (root_sm_name_result == null) throw "could not identify root state machine";
@@ -344,7 +344,7 @@ IO.CodeParser = new (function() {
 			var idx = i * 2 + 1;
 			sm_states.push({
 				sm_name: sm_parts[idx],
-				sm_states: parseStates(sm_parts[idx+1])
+				sm_states: parseStates(sm_parts[idx+1], state_type_imports)
 			});
 		}
 
@@ -434,14 +434,14 @@ IO.CodeParser = new (function() {
 	}
 
 
-	var parseStates = function(code) {
+	var parseStates = function(code, state_type_imports) {
 		var code_splitted = code.split(state_begin_pattern);
 		if (code_splitted.length == 1) throw "a container does not contain any states"
 
 		var state_list = [];
 
 		for (var i=4; i<code_splitted.length; i+=4) {
-			var state_param_result = parseStateParams(helper_splitOnTopCommas(code_splitted[i]));
+			var state_param_result = parseStateParams(helper_splitOnTopCommas(code_splitted[i]), state_type_imports);
 			if (code_splitted[i-3] != undefined)
 				state_param_result.state_pos_x = parseInt(code_splitted[i-3]);
 			if (code_splitted[i-2] != undefined)
@@ -460,7 +460,7 @@ IO.CodeParser = new (function() {
 		return state_list;
 	}
 
-	var parseStateParams = function(params) {
+	var parseStateParams = function(params, state_type_imports) {
 		// get name
 		var state_name = helper_removeQuotes(params[0]);
 		var state_class = "";
@@ -474,6 +474,8 @@ IO.CodeParser = new (function() {
 		var class_result = params[1].match(state_class_pattern);
 		if (class_result != null) {
 			state_class = class_result[1];
+			if (!state_class.includes("__") && state_type_imports != undefined && state_type_imports[state_class] != undefined)
+				state_class = state_type_imports[state_class] + "__" + state_class;
 			var params_split = helper_splitOnTopCommas(params[1].replace(state_class, ""));
 			params_split.forEach(function(element, i) {
 				var keyvalue = helper_splitKeyValue(element, "=");
@@ -626,7 +628,7 @@ IO.CodeParser = new (function() {
 		var init_result = parseInitSection(code_init);
 
 		// parse create section
-		var create_result = parseCreateSection(code_create, false);
+		var create_result = parseCreateSection(code_create, false, top_result.state_type_imports);
 
 		// parse additional functions
 
