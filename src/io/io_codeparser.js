@@ -476,7 +476,7 @@ IO.CodeParser = new (function() {
 			state_class = class_result[1];
 			if (!state_class.includes("__") && state_type_imports != undefined && state_type_imports[state_class] != undefined)
 				state_class = state_type_imports[state_class] + "__" + state_class;
-			var params_split = helper_splitOnTopCommas(params[1].replace(state_class, ""));
+			var params_split = helper_splitOnTopCommas(params[1].replace(class_result[1], ""));
 			params_split.forEach(function(element, i) {
 				var keyvalue = helper_splitKeyValue(element, "=");
 				if (keyvalue != undefined && !element.startsWith("lambda")) {
