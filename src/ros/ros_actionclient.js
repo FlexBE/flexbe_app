@@ -14,25 +14,34 @@ ROS.ActionClient = function(topic, action_type) {
 ////////////////////////////////
 // BEGIN Python implementation
 	var impl = `
-import rospy
+import rclpy
+from rclpy.action import ActionClient
 import sys
 import importlib
-import actionlib
 import json
 import genpy
+import flexbe_core.message
 import yaml
+import rosidl_runtime_py.convert
+import rosidl_runtime_py.set_message
 
 def feedback_cb(msg):
 	comm = dict()
-	comm['msg'] = yaml.load(genpy.message.strify_message(msg))
+	comm['msg'] = yaml.load(rosidl_runtime_py.convert.message_to_yaml(msg))
 	comm['type'] = "`+TYPE_FEEDBACK+`"
 	sys.stdout.write(json.dumps(comm))
 	sys.stdout.flush()
 
-def result_cb(state, msg):
+def result_cb(future):
+	goal_handle = future.result()
+  self._get_result_future = goal_handle.get_result_async()
+  self._get_result_future.add_done_callback(self.get_result)
+
+def get_result(future):
+	msg = future.result().result
 	comm = dict()
-	comm['msg'] = yaml.load(genpy.message.strify_message(msg))
-	comm['state'] = str(state)
+	comm['msg'] = yaml.load(rosidl_runtime_py.convert.message_to_yaml(msg))
+	# comm['state'] = str(state)
 	comm['type'] = "`+TYPE_RESULT+`"
 	sys.stdout.write(json.dumps(comm))
 	sys.stdout.flush()
@@ -43,21 +52,25 @@ msg_pkg = msg_def[0]
 msg_action_name = msg_def[1] + 'Action'
 msg_goal_name = msg_def[1] + 'Goal'
 
-rospy.init_node('flexbe_app_act_%s' % topic.replace('/', '_'))
+rclpy.init()
+node = rclpy.create_node('flexbe_app_act_%s' % topic.replace('/', '_'))
 
 msg_module = importlib.import_module('%s.msg' % msg_pkg)
 msg_action_class = getattr(msg_module, msg_action_name)
 msg_goal_class = getattr(msg_module, msg_goal_name)
 
-client = actionlib.SimpleActionClient(topic, msg_action_class)
+client = ActionClient(node, msg_action_class, topic)
 
-while not rospy.is_shutdown():
+while rclpy.ok():
 	json_str = sys.stdin.readline()
 	try:
 		msg_dict = json.loads(json_str)
 		msg = msg_goal_class()
-		genpy.message.fill_message_args(msg, [msg_dict])
-		client.send_goal(msg, done_cb=result_cb, feedback_cb=feedback_cb)
+		rosidl_runtime_py.set_message.set_message_fields(msg, msg_dict)
+
+		client.wait_for_server()
+		future = client.send_goal_async(msg, feedback_callback=feedback_cb)
+		future.add_done_callback(result_cb)
 	except Exception as e:
 		sys.stderr.write("ignoring goal %s> %s" % (json_str, str(e)))
 		sys.stderr.flush();
@@ -89,13 +102,14 @@ while not rospy.is_shutdown():
 							clearTimeout(timer);
 							timer = undefined;
 						}
-						callback = result_cb;
-						feedback_cb = undefined;
-						result_cb = undefined;
-						if (callback != undefined) {
-							var exec_cb = function(o,s) { process.nextTick(() => { callback(o,s); }); };
-							exec_cb(obj['msg'], obj['state']);
-						}
+						// callback = result_cb;
+						// feedback_cb = undefined;
+						// result_cb = undefined;
+						// if (callback != undefined) {
+						// 	var exec_cb = function(o,s) { process.nextTick(() => { callback(o,s); }); };
+						// 	exec_cb(obj['msg'], obj['state']);
+						// 	exec_cb(obj['msg']);
+						// }
 					}
 				}
 			} catch (err) {
@@ -116,12 +130,12 @@ while not rospy.is_shutdown():
 			clearTimeout(timer);
 			timer = undefined;
 		}
-		callback = result_cb;
-		feedback_cb = undefined;
-		result_cb = undefined;
-		if (callback != undefined) {
-			callback(undefined, undefined);
-		}
+		// callback = result_cb;
+		// feedback_cb = undefined;
+		// result_cb = undefined;
+		// if (callback != undefined) {
+		// 	callback(undefined, undefined);
+		// }
 	});
 
 	client.on('close', (code) => {
@@ -143,7 +157,7 @@ while not rospy.is_shutdown():
 			if (timer != undefined) clearTimeout(timer);
 			timer = setTimeout(timeout_cb, timeout);
 		}
-		
+
 	}
 
 	that.close = function() {

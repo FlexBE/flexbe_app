@@ -35,7 +35,7 @@ IO.BehaviorSaver = new (function() {
 			} else {
 				create_callback(folder_path);
 			}
-			
+
 		});
 	}
 
@@ -45,13 +45,13 @@ IO.BehaviorSaver = new (function() {
 		if (names.manifest_path != undefined) {
 			var folder_path = path.dirname(names.manifest_path);
 			var file_name = path.basename(names.manifest_path);
-			IO.Filesystem.createFile(folder_path, file_name, generated_manifest, function() { 
+			IO.Filesystem.createFile(folder_path, file_name, generated_manifest, function() {
 				callback();
 			});
 		} else {
 			ROS.getPackagePath(package_name, (package_path) => {
-				var folder_path = path.join(package_path, 'manifest');
-				IO.Filesystem.createFile(folder_path, names.manifest_name, generated_manifest, function() { 
+				var folder_path = path.join(package_path, 'lib', package_name, 'manifest');
+				IO.Filesystem.createFile(folder_path, names.manifest_name, generated_manifest, function() {
 					callback();
 				});
 			});

@@ -2,8 +2,7 @@
 Version=1.0
 Name=FlexBE App
 Comment=User interface for the FlexBE behavior engine.
-Exec=bash -i -c "rosrun flexbe_app run_app --offline"
+Exec=bash -i -c "ros2 run flexbe_app run_app --offline"
 Icon=flexbe_app.png
 Type=Application
 Categories=Application;Development;
-

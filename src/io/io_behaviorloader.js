@@ -9,7 +9,6 @@ IO.BehaviorLoader = new (function() {
 		var parsingResult;
 		try {
 			parsingResult = IO.CodeParser.parseCode(file_content);
-			T.logInfo("Code parsing completed.");
 		} catch (err) {
 			var error_string = "Code parsing failed: " + err;
 			T.logError(error_string);
@@ -73,6 +72,8 @@ IO.BehaviorLoader = new (function() {
 		resetEditor();
 
 		var file_path = path.join(manifest.codefile_path, manifest.codefile_name);
+		T.logInfo(manifest.codefile_path);
+		T.logInfo(manifest.codefile_name);
 		IO.Filesystem.readFile(file_path, (content) => {
 			T.logInfo("Parsing sourcecode...");
 			parseCode(content, manifest, callback);

@@ -9,12 +9,15 @@ ROS.Publisher = function(topic, msg_type, latched=false) {
 ////////////////////////////////
 // BEGIN Python implementation
 	var impl = `
-import rospy
+import rclpy
+import os
 import sys
 import importlib
 import json
 import genpy
+import flexbe_core.message
 import yaml
+import rosidl_runtime_py.set_message
 
 topic = sys.argv[1]
 msg_def = sys.argv[2].split('/')
@@ -22,25 +25,30 @@ msg_pkg = msg_def[0]
 msg_name = msg_def[1]
 latched = sys.argv[3] == "`+LATCHED+`" if len(sys.argv) > 3 else False
 
-rospy.init_node('flexbe_app_pub_%s' % topic.replace('/', '_'))
+rclpy.init()
+node = rclpy.create_node('flexbe_app_pub_%s' % topic.replace('/', '_'))
 
 msg_module = importlib.import_module('%s.msg' % msg_pkg)
 msg_class = getattr(msg_module, msg_name)
 
-pub = rospy.Publisher(topic, msg_class, queue_size=10, latch=latched)
+pub = node.create_publisher(msg_class, topic, 10)
 
-while not rospy.is_shutdown():
+while rclpy.ok():
 	json_str = sys.stdin.readline()
 	try:
 		msg_dict = json.loads(json_str)
+		sys.stderr.write("Msg dict = " + str(msg_dict))
 		msg = msg_class()
-		genpy.message.fill_message_args(msg, [msg_dict])
+
+		rosidl_runtime_py.set_message.set_message_fields(msg, msg_dict)
+
 		pub.publish(msg)
 	except Exception as e:
 		if json_str != '':
 			sys.stderr.write("ignoring input %s> %s" % (json_str, str(e)))
 			sys.stderr.flush();
 	`;
+
 // END Python implementation
 //////////////////////////////
 

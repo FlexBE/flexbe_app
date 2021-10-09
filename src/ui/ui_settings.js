@@ -108,7 +108,7 @@ UI.Settings = new (function() {
 			document.getElementById("cb_collapse_error").checked = items.collapse_error;
 			collapse_hint = items.collapse_hint;
 			document.getElementById("cb_collapse_hint").checked = items.collapse_hint;
-			
+
 			default_package = items.default_package;
 			that.createBehaviorPackageSelect(document.getElementById("select_default_package"));
 			code_indentation = items.code_indentation;

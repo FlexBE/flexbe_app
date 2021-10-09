@@ -1,22 +1,14 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(flexbe_app)
 
-find_package(catkin REQUIRED)
-
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-#catkin_python_setup()
-
-# specify catkin-specific information
-# INCLUDE_DIRS - The exported include paths (i.e. cflags) for the package
-# LIBRARIES - The exported libraries from the project
-# CATKIN_DEPENDS - Other catkin projects that this project depends on
-# DEPENDS - Non-catkin CMake projects that this project depends on
-# CFG_EXTRAS - Additional configuration options 
-catkin_package(
-    INCLUDE_DIRS src
-    LIBRARIES ${PROJECT_NAME})
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
 # use add_library() or add_executable() as required
 #add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})
@@ -32,9 +24,9 @@ add_custom_command(OUTPUT nwjs
 
 add_custom_target(nw_install DEPENDS nwjs)
 
-if(NOT ${CMAKE_CURRENT_SOURCE_DIR}/nwjs)
-  safe_execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/nwjs_install)
-endif()
+#if(NOT ${CMAKE_CURRENT_SOURCE_DIR}/nwjs)
+#  safe_execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/nwjs_install)
+#endif()
 
 #############
 ## Install ##
@@ -43,28 +35,34 @@ endif()
 INSTALL(PROGRAMS
     bin/run_app
     bin/shortcut
-    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    bin/nwjs_install
+    bin/test_report
+    DESTINATION lib/${PROJECT_NAME}
 )
 INSTALL(FILES
     package.json
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    DESTINATION lib/${PROJECT_NAME}
+)
+INSTALL(FILES
+    flexbe.desktop
+    DESTINATION lib/${PROJECT_NAME}
 )
 INSTALL(DIRECTORY
     src
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    DESTINATION lib/${PROJECT_NAME}
 )
 INSTALL(DIRECTORY
-    nwjs
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-    USE_SOURCE_PERMISSIONS
-)
-install(DIRECTORY
     launch
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    DESTINATION lib/${PROJECT_NAME}
 )
+INSTALL(DIRECTORY
+    launch
+    DESTINATION share/${PROJECT_NAME}
+)
+#INSTALL(DIRECTORY
+#    nwjs
+#    DESTINATION lib/${PROJECT_NAME}
+#    USE_SOURCE_PERMISSIONS
+#)
 
-# run tests
-if(CATKIN_ENABLE_TESTING)
-	find_package(rostest REQUIRED)
-	add_rostest(launch/test_report.test)
-endif()
+ament_package()

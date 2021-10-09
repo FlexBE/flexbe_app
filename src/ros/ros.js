@@ -3,26 +3,53 @@ ROS = new (function() {
 
 	var os = require('os');
 	var sys = require('sys');
-	var spawn = require('child_process').spawn;
+	var {spawn, exec, execSync} = require('child_process')
+	// var spawn = require('child_process').spawn;
 	var python = 'python' + (process.env.ROS_PYTHON_VERSION != undefined? process.env.ROS_PYTHON_VERSION : '');
 
 ////////////////////////////////
 // BEGIN Python implementation
 	var init_impl = `
-import rospy
+import rclpy
 import sys
 
-rospy.init_node('flexbe_app')
+rclpy.init()
+node = rclpy.create_node('flexbe_app')
 
 sys.stdout.flush()
-sys.stdout.write(':'+rospy.get_namespace()+':connected')
+sys.stdout.write(':'+node.get_namespace()+':connected')
 sys.stdout.flush()
 
-rospy.spin()
+rclpy.spin(node)
+	`;
+
+var new_line = "\n"
+	var get_package_paths = `
+import subprocess
+import os
+import sys
+import json
+from ament_index_python.packages import get_package_share_directory
+
+pkg_list = subprocess.check_output(["ros2", "pkg", "list"]).decode('utf-8')
+packages = []
+
+pkg_list = pkg_list.split(${new_line})
+
+for pkg in pkg_list:
+	path = get_package_share_directory(pkg)
+	if "/opt/ros/foxy" not in path:
+		if "share" in path:
+			path = path.split("/share")[0]
+
+		package = {'name': pkg, 'path': path, 'python_path': None}
+		packages.append(package)
+
+sys.stdout.write(json.dumps(packages))
 	`;
 // END Python implementation
 //////////////////////////////
-	
+
 	var ros_proc = undefined;
 
 	that.init = function(callback) {
@@ -40,6 +67,15 @@ rospy.spin()
 			ros_proc.kill('SIGKILL');
 			callback(undefined);
 		});
+
+		ros_proc = exec(python + " -c " + init_impl, function(err, stdout, stderr) {
+		  if (err || stderr) {
+				T.logError("ROS connection error: "+data);
+				ros_proc.kill('SIGKILL');
+				callback(undefined);
+		  }
+		  console.log(stdout);
+		});
 	}
 
 	that.shutdown = function() {
@@ -51,25 +87,22 @@ rospy.spin()
 	var package_cache = undefined;
 	that.getPackageList = function(callback) {
 		if (package_cache == undefined) {
-			var proc = spawn('rospack', ['list']);
+			var get_pkg = undefined;
+			let packages = []
 
-			var pkg_data = '';
-			proc.stdout.on('data', data => {
-				pkg_data += data;
-				
-			});
-			proc.on('close', (code) => {
-				package_cache = pkg_data.split(os.EOL);
-				if (package_cache.length > 0) package_cache = package_cache.slice(0,-1);
-				for (var i=0; i<package_cache.length; i++) {
-					package_cache[i] = package_cache[i].split(" ");
-					package_cache[i] = {
-						'name': package_cache[i][0],
-						'path': package_cache[i][1],
-						'python_path': undefined
-					}
+			get_pkg = spawn(python, ['-c', get_package_paths])
+
+			get_pkg.stdout.on('data', data => {
+				package_cache = JSON.parse(data);
+
+				for (let i = 0; i < package_cache.length; i++) {
+					package_cache[i].python_path = undefined
 				}
-				callback(package_cache.clone());
+				callback(package_cache.clone())
+			});
+
+			get_pkg.stderr.on('data', data => {
+				T.logError(data);
 			});
 		} else {
 			process.nextTick(() => {
@@ -131,16 +164,16 @@ rospy.spin()
 		});
 	}
 
-	// that.getParam = function(name, callback) {
-	// 	var proc = spawn('rosparam', ['get', name]);
-	// 	proc.stdout.on('data', data => {
-	// 		proc.kill('SIGKILL');
-	// 		if (String(data).startsWith('ERROR')) {
-	// 			callback(undefined);
-	// 		} else {
-	// 			callback(JSON.parse(data));
-	// 		}
-	// 	});
-	// }
+	that.getParam = function(name, callback) {
+		var proc = spawn('ros2', ['param', 'get', name]);
+		proc.stdout.on('data', data => {
+			proc.kill('SIGKILL');
+			if (String(data).startsWith('ERROR')) {
+				callback(undefined);
+			} else {
+				callback(JSON.parse(data));
+			}
+		});
+	}
 
 }) ();

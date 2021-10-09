@@ -1,6 +1,5 @@
 #!/bin/bash
-
-ROOT_PATH="$(rospack find flexbe_app)"
+ROOT_PATH="$(ros2 pkg prefix flexbe_app)"/lib/flexbe_app
 NW=$ROOT_PATH/nwjs/nw
 if [ ! -f $NW ]; then
     ROOT_PATH=.
@@ -8,8 +7,8 @@ if [ ! -f $NW ]; then
 fi
 if [ ! -x $NW ]; then
   echo "Cannot run flexbe_app, need to download nwjs first."
-  echo "Please build flexbe_app via catkin before using it or run the following command now:"
-  echo "  rosrun flexbe_app nwjs_install"
+  echo "Please build flexbe_app via colcon before using it or run the following command now:"
+  echo "  ros2 run flexbe_app nwjs_install"
   exit -1
 fi
 

@@ -33,20 +33,22 @@ class TestReport(unittest.TestCase):
                 if test_type == "assertTrue":
                     self.assertTrue(test_data, test_name)
 
+def main():
+  try:
+      with open("/tmp/flexbe_app_behavior_report.log", 'r') as f:
+          report = yaml.safe_load(f)
+  except IOError:
+      pass  # add no tests because there is no report to evaluate
+  else:
+      for test_type, tests in report.items():
+          for test_name, test_data in tests.items():
+              function_name = "test_%s_%s" % (test_name, test_type)
+              test_function = generate_test(test_type, test_data)
+              test_function.__name__ = function_name
+              setattr(TestReport, function_name, test_function)
+
+  unittest.main()
+
 
 if __name__ == '__main__':
-    try:
-        with open("/tmp/flexbe_app_behavior_report.log", 'r') as f:
-            report = yaml.safe_load(f)
-    except IOError:
-        pass  # add no tests because there is no report to evaluate
-    else:
-        for test_type, tests in report.items():
-            for test_name, test_data in tests.items():
-                function_name = "test_%s_%s" % (test_name, test_type)
-                test_function = generate_test(test_type, test_data)
-                test_function.__name__ = function_name
-                setattr(TestReport, function_name, test_function)
-
-    import rosunit
-    rosunit.unitrun("flexbe_app", "test_report", TestReport)
+    main()

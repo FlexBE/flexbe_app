@@ -1,34 +1,54 @@
-<package>
-  <name>flexbe_app</name>
-  <version>2.3.0</version>
-  <description>
-     flexbe_app provides a user interface (editor + runtime control) for the FlexBE behavior engine.
-  </description>
-  <maintainer email="schillin@kth.se">Philipp Schillinger</maintainer>
-  <license>BSD</license>
+<?xml version="1.0"?>
+<?xml-model
+    href="http://download.ros.org/schema/package_format3.xsd"
+    schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+    <name>flexbe_app</name>
+    <version>2.3.0</version>
+    <description>
+        flexbe_app provides a user interface (editor + runtime control) for the FlexBE behavior engine.
+    </description>
+    <url>http://ros.org/wiki/flexbe_app</url>
+    <author>Philipp Schillinger</author>
+    <maintainer email="schillin@kth.se">Philipp Schillinger</maintainer>
 
-  <url>http://ros.org/wiki/flexbe_app</url>
-  <author>Philipp Schillinger</author>
+    <license>BSD</license>
+    <url type="website">http://ros.org/wiki/flexbe_core</url>
+    <url type="bugtracker">https://github.com/team-vigir/flexbe_behavior_engine/issues</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+    <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_depend>curl</build_depend>
-  <build_depend>rostest</build_depend>
+    <exec_depend>rclpy</exec_depend>
+    <exec_depend>rclcpp</exec_depend>
+    <exec_depend>std_msgs</exec_depend>
+    <exec_depend>ros2pkg</exec_depend>
+    <exec_depend>flexbe_msgs</exec_depend>
+    <exec_depend>launch_ros</exec_depend>
 
-  <run_depend>libnss3-dev</run_depend>
+    <build_depend>curl</build_depend>
+    <build_depend>rostest</build_depend>
 
-  <run_depend>rospy</run_depend>
-  <run_depend>genpy</run_depend>
-  <run_depend>actionlib</run_depend>
-  <run_depend>rospack</run_depend>
+    <exec_depend>libnss3-dev</exec_depend>
 
-  <run_depend>flexbe_onboard</run_depend>
-  <run_depend>flexbe_mirror</run_depend>
-  <run_depend>flexbe_widget</run_depend>
+    <exec_depend>genpy</exec_depend>
 
-  <run_depend>std_msgs</run_depend>
-  <run_depend>flexbe_msgs</run_depend>
+    <exec_depend>flexbe_onboard</exec_depend>
+    <exec_depend>flexbe_mirror</exec_depend>
+    <exec_depend>flexbe_widget</exec_depend>
 
-  <test_depend>rosunit</test_depend>
+    <test_depend>ament_copyright</test_depend>
+    <test_depend>ament_flake8</test_depend>
+    <test_depend>ament_pep257</test_depend>
+    <test_depend>python3-pytest</test_depend>
 
+    <test_depend>ament_lint_auto</test_depend>
+    <test_depend>ament_lint_common</test_depend>
+
+    <export>
+      <build_type>ament_cmake</build_type>
+    </export>
+
+    <!-- <export>
+        <build_type>ament_python</build_type>
+    </export> -->
 </package>

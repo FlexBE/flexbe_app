@@ -4,6 +4,7 @@ IO.CodeGenerator = new (function() {
 	var names;
 	var sm_counter = 0;
 	var sm_names = [];
+	var state_init_list = [];
 
 	var ws = '\t';
 
@@ -41,11 +42,12 @@ IO.CodeGenerator = new (function() {
 		for (var i=0; i<imported_states.length; ++i) {
 			if (imported_states[i] instanceof BehaviorState ||
 				!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(imported_states[i].getStateClass())) {
-				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass());	
+				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass());
 			} else {
 				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass()
 					+ " as " + imported_states[i].getStatePackage() + "__" + imported_states[i].getStateClass());
 			}
+			state_init_list.push(ws + ws + imported_states[i].getStateClass() + ".initialize_ros(node)")
 		}
 		// put together
 		code += "from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger\n";
@@ -80,17 +82,18 @@ IO.CodeGenerator = new (function() {
 	var generateInitialization = function() {
 		var code = "";
 		// header
-		code += ws+"def __init__(self):\n";
+		code += ws+"def __init__(self, node):\n";
 		code += ws+ws+"super(" + names.class_name + ", self).__init__()\n";
 		code += ws+ws+"self.name = '" + names.behavior_name + "'\n";
 		code += "\n";
 		// parameters
 		code += ws+ws+"# parameters of this behavior\n";
+
 		var params = Behavior.getBehaviorParameters();
 		for (var i = 0; i < params.length; i++) {
-			var default_value = 
+			var default_value =
 				(params[i].type == "text" || params[i].type == "enum")? "'" + params[i].default + "'" :
-				(params[i].type == "yaml")? "dict()" : 
+				(params[i].type == "yaml")? "dict()" :
 				params[i].default;
 			code += ws+ws+"self.add_parameter('" + params[i].name + "', " + default_value + ")\n";
 		};
@@ -98,6 +101,14 @@ IO.CodeGenerator = new (function() {
 		// contains
 		code += ws+ws+"# references to used behaviors\n";
 		var states = helper_collectAllStates(Behavior.getStatemachine());
+
+		code += ws+ws+ "OperatableStateMachine" + ".initialize_ros(node)" + "\n"
+		code += ws+ws+ "ConcurrencyContainer" + ".initialize_ros(node)" + "\n"
+		code += ws+ws+ "PriorityContainer" + ".initialize_ros(node)" + "\n"
+		code += ws+ws+ "Logger" + ".initialize(node)" + "\n"
+		code += state_init_list.sort().join("\n");
+
+
 		var contained_behaviors = [];
 		for (var i = 0; i < states.length; i++) {
 			if (!(states[i] instanceof BehaviorState)) continue;
@@ -144,7 +155,7 @@ IO.CodeGenerator = new (function() {
 		var pos = [];
 		for (var i = 0; i < Behavior.getStatemachine().getSMOutcomes().length; i++) {
 			var position = Behavior.getStatemachine().getSMOutcomes()[i].getPosition();
-			pos.push("x:" + Math.round(position.x) + " y:" + Math.round(position.y)); 
+			pos.push("x:" + Math.round(position.x) + " y:" + Math.round(position.y));
 		}
 		code += ws+ws+"# " + pos.join(", ") + "\n";
 		code += ws+ws+"_state_machine = OperatableStateMachine(outcomes=['" + Behavior.getInterfaceOutcomes().join("', '") + "']";
@@ -216,7 +227,7 @@ IO.CodeGenerator = new (function() {
 			var pos = [];
 			for (var i = 0; i < sm.getSMOutcomes().length; i++) {
 				var position = sm.getSMOutcomes()[i].getPosition();
-				pos.push("x:" + Math.round(position.x) + " y:" + Math.round(position.y)); 
+				pos.push("x:" + Math.round(position.x) + " y:" + Math.round(position.y));
 			}
 			code += ws+ws+"# " + pos.join(", ") + "\n";
 			if (sm.isConcurrent()) {
@@ -290,7 +301,7 @@ IO.CodeGenerator = new (function() {
 			code += " {" + internal_param_list.join(",") + "}";
 		}
 		code += "\n";
-		
+
 		code += ws+ws+ws+"OperatableStateMachine.add('" + s.getStateName() + "',\n";
 
 		// class
@@ -381,7 +392,7 @@ IO.CodeGenerator = new (function() {
 				code += "}";
 			}
 		}
-		
+
 		code += ")\n\n";
 		T.logInfo("[+] " + s.getStateName());
 		return code;
@@ -391,7 +402,7 @@ IO.CodeGenerator = new (function() {
 		T.logInfo("Generating code for " + Behavior.getBehaviorName() + "...");
 		// test conditions for generating code
 		if (Behavior.getStatemachine().getStates().length == 0) throw "state machine contains no states";
-		
+
 		names = Behavior.createNames();
 		sm_counter = 0;
 		sm_names = [];

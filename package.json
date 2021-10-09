@@ -4,7 +4,7 @@
   "main": "src/main.js",
   "window": {
     "icon": "src/img/icon-128.png",
-    "toolbar": false,
+    "toolbar": true,
     "width": 1340,
     "height": 830,
     "min_width": 1340,
