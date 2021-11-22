@@ -11,7 +11,6 @@ import rclpy
 import sys
 import importlib
 import json
-import genpy
 import rosidl_runtime_py.convert
 import yaml
 

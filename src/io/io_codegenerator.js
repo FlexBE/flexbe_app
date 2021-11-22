@@ -47,7 +47,12 @@ IO.CodeGenerator = new (function() {
 				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass()
 					+ " as " + imported_states[i].getStatePackage() + "__" + imported_states[i].getStateClass());
 			}
-			state_init_list.push(ws + ws + imported_states[i].getStateClass() + ".initialize_ros(node)")
+
+			if (!imported_states[i].getStateClass().includes("SM") &&
+					!state_init_list.includes(ws + ws + imported_states[i].getStateClass() + ".initialize_ros(node)")) {
+
+					state_init_list.push(ws + ws + imported_states[i].getStateClass() + ".initialize_ros(node)")
+			}
 		}
 		// put together
 		code += "from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger\n";
@@ -107,6 +112,10 @@ IO.CodeGenerator = new (function() {
 		code += ws+ws+ "PriorityContainer" + ".initialize_ros(node)" + "\n"
 		code += ws+ws+ "Logger" + ".initialize(node)" + "\n"
 		code += state_init_list.sort().join("\n");
+		code += "\n";
+
+		// Need to clear state_init_list in case of saving multiple times
+		state_init_list = []
 
 
 		var contained_behaviors = [];
@@ -117,7 +126,7 @@ IO.CodeGenerator = new (function() {
 		}
 		contained_behaviors.sort(compareKey(be => be.getStatePath()));
 		for (var i=0; i<contained_behaviors.length; ++i) {
-			code += ws+ws+"self.add_behavior(" + contained_behaviors[i].getStateClass() + ", '" + contained_behaviors[i].getStatePath().substr(1) + "')\n";
+			code += ws+ws+"self.add_behavior(" + contained_behaviors[i].getStateClass() + ", '" + contained_behaviors[i].getStatePath().substr(1) + "', node)\n";
 		}
 		code += "\n";
 		// manual
