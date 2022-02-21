@@ -100,14 +100,6 @@ while rclpy.ok():
 							clearTimeout(timer);
 							timer = undefined;
 						}
-						// callback = result_cb;
-						// feedback_cb = undefined;
-						// result_cb = undefined;
-						// if (callback != undefined) {
-						// 	var exec_cb = function(o,s) { process.nextTick(() => { callback(o,s); }); };
-						// 	exec_cb(obj['msg'], obj['state']);
-						// 	exec_cb(obj['msg']);
-						// }
 					}
 				}
 			} catch (err) {
@@ -128,12 +120,6 @@ while rclpy.ok():
 			clearTimeout(timer);
 			timer = undefined;
 		}
-		// callback = result_cb;
-		// feedback_cb = undefined;
-		// result_cb = undefined;
-		// if (callback != undefined) {
-		// 	callback(undefined, undefined);
-		// }
 	});
 
 	client.on('close', (code) => {

@@ -1,8 +1,8 @@
 #!/bin/bash -e
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 TEMPFILE="nwjs.tar.gz"
-mkdir -p ../nwjs
-cd ../nwjs
+mkdir -p nwjs
+cd nwjs
 
 # VERSION="v0.42.3" # verified working, to be incremented explicitly
 VERSION="v0.55.0"
@@ -39,7 +39,7 @@ echo "Downloading nwjs..."
 curl -s -o $TEMPFILE https://dl.nwjs.io/$VERSION/nwjs-$VERSION-$OS-$ARCH.tar.gz
 
 echo "Unpacking..."
-tar -xzf $TEMPFILE --strip-components 1
+tar -xvf $TEMPFILE --strip-components 1
 rm $TEMPFILE
 echo "$VERSION" > version
 

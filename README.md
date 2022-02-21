@@ -6,15 +6,16 @@ User interface (editor + runtime control) for the FlexBE behavior engine.
 
 Clone the following repos into your ROS workspace:
 
-    git clone https://github.com/team-vigir/flexbe_behavior_engine.git  # if not already present
+    git clone https://github.com/FlexBE/flexbe_behavior_engine.git  # if not already present
     git clone https://github.com/FlexBE/flexbe_app.git
 
 Build you workspace:
 
-    catkin_make # or catkin build
+    colcon build
 
-During the build process, the required nwjs binaries are automatically downloaded and extracted.
-To download the binaries manually instead, run the script `bin/nwjs_install`.
+First download the required nwjs binaries to run the FlexBE App:
+
+    ros2 run flexbe_app nwjs_install
 
 ## Workspace
 
@@ -35,7 +36,8 @@ Use the shortcut or the following command to run the FlexBE App alone, i.e., for
 
     ros2 run flexbe_app run_app --offline
 
-Omitting the `--offline` arg will let the App try to connect to ROS. You can manually connect/disconnect the App in the *Configuration* view.
+Omitting the `--offline` arg will let the App try to connect to ROS.
+You can manually connect/disconnect the App in the *Configuration* view.
 
 Use the following launch file to run FlexBE's operator control station, i.e., everything FlexBE requires on the operator machine for controlling behavior execution:
 
@@ -46,18 +48,6 @@ Use the following launch file to run both of the above for local behavior execut
 
     ros2 launch flexbe_app flexbe_full.launch.py
 
-
-## Backwards Compatibility
-
-The FlexBE App in this repository replaces the previous *flexbe_chrome_app*. Please refer to the following announcement for an overview of the most important changes: [Future of the FlexBE Chrome App](https://github.com/pschillinger/flexbe_chrome_app/issues/11)
-
-If you have been using FlexBE already with the old Chrome app, you can convert the content of your repository according to the structure defined below. Besides adding the export statement to your state packages, you can automate this conversion by running the FlexBE App. If no behavior package is detected, it will suggest you to initialize one.
-
----
-
-Deprecated Chrome App branch: **deprecated/chrome_app**
-
-*Please checkout the above branch on all repos if available for a best-effort support of the deprecated Chrome app. However, please consider to update as soon as possible according to the instructions below to ensure that the system will remain working in the future and to receive all updates.*
 
 ---
 
