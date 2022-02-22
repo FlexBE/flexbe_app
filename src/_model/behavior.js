@@ -10,7 +10,7 @@ Behavior = new (function() {
 	var creation_date = "";
 
 	var private_variables = [];		// {key, value}
-	var default_userdata = [];		// {key, value} 
+	var default_userdata = [];		// {key, value}
 	var private_functions = [];		// {name, params}
 
 	var behavior_parameters = [];	// {type, name, default, label, hint, additional}
@@ -292,7 +292,7 @@ Behavior = new (function() {
 		creation_date = "";
 
 		private_variables = [];		// {key, value}
-		default_userdata = [];		// {key, value} 
+		default_userdata = [];		// {key, value}
 		private_functions = [];		// {name, params}
 
 		behavior_parameters = [];	// {type, name, default, label, hint, additional}
@@ -305,7 +305,7 @@ Behavior = new (function() {
 		manual_code_init = "";
 		manual_code_create = "";
 		manual_code_func = "";
-		
+
 		comment_notes = [];
 
 		root_sm = new Statemachine("", new WS.StateMachineDefinition([], [], []));
@@ -330,7 +330,7 @@ Behavior = new (function() {
 		result.behavior_name = behavior_name;
 		result.rosnode_name = behavior_package;
 		result.class_name = behavior_name.replace(/[^\w]/g, "") + 'SM';
-		result.manifest_name = behavior_name.toLowerCase().replace(/[^\w]/g, "_") + '.xml';
+		result.manifest_name = behavior_name.toLowerCase().replace(/[^\w]/g, "_") + '_manifest.py';
 		result.manifest_path = manifest_path;
 		result.file_name = file_name || behavior_name.toLowerCase().replace(/[^\w]/g, "_") + '_sm.py';
 		result.file_name_tmp = result.file_name.replace(/\.py$/, "_tmp.py");

@@ -28,20 +28,21 @@ IO.PackageGenerator = new (function() {
 				} else {
 					if (path.extname(entry) != ".xml" || path.basename(entry)[0] == '#' || path.dirname(entry) == ignore_path) return;
 					IO.Filesystem.readFile(entry, (content) => {
-						var manifest = IO.ManifestParser.parseManifest(content, entry);
-						if (manifest != undefined) {// && manifest.rosnode_name != pkg_name) {
-							ROS.getPackagePath(manifest.rosnode_name, (be_pkg_path) => {
-								var src_file_path = path.join(be_pkg_path, 'src', manifest.rosnode_name, manifest.codefile_name);
-								var dst_file_path = path.join(pkg_path, 'src', pkg_name, manifest.codefile_name);
-								var src_file = fs.readFileSync(src_file_path);
-								fs.writeFileSync(dst_file_path, src_file);
-								var dst_manifest_path = path.join(ignore_path, manifest.name.toLowerCase().replace(/ /g, "_") + '.xml');
-								var new_content = content.replace('package_path="'+manifest.rosnode_name+'.', 'package_path="'+pkg_name+'.');
-								fs.writeFileSync(dst_manifest_path, new_content);
-								clearTimeout(timer);
-								timer = setTimeout(callback, 500);
-							});
-						}
+						IO.ManifestParser.parseManifest(content, entry, (manifest) => {
+							if (manifest != undefined) {// && manifest.rosnode_name != pkg_name) {
+								ROS.getPackagePath(manifest.rosnode_name, (be_pkg_path) => {
+									var src_file_path = path.join(be_pkg_path, 'src', manifest.rosnode_name, manifest.codefile_name);
+									var dst_file_path = path.join(pkg_path, 'src', pkg_name, manifest.codefile_name);
+									var src_file = fs.readFileSync(src_file_path);
+									fs.writeFileSync(dst_file_path, src_file);
+									var dst_manifest_path = path.join(ignore_path, manifest["name"]toLowerCase().replace(/ /g, "_") + '.py');
+									var new_content = content.replace('package_path="'+manifest.rosnode_name+'.', 'package_path="'+pkg_name+'.');
+									fs.writeFileSync(dst_manifest_path, new_content);
+									clearTimeout(timer);
+									timer = setTimeout(callback, 500);
+								});
+							}
+						})
 					});
 				}
 			});

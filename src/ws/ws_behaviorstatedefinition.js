@@ -21,7 +21,7 @@ WS.BehaviorStateDefinition = function(manifest, outcomes, input_keys, output_key
 	var parameterDefaults = [];
 	manifest.params.forEach(param => {
 		parameters.push(param.name);
-		parameterDefaults.push(undefined); 
+		parameterDefaults.push(undefined);
 		var defaultValue = (param.type == "text" || param.type == "enum")? '"' + param.default + '"' : param.default;
 		var desc = "<div style='margin-bottom: 0.5em;'>Default: <i>" + defaultValue + "</i></div>" + param.label + ": " + param.hint;
 		var info = "";
@@ -38,7 +38,7 @@ WS.BehaviorStateDefinition = function(manifest, outcomes, input_keys, output_key
 		}
 		documentation.addDescription('--', param.name, param.type, desc);
 	});
-	
+
 	this.__proto__ = new WS.StateDefinition(manifest.class_name, documentation,
 		path, parameters, outcomes, input_keys, output_keys, parameterDefaults, autonomy, []);
 
@@ -48,7 +48,7 @@ WS.BehaviorStateDefinition = function(manifest, outcomes, input_keys, output_key
 	this.getBehaviorTagList = function() { return behavior_tag_list; }
 	this.getDefaultUserdata = function() { return bsm_parsing_result.default_userdata; }
 	this.cloneBehaviorStatemachine = function() {
-		return IO.ModelGenerator.buildStateMachine(bsm_parsing_result.container_name, bsm_parsing_result.container_sm_var_name, 
+		return IO.ModelGenerator.buildStateMachine(bsm_parsing_result.container_name, bsm_parsing_result.container_sm_var_name,
 												bsm_parsing_result.sm_defs, bsm_parsing_result.sm_states, true);
 	}
 };

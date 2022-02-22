@@ -215,24 +215,26 @@ IO.PackageParser = new (function() {
 						processEntry(idx + 1);
 					});
 				} else {
-					if (path.extname(entry) == ".xml" && path.basename(entry)[0] != '#') {
+					if (path.extname(entry) == ".py" && !path.basename(entry).includes("__init__") &&
+							path.basename(entry).includes("manifest")) {
 						IO.Filesystem.readFile(entry, (content) => {
-							var manifest = IO.ManifestParser.parseManifest(content, entry, python_path);
-							if (manifest != undefined) {
-								if (manifest.rosnode_name != pkg_name) {
-									T.logWarn("Ignoring behavior " + manifest.name + ": Manifest and code need to be in the same ROS package.");
+							IO.ManifestParser.parseManifest(content, entry, python_path, (manifest) => {
+								if (manifest != undefined) {
+									if (manifest.rosnode_name != pkg_name) {
+										T.logWarn("Ignoring behavior " + manifest.name + ": Manifest and code need to be in the same ROS package.");
+										processEntry(idx + 1);
+										return;
+									}
+									IO.BehaviorLoader.loadBehaviorInterface(manifest, function(ifc) {
+										var behavior_def = new WS.BehaviorStateDefinition(manifest, ifc.smi_outcomes, ifc.smi_input, ifc.smi_output);
+										WS.Behaviorlib.addToLib(behavior_def);
+										behavior_defs.push(behavior_def);
+										processEntry(idx + 1);
+									});
+								} else {
 									processEntry(idx + 1);
-									return;
 								}
-								IO.BehaviorLoader.loadBehaviorInterface(manifest, function(ifc) {
-									var behavior_def = new WS.BehaviorStateDefinition(manifest, ifc.smi_outcomes, ifc.smi_input, ifc.smi_output);
-									WS.Behaviorlib.addToLib(behavior_def);
-									behavior_defs.push(behavior_def);
-									processEntry(idx + 1);
-								});
-							} else {
-								processEntry(idx + 1);
-							}
+							});
 						});
 					} else {
 						processEntry(idx + 1);

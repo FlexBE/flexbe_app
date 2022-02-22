@@ -72,8 +72,6 @@ IO.BehaviorLoader = new (function() {
 		resetEditor();
 
 		var file_path = path.join(manifest.codefile_path, manifest.codefile_name);
-		T.logInfo(manifest.codefile_path);
-		T.logInfo(manifest.codefile_name);
 		IO.Filesystem.readFile(file_path, (content) => {
 			T.logInfo("Parsing sourcecode...");
 			parseCode(content, manifest, callback);

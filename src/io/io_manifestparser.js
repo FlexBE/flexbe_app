@@ -1,86 +1,67 @@
 IO.ManifestParser = new (function() {
 	var that = this;
+	var spawn = require('child_process').spawn;
+	var python = 'python' + (process.env.ROS_PYTHON_VERSION != undefined? process.env.ROS_PYTHON_VERSION : '');
 
-	this.parseManifest = function(content, file_path, python_path) {
-		parser = new DOMParser();
-		xml = parser.parseFromString(content,"text/xml");
+	this.parseManifest = function(content, file_path, python_path, callback) {
+		var file_path_parts = file_path.split("/")
+		var python_file = file_path_parts[file_path_parts.length - 1].substring(0, file_path_parts[file_path_parts.length - 1].indexOf(".py"))
 
-		// structure test
-		if (xml.getElementsByTagName("behavior").length != 1
-		 || xml.getElementsByTagName("executable").length != 1
-		 || xml.getElementsByTagName("executable")[0].getAttribute("package_path") == undefined
-		 || xml.getElementsByTagName("executable")[0].getAttribute("package_path").split(".").length != 2
-		) return;
+		var py_module = file_path_parts[file_path_parts.length - 3] + "." + file_path_parts[file_path_parts.length - 2] + "." + python_file
+		var manifest_file = file_path_parts[file_path_parts.length - 1]
+		var manifest_dict = manifest_file.substring(0, manifest_file.indexOf("_manifest"))
 
-		var name = xml.getElementsByTagName("behavior")[0].getAttribute("name");
-		var description = (xml.getElementsByTagName("description").length > 0 && xml.getElementsByTagName("description")[0].childNodes.length > 0) ?
-			xml.getElementsByTagName("description")[0].childNodes[0].nodeValue.trim().replace(/\s+/, " ") : "";
-		var tags = (xml.getElementsByTagName("tagstring").length > 0 && xml.getElementsByTagName("tagstring")[0].childNodes.length > 0) ?
-			xml.getElementsByTagName("tagstring")[0].childNodes[0].nodeValue.trim() : "";
-		var author = (xml.getElementsByTagName("author").length > 0 && xml.getElementsByTagName("author")[0].childNodes.length > 0) ?
-			xml.getElementsByTagName("author")[0].childNodes[0].nodeValue.trim() : "";
-		var date = (xml.getElementsByTagName("date").length > 0 && xml.getElementsByTagName("date")[0].childNodes.length > 0)?
-			xml.getElementsByTagName("date")[0].childNodes[0].nodeValue.trim()
-			: undefined;
+		var json_data = undefined
+		var impl = `
+import json
+from ${py_module} import ${manifest_dict}
+print(json.dumps(${manifest_dict}))`;
+		// var impl = `from ` + py_module + ` import ` + manifest_dict + `\nprint(` + manifest_dict + `)`
+		var manifest = undefined;
+		var manifest_json = undefined;
 
-		var path = xml.getElementsByTagName("executable")[0].getAttribute("package_path").split(".");
-		var rosnode_name = path[0];
-		var codefile_name = path[1] + ".py";
-		var codefile_path = python_path;
-		var class_name = xml.getElementsByTagName("executable")[0].getAttribute("class");
+		manifest = spawn(python, ['-c', impl]);
+		manifest.stdout.on('data', data => {
+			try {
+				json_data = JSON.parse(data)
 
-		var params_element = xml.getElementsByTagName("params");
-		var param_list = [];
-		if (params_element.length > 0) {
-			var params = params_element[0].getElementsByTagName("param");
-			for (var i = 0; i < params.length; i++) {
-				var p = params[i];
-				var p_obj = {
-					type: p.getAttribute("type"),
-					name: p.getAttribute("name"),
-					default: p.getAttribute("default"),
-					label: p.getAttribute("label"),
-					hint: p.getAttribute("hint"),
-					additional: undefined
-				};
-				if (p_obj.type == "enum") {
-					p_obj.additional = [];
-					var options = p.getElementsByTagName("option");
-					for (var j = 0; j < options.length; j++) {
-						p_obj.additional.push(options[j].getAttribute("value"));
-					}
-				} else if (p_obj.type == "numeric") {
-					p_obj.additional = {min: undefined, max: undefined};
-					p_obj.additional.min = p.getElementsByTagName("min")[0].getAttribute("value");
-					p_obj.additional.max = p.getElementsByTagName("max")[0].getAttribute("value");
-				} else if (p_obj.type == "yaml") {
-					p_obj.additional = {key: undefined};
-					p_obj.additional.key = p.getElementsByTagName("key")[0].getAttribute("name");
+				var package_path_parts = json_data["executable"]["package_path"].split(".")
+				var contains_elements = json_data["contained_behaviors"]
+
+				var contains_list = [];
+				for (var i = 0; i < contains_elements.length; i++) {
+					contains_list.push(contains_elements[i]["name"]);
 				}
-				param_list.push(p_obj);
+
+				var manifest_json = {
+					name: 			    json_data["name"],
+					description: 	  json_data["description"],
+					tags: 			    json_data["tagstring"],
+					author: 		    json_data["author"],
+					date: 			    json_data["date"],
+					rosnode_name: 	package_path_parts[0],
+					codefile_name: 	package_path_parts[1] + ".py",
+					codefile_path: 	python_path,
+					class_name: 	  json_data["executable"]["class"],
+					params: 		    json_data["params"],
+					contains: 		  contains_list,
+					file_path: 		  file_path
+				};
+
+				callback(manifest_json)
+			} catch (err) {
+				try_parse = false;
+				console.log('Manifest Parser Error:');
+				console.log(err);
+				if (err.hasOwnProperty('name') && err.name == "SyntaxError" && err.hasOwnProperty('at')) {
+					buffer.slice(err.at);
+					try_parse = true;
+				}
 			}
-		}
-
-		var contains_elements = xml.getElementsByTagName("contains");
-		var contains_list = [];
-		for (var i = 0; i < contains_elements.length; i++) {
-			contains_list.push(contains_elements[i].getAttribute("name"));
-		}
-
-		return {
-			name: 			name,
-			description: 	description,
-			tags: 			tags,
-			author: 		author,
-			date: 			date,
-			rosnode_name: 	rosnode_name,
-			codefile_name: 	codefile_name,
-			codefile_path: 	codefile_path,
-			class_name: 	class_name,
-			params: 		param_list,
-			contains: 		contains_list,
-			file_path: 		file_path
-		};
+		});
+		manifest.stderr.on('data', (data) => {
+			T.logWarn("[Manifest parse] " + data);
+		});
 	}
 
 }) ();

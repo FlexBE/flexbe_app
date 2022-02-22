@@ -2,6 +2,7 @@ IO.BehaviorSaver = new (function() {
 	var that = this;
 
 	var path = require('path');
+	var fs = require('fs');
 
 	var storeBehaviorCode = function(generated_code, callback) {
 		var create_callback = function(folder) {
@@ -45,12 +46,25 @@ IO.BehaviorSaver = new (function() {
 		if (names.manifest_path != undefined) {
 			var folder_path = path.dirname(names.manifest_path);
 			var file_name = path.basename(names.manifest_path);
+
 			IO.Filesystem.createFile(folder_path, file_name, generated_manifest, function() {
 				callback();
 			});
 		} else {
 			ROS.getPackagePath(package_name, (package_path) => {
-				var folder_path = path.join(package_path, 'lib', package_name, 'manifest');
+				T.logInfo("Getting manifest package path")
+
+				var python_version = ""
+				for (let i = 0; i < 10; i++) {
+					python_version = "python" + process.env.ROS_PYTHON_VERSION.toString() + "." + i.toString()
+					if (fs.existsSync(path.join(package_path, 'lib', python_version, 'site-packages', package_name, 'manifest'))) {
+						break;
+					}
+				}
+
+				T.logInfo("Python version = " + python_version)
+				var folder_path = path.join(package_path, 'lib', python_version, 'site-packages', package_name, 'manifest');
+				T.logInfo(folder_path)
 				IO.Filesystem.createFile(folder_path, names.manifest_name, generated_manifest, function() {
 					callback();
 				});
