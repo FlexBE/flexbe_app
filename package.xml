@@ -26,7 +26,6 @@
     <exec_depend>launch_ros</exec_depend>
 
     <build_depend>curl</build_depend>
-    <build_depend>rostest</build_depend>
 
     <exec_depend>libnss3-dev</exec_depend>
 
