@@ -9,13 +9,24 @@ Clone the following repos into your ROS workspace:
     git clone https://github.com/FlexBE/flexbe_behavior_engine.git  # if not already present
     git clone https://github.com/FlexBE/flexbe_app.git
 
-Build you workspace:
+Make sure that the branches are consistent (e.g. `git checkout ros2-devel-alpah`)
+
+Install any required dependencies.
+
+    rosdep update  
+    rosdep install --from-paths src --ignore-src
+
+Build your workspace:
 
     colcon build
 
-First download the required nwjs binaries to run the FlexBE App:
+After sourcing the new setup as normally required, you must download the required `nwjs` binaries
+*before* you can run the FlexBE App:
 
     ros2 run flexbe_app nwjs_install
+
+  > Note: These are installed in the `install` folder.  If the `install` folder is deleted, then the `nwjs` binaries
+  will need to be reinstalled with this script.
 
 ## Workspace
 
@@ -67,7 +78,9 @@ A package is a state package for FlexBE if its `package.xml` declares the export
     ...
     </package>
 
-It is then expected to provide Python class definitions as described in [Developing Basic States](http://wiki.ros.org/flexbe/Tutorials/Developing%20Basic%20States). Example: [flexbe_states](https://github.com/team-vigir/flexbe_behavior_engine/tree/feature/flexbe_app/flexbe_states). Adding the above export statement is the only change to previous versions.
+It is then expected to provide Python class definitions as described in [Developing Basic States](http://wiki.ros.org/flexbe/Tutorials/Developing%20Basic%20States).
+
+Example: [flexbe_states](https://github.com/FlexBE/flexbe_behavior_engine/flexbe_states).
 
 ### Behavior packages
 
@@ -86,3 +99,18 @@ If no package in the `ROS_PACKAGE_PATH` contains such an export statement, the F
 In order to create a completely new behavior package, create an empty ROS package and then use the FlexBE App to initialize it.
 
 A behavior package is expected to provide a `manifest` folder which contains the manifests for all provided behaviors. The behaviors are located in a Python module named like the package and contained in the `src` folder.
+
+## Publications
+
+Please use the following publication for reference when using FlexBE:
+
+Philipp Schillinger, Stefan Kohlbrecher, and Oskar von Stryk, ["Human-Robot Collaborative High-Level Control with Application to Rescue Robotics"](http://dx.doi.org/10.1109/ICRA.2016.7487442), IEEE International Conference on Robotics and Automation (ICRA), Stockholm, Sweden, May 2016.
+
+    @INPROCEEDINGS{2016:ICRA_Schillinger-etal,
+        author = {Philipp Schillinger and Stefan Kohlbrecher and Oskar von Stryk},
+        title = {Human-Robot Collaborative High-Level Control with Application to Rescue Robotics},
+        year = {2016},
+        pages = {2796-2802},
+        booktitle = {Proc. IEEE Int. Conf. on Robotics and Automation (ICRA)},
+        doi={10.1109/ICRA.2016.7487442}}
+    }
