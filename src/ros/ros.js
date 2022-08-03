@@ -23,30 +23,59 @@ sys.stdout.flush()
 rclpy.spin(node)
 	`;
 
-var new_line = "\n"
 	var get_package_paths = `
-import subprocess
-import os
-import sys
 import json
-from ament_index_python.packages import get_package_share_directory
+import os
+import pathlib
+import subprocess
+import sys
 
-pkg_list = subprocess.check_output(["ros2", "pkg", "list"]).decode('utf-8')
-packages = []
+from ament_index_python.packages import get_packages_with_prefixes, get_package_share_directory
+import xml.etree.ElementTree as ET
 
-pkg_list = pkg_list.split(${new_line})
+def check_for_relevance(pkg_name, pkg_share_path):
 
-for pkg in pkg_list:
-	path = get_package_share_directory(pkg)
-	if "/opt/ros/foxy" not in path:
-		if "share" in path:
-			path = path.split("/share")[0]
+    package_xml_path = os.path.join(pkg_share_path, "share", pkg_name, "package.xml")
 
-		package = {'name': pkg, 'path': path, 'python_path': None}
-		packages.append(package)
+    if os.path.exists(package_xml_path):
+        try:
+            xml_tree = ET.parse(package_xml_path)
+            root = xml_tree.getroot()
+            pkg_export = root.find("export")
+            if pkg_export:
+                has_states = pkg_export.find("flexbe_states") is not None
+                has_behaviors = pkg_export.find("flexbe_behaviors") is not None
+                return has_states, has_behaviors
+        except Exception as exc:
+            pass
 
-sys.stdout.write(json.dumps(packages))
-	`;
+    return False, False
+
+def find_flexbe_packages():
+
+    pkg_list = get_packages_with_prefixes()
+
+    flexbe_packages = []
+
+    for pkg_name, pkg_path in pkg_list.items():
+        has_states, has_behaviors = check_for_relevance(pkg_name, pkg_path)
+
+        if has_states or has_behaviors:
+            package = {"name": pkg_name, "path": pkg_path, "python_path": None}
+            flexbe_packages.append(package)
+
+    return flexbe_packages
+
+if __name__ == "__main__":
+    flexbe_packages = find_flexbe_packages()
+    #-----------------------------------------------------------
+    dump_path = os.path.join(str(pathlib.Path.home()), ".ros", "flexbe_package_list.txt")
+    with open(dump_path, "wt") as dump:
+            dump.write(json.dumps(flexbe_packages, sort_keys=True, indent=2))
+    #-----------------------------------------------------------
+
+    sys.stdout.write(json.dumps(flexbe_packages))
+`;
 // END Python implementation
 //////////////////////////////
 
@@ -88,22 +117,37 @@ sys.stdout.write(json.dumps(packages))
 	that.getPackageList = function(callback) {
 		if (package_cache == undefined) {
 			var get_pkg = undefined;
+			let package_data = '';
 			let packages = []
 
+			T.logInfo("  Request FlexBE compatible package list from ROS ...");
 			get_pkg = spawn(python, ['-c', get_package_paths])
 
 			get_pkg.stdout.on('data', data => {
-				package_cache = JSON.parse(data);
-
-				for (let i = 0; i < package_cache.length; i++) {
-					package_cache[i].python_path = undefined
-				}
-				callback(package_cache.clone())
+				package_data += data;
 			});
 
 			get_pkg.stderr.on('data', data => {
 				T.logError(data);
 			});
+			get_pkg.on('close', (code) => {
+				T.logInfo(" Processing FlexBE compatible package list ...");
+				try {
+					package_cache = JSON.parse(package_data);
+				} catch (err) {
+					T.logError(err.toString());
+					T.logError(" ros.js:: JSON error -->\n" + data);
+					throw err;
+				}
+
+				T.logInfo(" Found " + package_cache.length + " FlexBE compatible packages.");
+				for (let i = 0; i < package_cache.length; i++) {
+					package_cache[i].python_path = undefined
+					T.logInfo("  " + package_cache[i].name + " -->" + package_cache[i].path)
+				}
+				callback(package_cache.clone())
+			});
+
 		} else {
 			process.nextTick(() => {
 				callback(package_cache.clone());

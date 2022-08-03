@@ -19,6 +19,7 @@ IO.PackageGenerator = new (function() {
 	}
 
 	var convertBehaviors = function(folder, pkg_name, pkg_path, callback, timer) {
+		T.logInfo("convertBehaviors ...");
 		if (timer == undefined) timer = setTimeout(callback, 500);
 		var ignore_path = path.join(pkg_path, "manifest");
 		IO.Filesystem.getFolderContent(folder, function(files) {
@@ -36,7 +37,7 @@ IO.PackageGenerator = new (function() {
 								var src_file = fs.readFileSync(src_file_path);
 								fs.writeFileSync(dst_file_path, src_file);
 								var dst_manifest_path = path.join(ignore_path, manifest.name.toLowerCase().replace(/ /g, "_") + '.xml');
-								var new_content = content.replace('package_path="'+manifest.rosnode_name+'.', 'package_path="'+pkg_name+'.');
+								var new_content = content.replace('package_path="' + manifest.rosnode_name + '.', 'package_path="' + pkg_name + '.');
 								fs.writeFileSync(dst_manifest_path, new_content);
 								clearTimeout(timer);
 								timer = setTimeout(callback, 500);
@@ -46,9 +47,11 @@ IO.PackageGenerator = new (function() {
 				}
 			});
 		});
+		T.logInfo("convertBehaviors done!");
 	}
 
 	this.initializeBehaviorPackage = function(pkg_name, convert_behaviors, callback) {
+		T.logInfo("initializeBehaviorPackage ...");
 		ROS.getPackagePath(pkg_name, (pkg_path) => {
 			IO.Filesystem.getFileContent(pkg_path, "package.xml", (content) => {
 				if (content.indexOf("</export>") != -1) {
@@ -84,6 +87,7 @@ IO.PackageGenerator = new (function() {
 				});
 			});
 		});
+		T.logInfo("initializeBehaviorPackage done!");
 	}
 
 }) ();

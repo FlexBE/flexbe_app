@@ -15,7 +15,7 @@ import rosidl_runtime_py.convert
 import yaml
 
 def callback(msg):
-	sys.stdout.write(json.dumps(yaml.load(rosidl_runtime_py.convert.message_to_yaml(msg))))
+	sys.stdout.write(json.dumps(yaml.load(rosidl_runtime_py.convert.message_to_yaml(msg), Loader=yaml.SafeLoader)))
 	sys.stdout.flush()
 
 topic = sys.argv[1]

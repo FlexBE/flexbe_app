@@ -12,4 +12,5 @@ if [ ! -x $NW ]; then
   exit -1
 fi
 
+echo "Running FlexBE App @ $ROOT_PATH $@ ..."
 "$NW" --password-store=basic $ROOT_PATH "$@"

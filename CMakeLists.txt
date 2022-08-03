@@ -37,6 +37,7 @@ INSTALL(PROGRAMS
     bin/shortcut
     bin/nwjs_install
     bin/test_report
+    bin/find_flexbe_packages
     DESTINATION lib/${PROJECT_NAME}
 )
 INSTALL(FILES

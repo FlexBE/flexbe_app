@@ -25,7 +25,7 @@ import rosidl_runtime_py.set_message
 
 def feedback_cb(msg):
 	comm = dict()
-	comm['msg'] = yaml.load(rosidl_runtime_py.convert.message_to_yaml(msg))
+	comm['msg'] = yaml.load(rosidl_runtime_py.convert.message_to_yaml(msg), Loader=yaml.SafeLoader)
 	comm['type'] = "`+TYPE_FEEDBACK+`"
 	sys.stdout.write(json.dumps(comm))
 	sys.stdout.flush()
@@ -38,7 +38,7 @@ def result_cb(future):
 def get_result(future):
 	msg = future.result().result
 	comm = dict()
-	comm['msg'] = yaml.load(rosidl_runtime_py.convert.message_to_yaml(msg))
+	comm['msg'] = yaml.load(rosidl_runtime_py.convert.message_to_yaml(msg), Loader=yaml.SafeLoader)
 	# comm['state'] = str(state)
 	comm['type'] = "`+TYPE_RESULT+`"
 	sys.stdout.write(json.dumps(comm))

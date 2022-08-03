@@ -26,10 +26,11 @@ RC.ROS = new (function() {
 	}
 
 	this.trySetupConnection = function() {
-		T.logInfo("Setting up ROS connection...");
+		T.logInfo("Setting up ROS connection ...");
 		trying = true;
 		UI.Settings.setRosProperties('');
 		ROS.init(setupConnection);
+		T.logInfo("Done ROS connection setup!");
 	}
 
 	this.closeConnection = function() {

@@ -9,6 +9,7 @@ VERSION="v0.55.0"
 # check if nw is already existing and up-to-date, abort if so
 if [ -f nw ]; then
 	if [ -f version ] && [ "$(cat version)" == "$VERSION" ]; then
+		echo " nwjs ${VERSION} already exists!"
 		exit 0
 	else
 		cd ..

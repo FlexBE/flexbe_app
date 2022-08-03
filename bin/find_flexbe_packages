@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+"""
+Find all packages that define FlexBE behaviors or states
+"""
+import json
+import os
+import pathlib
+import subprocess
+import sys
+
+from ament_index_python.packages import get_packages_with_prefixes, get_package_share_directory
+import xml.etree.ElementTree as ET
+
+def check_for_relevance(pkg_name, pkg_share_path):
+
+    package_xml_path = os.path.join(pkg_share_path, "share", pkg_name, "package.xml")
+
+    if os.path.exists(package_xml_path):
+        try:
+            xml_tree = ET.parse(package_xml_path)
+            root = xml_tree.getroot()
+            pkg_export = root.find("export")
+            if pkg_export:
+                has_states = pkg_export.find("flexbe_states") is not None
+                has_behaviors = pkg_export.find("flexbe_behaviors") is not None
+                return has_states, has_behaviors
+        except Exception as exc:
+            print(exc)
+            print(f"Malformed package.xml at {package_xml_path}")
+    else:
+        print(f" No package.xml for {pkg_name} in {package_xml_path}")
+
+    return False, False
+
+def find_flexbe_packages():
+
+    pkg_list = get_packages_with_prefixes()
+
+    flexbe_packages = []
+
+    for pkg_name, pkg_path in pkg_list.items():
+        has_states, has_behaviors = check_for_relevance(pkg_name, pkg_path)
+
+        if has_states or has_behaviors:
+            package = {"name": pkg_name, "path": pkg_path, "python_path": None}
+            flexbe_packages.append(package)
+        #else:
+        #    print(f"  {pkg_name} is NOT FlexBE at {pkg_share_path} !")
+
+    #print(f"  Found {len(flexbe_packages)} FlexBE packages of {len(pkg_list)} total installed packages" )
+    return flexbe_packages
+
+if __name__ == "__main__":
+    flexbe_packages = find_flexbe_packages()
+    #-----------------------------------------------------------
+    dump_path = os.path.join(str(pathlib.Path.home()), ".ros", "flexbe_package_list.txt")
+    with open(dump_path, "wt") as dump:
+            dump.write(json.dumps(flexbe_packages, sort_keys=True, indent=2))
+    #-----------------------------------------------------------
+
+    sys.stdout.write(json.dumps(flexbe_packages))

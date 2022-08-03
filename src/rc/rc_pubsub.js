@@ -75,7 +75,7 @@ RC.PubSub = new (function() {
 			T.logInfo("Please press 'Stop Execution' next time before closing this window when running a behavior.");
 		}
 
-		if (RC.Controller.isLocked() && msg.code == STARTED && msg.args.length > 0 
+		if (RC.Controller.isLocked() && msg.code == STARTED && msg.args.length > 0
 			&& RC.Controller.isCurrentState(Behavior.getStatemachine().getStateByPath(msg.args[0]), false)) {
 
 			RC.Sync.remove("Switch");
@@ -138,7 +138,7 @@ RC.PubSub = new (function() {
 		if (UI.Settings.getCommandsKey() != '' && msg.key != UI.Settings.getCommandsKey()) {
 			T.clearLog();
 			T.logError('Captured unauthorized command execution attempt!');
-			T.logInfo('You should disable ROS commands in the configuration view and check "rostopic info /flexbe/uicommand" for suspicious publishers.');
+			T.logInfo('You should disable ROS commands in the configuration view and check "ros2 topic info -v /flexbe/uicomman" for suspicious publishers.');
 			that.sendRosNotification('');
 			return;
 		}
@@ -256,7 +256,7 @@ RC.PubSub = new (function() {
 		var root_split = root.split("/");
 		var root_name = root_split[root_split.length - 1];
 		var root_container_path = root.replace("/" + root_name, "");
-		var root_container = (root_container_path == "")? Behavior.getStatemachine() : 
+		var root_container = (root_container_path == "")? Behavior.getStatemachine() :
 								Behavior.getStatemachine().getStateByPath(root_container_path);
 		var root_varname = "";
 		var defs = IO.ModelGenerator.parseInstantiationMsg(result.states);
@@ -342,7 +342,7 @@ RC.PubSub = new (function() {
 
 		onboard_heartbeat_listener = new ROS.Subscriber(
 			ns + 'flexbe/heartbeat',
-			'std_msgs/Empty',
+			'flexbe_msgs/BehaviorSync',
 			onboard_heartbeat_callback);
 
 		ros_command_listener = new ROS.Subscriber(
@@ -393,7 +393,7 @@ RC.PubSub = new (function() {
 			ns + 'flexbe/command/pause',
 			'std_msgs/Bool');
 
-		ros_notification_publisher = new ROS.Publisher( 
+		ros_notification_publisher = new ROS.Publisher(
 			ns + 'flexbe/uinotification',
 			'std_msgs/String');
 
@@ -455,7 +455,7 @@ RC.PubSub = new (function() {
 			try {
 				behavior_structure = Behavior.createStructureInfo();
 			} catch (error) {
-				T.logError("Failed to construct behavior structure, execution might fail: " + error);	
+				T.logError("Failed to construct behavior structure, execution might fail: " + error);
 			}
 
 			// request start
@@ -592,7 +592,7 @@ RC.PubSub = new (function() {
 
 	this.sendRosNotification = function(cmd) {
 		if (ros_notification_publisher == undefined) { T.debugWarn("ROS not initialized!"); return; }
-		
+
 		ros_notification_publisher.publish({
 			data: cmd
 		});

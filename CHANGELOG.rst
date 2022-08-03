@@ -1,6 +1,16 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2.4.1 (2022-08-02)
+* ROS Humble release
+* Tested on Ubuntu 22.04 and ROS Humble
+* For use with ROS 2 version 2.1.x of flexbe_behavior_engine
+* Includes changes sync check handling
+* adds script to check for all flexbe packages
+* Modify package discovery handling
+* Use safe yaml loading
+
+------------------
 2.4.0 (2022-02-22)
 * Initial ROS 2 "Foxy" release
 * For use with ROS 2 version 2.0.0 of flexbe_behavior_engine

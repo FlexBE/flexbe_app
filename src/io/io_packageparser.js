@@ -12,6 +12,7 @@ IO.PackageParser = new (function() {
 	this.discover = function(pkg_cache, callback) {
 		var add_states = [];
 		var add_behaviors = [];
+		T.logInfo("PackageParser discover ...");
 
 		ROS.getPackageList((pkg_list) => {
 			// remove missing packages from cache
@@ -21,9 +22,9 @@ IO.PackageParser = new (function() {
 			// all remaining packages are new and should be parsed
 			var pkg_count = pkg_list.length;
 			if (pkg_count > 0) {
-				T.logInfo("Checking "+pkg_count+" ROS packages for states and behaviors  ("+pkg_cache.length+" in cache)...");
+				T.logInfo("Checking "+pkg_count+" ROS packages for states and behaviors  ("+pkg_cache.length+" in existing cache)...");
 			} else {
-				T.logInfo("No new ROS packages detected ("+pkg_cache.length+" in cache).");
+				T.logInfo("No new ROS packages detected ("+pkg_cache.length+" in existing cache).");
 			}
 			pkg_cache = pkg_cache.concat(pkg_list);
 
@@ -80,7 +81,7 @@ IO.PackageParser = new (function() {
 				callback(undefined, undefined);
 			}
 		} catch (e) {
-			T.logWarn("Skipping package "+pkg_path+" due to a malformed package.xml");
+			T.logWarn("Skipping package " + pkg_path + " due to a malformed package.xml");
 			callback(undefined, undefined);
 		}
 	}

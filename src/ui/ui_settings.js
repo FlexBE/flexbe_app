@@ -146,6 +146,7 @@ UI.Settings = new (function() {
 			} else {
 				ros_pkg_cache = [];
 			}
+			T.logInfo(" discover new FlexBE ROS packages ... ");
 			IO.PackageParser.discover(ros_pkg_cache, that.packageDiscoverCallback);
 
 			that.setRosProperties('');
@@ -544,15 +545,15 @@ UI.Settings = new (function() {
 		var status_disp = document.getElementById('ros_prop_status');
 		var connect_button = document.getElementById('button_ros_connect');
 		if (RC.ROS.isConnected()) {
-			status_disp.value = "Connected to master!";
+			status_disp.value = "Connected to ROS!";
 			status_disp.style.color = "#090";
 			connect_button.value = "Disconnect";
 		} else if (RC.ROS.isTrying()) {
-			status_disp.value = "Waiting for master...";
+			status_disp.value = "Waiting for ROS connection...";
 			status_disp.style.color = "#900";
 			connect_button.value = "Disconnect";
 		} else {
-			status_disp.value = "Not connecting.";
+			status_disp.value = "Not connecting to ROS.";
 			status_disp.style.color = "#999";
 			connect_button.value = "Connect";
 		}
@@ -587,6 +588,7 @@ UI.Settings = new (function() {
 		ros_pkg_cache = [];
 		state_pkg_cache = [];
 		behavior_pkg_cache = [];
+		T.logInfo("force discover new FlexBE ROS packages ... ");
 		IO.PackageParser.discover(ros_pkg_cache, that.packageDiscoverCallback);
 	}
 
