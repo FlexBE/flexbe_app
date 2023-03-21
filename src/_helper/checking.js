@@ -213,7 +213,11 @@ Checking = new (function() {
 			for (var i = 0; i < imap.length; i++) {
 				if (imap[i] == "") return "input key " + state.getInputKeys()[i] + " of state " + state.getStatePath() + " has empty value";
 				if (state instanceof BehaviorState && imap[i] == undefined) continue;
-				if (!imap[i].match(python_varname_pattern)) return "input key " + state.getInputKeys()[i] + " of state " + state.getStatePath() + " has invalid value: " + imap[i];
+				// when there is a "." in the key, assume we want to read the object's attribute, so check the individual fields
+				var field = imap[i].split(".")
+				for (var j = 0; j < field.length; j++) {
+					if (!field[j].match(python_varname_pattern)) return "input key " + state.getInputKeys()[i] + " of state " + state.getStatePath() + " has invalid value: " + field[j];
+				}
 			}
 		}
 
@@ -235,15 +239,17 @@ Checking = new (function() {
 			if (state.getContainer().getStateName() == "") {
 				available_userdata = available_userdata.concat(Behavior.getDefaultUserdata().map(function(el) { return el.key; }));
 			}
-			if (!available_userdata.contains(sm_dataflow[i].getOutcome())) {
-				var idx = state.getParameters().indexOf(sm_dataflow[i].getOutcome())
+			// when there is a "." in the key, assume we want to read the object's attribute, so check only the object itself
+			var outcome = sm_dataflow[i].getOutcome().split(".")[0];
+			if (!available_userdata.contains(outcome)) {
+				var idx = state.getParameters().indexOf(sm_dataflow[i].getOutcome());
 				if (idx >= 0 && state.getParameterValues()[idx] != "None") {
 					T.logWarn("input key " + sm_dataflow[i].getOutcome() + " of state " + state.getStatePath() + " is overwritten by parameter with same name");
 					continue;
 				}
 				else {
 					if (!UI.Statemachine.isDataflow()) UI.Statemachine.toggleDataflow();
-					return "input key " + sm_dataflow[i].getOutcome() + " of state " + state.getStatePath() + " could be undefined";
+					return "input key " + outcome + " of state " + state.getStatePath() + " could be undefined";
 				}
 			}
 		}
