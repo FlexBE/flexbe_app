@@ -1,6 +1,10 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2.4.0 (2023-05-18)
+------------------
+* Merge develop branch
+* Updates for Melodic and Noetic releases on github.com/FlexBE
 
 2.3.0 (2020-11-19)
 ------------------
