@@ -1,6 +1,14 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Forthcoming
+-----------
+* merge PR `#74 <https://github.com/FlexBE/flexbe_app/issues/74>`_, 76, 77; tweak CI workflow
+* Merge pull request `#60 <https://github.com/FlexBE/flexbe_app/issues/60>`_ from fmessmer/fix/catkin_lint
+  some catkin_lint fixes
+* some catkin_lint fixes
+* Contributors: David Conner, dcconner, fmessmer
+
 2.4.0 (2023-05-18)
 ------------------
 * Merge develop branch
