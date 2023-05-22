@@ -1,8 +1,8 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Forthcoming
------------
+2.4.1 (2023-05-22)
+------------------
 * merge PR `#74 <https://github.com/FlexBE/flexbe_app/issues/74>`_, 76, 77; tweak CI workflow
 * Merge pull request `#60 <https://github.com/FlexBE/flexbe_app/issues/60>`_ from fmessmer/fix/catkin_lint
   some catkin_lint fixes
