@@ -28,7 +28,7 @@
     <build_depend>curl</build_depend>
 
     <exec_depend>libnss3-dev</exec_depend>
-
+    
     <exec_depend>flexbe_onboard</exec_depend>
     <exec_depend>flexbe_mirror</exec_depend>
     <exec_depend>flexbe_widget</exec_depend>

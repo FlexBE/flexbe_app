@@ -240,11 +240,11 @@ IO.CodeGenerator = new (function() {
 			}
 			code += ws+ws+"# " + pos.join(", ") + "\n";
 			if (sm.isConcurrent()) {
-				code += ws+ws+ sm_name + " = ConcurrencyContainer(outcomes=['" + sm.getOutcomes().join("', '") + "']";
+				code += ws+ws+ sm_name + " = ConcurrencyContainer(outcomes=[" + sm.getOutcomes().map(x => "'" + x + "'").join(", ") + "]";
 			} else if (sm.isPriority()) {
-				code += ws+ws+ sm_name + " = PriorityContainer(outcomes=['" + sm.getOutcomes().join("', '") + "']";
+				code += ws+ws+ sm_name + " = PriorityContainer(outcomes=[" + sm.getOutcomes().map(x => "'" + x + "'").join(", ") + "]";
 			} else {
-				code += ws+ws+ sm_name + " = OperatableStateMachine(outcomes=['" + sm.getOutcomes().join("', '") + "']";
+				code += ws+ws+ sm_name + " = OperatableStateMachine(outcomes=[" + sm.getOutcomes().map(x => "'" + x + "'").join(", ") + "]";
 			}
 			if (sm.getInputKeys().length > 0) {
 				code += ", input_keys=['" + sm.getInputKeys().join("', '") + "']";
