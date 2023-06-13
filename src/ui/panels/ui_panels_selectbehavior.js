@@ -85,7 +85,8 @@ UI.Panels.SelectBehavior = new (function() {
 				var need = modifier == "+";
 				var relevant = false;
 				be_list_tagged_clone = be_list_tagged.clone().filter(function(b) {
-					var has_tag = WS.Behaviorlib.getByName(b).getBehaviorTagList().contains(tag);
+					//var has_tag = WS.Behaviorlib.getByName(b).getBehaviorTagList().contains(tag);
+					var has_tag = b.getBehaviorTagList().contains(tag);
 					relevant = relevant || has_tag;
 					return need == has_tag;
 				});
@@ -100,15 +101,15 @@ UI.Panels.SelectBehavior = new (function() {
 
 		if (filter_pkg != "ALL") {
 			be_list_tagged = be_list_tagged.filter(function(element) {
-				return WS.Behaviorlib.getByName(element).getStatePackage() == filter_pkg;
+				return element.getStatePackage() == filter_pkg;
 			});
 		}
 
 		var begin_list = be_list_tagged.filter(function(element) {
-			return element.toLowerCase().indexOf(filter_exp) == 0;
+			return element.getBehaviorName().toLowerCase().indexOf(filter_exp) == 0;
 		});
 		var contain_list = be_list_tagged.filter(function(element) {
-			return element.toLowerCase().indexOf(filter_exp) > 0;
+			return element.getBehaviorName().toLowerCase().indexOf(filter_exp) > 0;
 		});
 
 		displayBehaviors(begin_list, true);
@@ -121,7 +122,7 @@ UI.Panels.SelectBehavior = new (function() {
 		var tag_list = [];
 		var filter_exp = document.getElementById("input_behavior_filter").value;
 		be_list_displayed.forEach(function(b) {
-			WS.Behaviorlib.getByName(b).getBehaviorTagList().forEach(function(t) {
+			b.getBehaviorTagList().forEach(function(t) {
 				if (t == "" || filter_exp.indexOf("+"+t) != -1 || filter_exp.indexOf("-"+t) != -1) return;
 				var entry = tag_list.findElement(function(e) { return e.tag == t; })
 				if (entry != undefined) {
@@ -201,7 +202,8 @@ UI.Panels.SelectBehavior = new (function() {
 		}
 
 		behaviors.forEach(function(b) {
-			var m = WS.Behaviorlib.getByName(b).getBehaviorManifest();
+			//var m = WS.Behaviorlib.getByName(b).getBehaviorManifest();
+			var m = b.getBehaviorManifest();
 			be_list_displayed.push(b);
 
 			behavior_div = document.createElement("div");
@@ -214,7 +216,7 @@ UI.Panels.SelectBehavior = new (function() {
 				selection_callback(m);
 				that.hide();
 			});
-			if (enable_hover) addHoverDetails(behavior_div, WS.Behaviorlib.getByName(b));
+			if (enable_hover) addHoverDetails(behavior_div, b);
 
 			panel.appendChild(behavior_div);
 		});

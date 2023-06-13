@@ -31,13 +31,13 @@ Scripts = new (function() {
 		T.show();
 		var total = 0;
 		WS.Behaviorlib.getBehaviorList().forEach(function (bn) {
-			var bsm = WS.Behaviorlib.getByName(bn).cloneBehaviorStatemachine();
+			var bsm = bn.cloneBehaviorStatemachine();
 			var states = searchFunction(bsm, function(s) { return s.getStateClass() == class_name; });
 			if (states.length > 0) {
 				if (total == 0) {
 					T.logInfo("Found the following uses of state class " + class_name + ":");
 				}
-				T.logInfo(bn + " (" + states.length + "x)");
+				T.logInfo(bn.getBehaviorName() + " (" + states.length + "x)");
 				states.forEach(function(s) { T.logInfo("&nbsp;&nbsp;" + s.getStatePath()); });
 			}
 			total += states.length;

@@ -88,6 +88,7 @@ UI.Settings = new (function() {
 			'synthesis_type': 'flexbe_msgs/BehaviorSynthesisAction',
 			'synthesis_system': ''
 		}, function(items) {
+			T.logInfo("Hi");
 			ros_pkg_cache = items.ros_pkg_cache;
 			state_pkg_cache = items.state_pkg_cache;
 			behavior_pkg_cache = items.behavior_pkg_cache;

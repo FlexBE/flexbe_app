@@ -170,6 +170,7 @@ if __name__ == "__main__":
 
 	that.getPackagePythonPath = function(package_name, callback) {
 		var python_path = undefined;
+		var temp_package_path = undefined;
 		that.getPackageList((package_cache) => {
 			for (var i=0; i<package_cache.length; i++) {
 				if (package_cache[i]['name'] == package_name) {

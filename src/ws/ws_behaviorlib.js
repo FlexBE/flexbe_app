@@ -19,9 +19,10 @@ WS.Behaviorlib = new (function() {
 	this.getBehaviorList = function() {
 		list = []
 		for (var i=0; i<behaviorlib.length; ++i) {
-			list.push(behaviorlib[i].getBehaviorName());
+			//list.push(behaviorlib[i].getBehaviorName());
+			list.push(behaviorlib[i]);
 		}
-		return list.sort(function(a,b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+		return list.sort(function(a,b) { return a.getBehaviorName().toLowerCase().localeCompare(b.getBehaviorName().toLowerCase()); });
 	}
 
 	this.resetLib = function() {

@@ -10,7 +10,7 @@ CheckBehaviorsReport = new (function() {
                 IO.Filesystem.createFile('/tmp', "flexbe_app_behavior_report.log", JSON.stringify(report), callback);
             } else {
                 var behavior = behaviors.shift();
-                var m = WS.Behaviorlib.getByName(behavior).getBehaviorManifest();
+                var m = behavior.getBehaviorManifest();
 
                 IO.BehaviorLoader.loadBehavior(m, function(error_string) {
                     console.log(error_string);

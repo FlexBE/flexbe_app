@@ -107,7 +107,9 @@ CommandLib = new (function() {
 			},
 			text: "Loads the behavior with the given name.",
 			completions: [
-				function() { return WS.Behaviorlib.getBehaviorList(); }
+				function() { 
+				    return WS.Behaviorlib.getBehaviorList().map(function(element, index){return element.getBehaviorName();});
+				}
 			]
 		},
 		{
@@ -130,7 +132,8 @@ CommandLib = new (function() {
 			},
 			text: "Updates the implementation of a behavior in the background (except the one currently loaded).",
 			completions: [
-				function() { return WS.Behaviorlib.getBehaviorList().filter(function(be) { return be != Behavior.getBehaviorName(); }); }
+				function() { return WS.Behaviorlib.getBehaviorList().map(function(element, index){return element.getBehaviorName();})
+				.filter(function(be) { return be != Behavior.getBehaviorName(); }); }
 			]
 		},
 		{
