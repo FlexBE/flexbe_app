@@ -1,7 +1,15 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* 3.0.1 (2022-08-02)
+Forthcoming
+-----------
+* Changed getbehaviorlist to return behavior object instead of names. Updated ui_panels_selectbehavior to reflect this change. Fixes bug mentioned in PR #76 in Noetic
+* Updated to match noetic PR #77
+* beautify from one line block
+* correct semantic versioning given Noetic release
+
+3.0.1 (2022-08-02)
+------------------
 * Originally tagged as 2.4.1
 * ROS Humble release
 * Tested on Ubuntu 22.04 and ROS Humble
@@ -11,13 +19,11 @@ Changelog for package flexbe_app
 * Modify package discovery handling
 * Use safe yaml loading
 
+3.0.0 (2022-02-22)
 ------------------
-* 3.0.0 (2022-02-22)
-> Original 2.4.0 (2022-02-22)
+* Originally tagged as ros2 version 2.4.0 (2022-02-22)
 * Initial ROS 2 "Foxy" release
 * For use with ROS 2 version 2.0.0 of flexbe_behavior_engine
-
-------------------
 
 2.3.0 (2020-11-19)
 ------------------
