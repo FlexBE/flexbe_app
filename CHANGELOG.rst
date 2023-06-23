@@ -3,7 +3,15 @@ Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Forthcoming
 -----------
-* Changed getbehaviorlist to return behavior object instead of names. Updated ui_panels_selectbehavior to reflect this change. Fixes bug mentioned in PR #76 in Noetic
+* update for use_sim_time handling
+* update CI for ros2
+* Changed getbehaviorlist to return behavior object instead of names. 
+* Updated ui_panels_selectbehavior to reflect this change. Fixes bug mentioned in PR #76 in Noetic
+* Updated to match noetic PR #77
+* beautify from one line block
+* correct semantic versioning given Noetic release
+* Changed getbehaviorlist to return behavior object instead of names. 
+* Updated ui_panels_selectbehavior to reflect this change. Fixes bug mentioned in PR #76 in Noetic
 * Updated to match noetic PR #77
 * beautify from one line block
 * correct semantic versioning given Noetic release
