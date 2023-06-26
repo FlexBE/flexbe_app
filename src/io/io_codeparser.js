@@ -84,7 +84,7 @@ IO.CodeParser = new (function() {
 	var state_begin_pattern = /^(?:\s*# x:(-?\d+) y:(-?\d+)(?: (\{.+\}))?)?\s*OperatableStateMachine\.add/im;
 
 		// [1] - content without quotes
-	var string_quotes_pattern = /^["'](.*)["']/;
+	var string_quotes_pattern = /["'](.*)["']/;
 		// [1] - name of the state class
 	var state_class_pattern = /^\s*(\w+)\(/;
 		// [1] - name of the behavior class , [2+2*i,3+2*i] - (optional) list of default keys or parameters
