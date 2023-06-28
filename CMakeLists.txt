@@ -32,7 +32,7 @@ add_custom_target(nw_install DEPENDS nwjs)
 ## Install ##
 #############
 
-INSTALL(PROGRAMS
+install(PROGRAMS
     bin/run_app
     bin/shortcut
     bin/nwjs_install
@@ -40,27 +40,27 @@ INSTALL(PROGRAMS
     bin/find_flexbe_packages
     DESTINATION lib/${PROJECT_NAME}
 )
-INSTALL(FILES
+install(FILES
     package.json
     DESTINATION lib/${PROJECT_NAME}
 )
-INSTALL(FILES
+install(FILES
     flexbe.desktop
     DESTINATION lib/${PROJECT_NAME}
 )
-INSTALL(DIRECTORY
+install(DIRECTORY
     src
     DESTINATION lib/${PROJECT_NAME}
 )
-INSTALL(DIRECTORY
+install(DIRECTORY
     launch
     DESTINATION lib/${PROJECT_NAME}
 )
-INSTALL(DIRECTORY
+install(DIRECTORY
     launch
     DESTINATION share/${PROJECT_NAME}
 )
-#INSTALL(DIRECTORY
+#install(DIRECTORY
 #    nwjs
 #    DESTINATION lib/${PROJECT_NAME}
 #    USE_SOURCE_PERMISSIONS

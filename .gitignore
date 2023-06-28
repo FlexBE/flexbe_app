@@ -1,2 +1,3 @@
 nwjs/
 .vscode/**
+__pycache__

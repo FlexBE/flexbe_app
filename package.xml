@@ -4,17 +4,18 @@
     schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
     <name>flexbe_app</name>
-    <version>3.0.1</version>
+    <version>3.1.0</version>
     <description>
         flexbe_app provides a user interface (editor + runtime control) for the FlexBE behavior engine.
     </description>
     <url>http://ros.org/wiki/flexbe_app</url>
     <author>Philipp Schillinger</author>
-    <maintainer email="schillin@kth.se">Philipp Schillinger</maintainer>
+    <maintainer email="philsplus@gmail.com">Philipp Schillinger</maintainer>
+    <maintainer email="robotics@cnu.edu">David Conner</maintainer>
 
     <license>BSD</license>
     <url type="website">http://ros.org/wiki/flexbe_core</url>
-    <url type="bugtracker">https://github.com/team-vigir/flexbe_behavior_engine/issues</url>
+    <url type="bugtracker">https://github.com/FlexBE/flexbe_app/issues</url>
 
     <buildtool_depend>ament_cmake</buildtool_depend>
 

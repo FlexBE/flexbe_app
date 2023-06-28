@@ -9,7 +9,7 @@ Clone the following repos into your ROS workspace:
     git clone https://github.com/FlexBE/flexbe_behavior_engine.git  # if not already present
     git clone https://github.com/FlexBE/flexbe_app.git
 
-Make sure that the branches are consistent (e.g. `git checkout ros2-devel-alpha`)
+Make sure that the branches are consistent (e.g. `git checkout ros2-devel`)
 
 Install any required dependencies.
 
@@ -80,7 +80,7 @@ A package is a state package for FlexBE if its `package.xml` declares the export
 
 It is then expected to provide Python class definitions as described in [Developing Basic States](http://wiki.ros.org/flexbe/Tutorials/Developing%20Basic%20States).
 
-Example: [flexbe_states](https://github.com/FlexBE/flexbe_behavior_engine/tree/ros2-devel-alpha/flexbe_states)
+Example: [flexbe_states](https://github.com/FlexBE/flexbe_behavior_engine/tree/ros2-devel/flexbe_states)
 
 ### Behavior packages
 
