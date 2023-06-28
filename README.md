@@ -2,6 +2,8 @@
 
 User interface (editor + runtime control) for the FlexBE behavior engine.
 
+![FlexBE CI](https://github.com/FlexBE/flexbe_app/workflows/FlexBE%20CI/badge.svg?branch=humble)
+
 ## Installation
 
 Clone the following repos into your ROS workspace:

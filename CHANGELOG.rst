@@ -1,9 +1,13 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Forthcoming
------------
-* update for use_sim_time handling
+3.1.0 (2023-06-29)
+------------------
+* Update logos and CI badge
+* Update to make default SM generation more compatible with ROS 2 Flake8 guidelines
+* Update for cross-compatibility with (future) flexbe_webui
+* Update for use_sim_time handling
+* flake8, pep257, and copyright cleanup
 * update CI for ros2
 * Changed getbehaviorlist to return behavior object instead of names. 
 * Updated ui_panels_selectbehavior to reflect this change. Fixes bug mentioned in PR #76 in Noetic

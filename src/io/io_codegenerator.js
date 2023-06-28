@@ -6,7 +6,7 @@ IO.CodeGenerator = new (function() {
 	var sm_names = [];
 	var state_init_list = [];
 
-	var ws = '\t';
+	var ws = '    ';  // flake8 does not want tabs
 
 	var autonomyMapping = function(autonomy_int) {
 		switch(parseInt(autonomy_int)) {
@@ -55,11 +55,16 @@ IO.CodeGenerator = new (function() {
 			}
 		}
 		// put together
-		code += "from flexbe_core import Behavior, Autonomy, OperatableStateMachine, ConcurrencyContainer, PriorityContainer, Logger\n";
+		code += "from flexbe_core import Autonomy\n";
+		code += "from flexbe_core import Behavior\n";
+		code += "from flexbe_core import ConcurrencyContainer\n";
+		code += "from flexbe_core import Logger\n";
+		code += "from flexbe_core import OperatableStateMachine\n";
+		code += "from flexbe_core import PriorityContainer\n";
 		code += import_list.sort().join("\n");
 		code += "\n";
 		// add manual imports
-		code += "# Additional imports can be added inside the following tags\n";
+		code += "\n# Additional imports can be added inside the following tags\n";
 		code += "# [MANUAL_IMPORT]";
 		if (Behavior.getManualCodeImport() == "") {
 			code += "\n\n";
@@ -73,14 +78,21 @@ IO.CodeGenerator = new (function() {
 
 	var generateBehaviorHead = function() {
 		var code = "";
-		code += "'''\n";
-		code += "Created on " + Behavior.getCreationDate() + "\n";
+		code += '"""\n';
+		code += "Define " + Behavior.getBehaviorName() + ".\n";
+		code += "\nCreated on " + Behavior.getCreationDate() + "\n";
 		code += "@author: " + Behavior.getAuthor() + "\n";
-		code += "'''\n";
+		code += '"""\n';
+		return code;
+	}
+
+	var generateClassDefinition = function() {
+		var code = "";
 		code += "class " + names.class_name + "(Behavior):\n";
-		code += ws+"'''\n";
+		code += ws+'"""\n';
+		code += ws+"Define " + Behavior.getBehaviorName() + ".\n\n";  // pep257 style single line
 		code += ws+ Behavior.getBehaviorDescription() + "\n";
-		code += ws+"'''\n";
+		code += ws+'"""\n';
 		return code;
 	}
 
@@ -88,7 +100,7 @@ IO.CodeGenerator = new (function() {
 		var code = "";
 		// header
 		code += ws+"def __init__(self, node):\n";
-		code += ws+ws+"super(" + names.class_name + ", self).__init__()\n";
+		code += ws+ws+"super().__init__()\n";
 		code += ws+ws+"self.name = '" + names.behavior_name + "'\n";
 		code += "\n";
 		// parameters
@@ -139,7 +151,7 @@ IO.CodeGenerator = new (function() {
 		}
 		code += "# [/MANUAL_INIT]\n";
 		code += "\n";
-		code += ws+ws+"# Behavior comments:\n\n";
+		code += ws+ws+"# Behavior comments:\n";
 		var notes = Behavior.getCommentNotes();
 		notes.sort(compareKey(note => note.getContent()));
 		for (var i = 0; i < notes.length; i++) {
@@ -192,7 +204,7 @@ IO.CodeGenerator = new (function() {
 			code += Behavior.getManualCodeCreate();
 		}
 		code += "# [/MANUAL_CREATE]\n";
-		code += "\n";
+		code += ""; // flake8 only skip one line in main methods
 
 		// generate contained state machines
 		var sub_sms = helper_getAllSubSMs(Behavior.getStatemachine());
@@ -203,9 +215,9 @@ IO.CodeGenerator = new (function() {
 		}
 
 		// generate root state machine
-		code += "\n";
+		code += "";  // flake8 only skip one line in main method
 		code += generateStateMachine(Behavior.getStatemachine(), false);
-		code += "\n";
+		code += ""; // flake8 only skip one line in main methods
 
 		code += ws+ws+"return _state_machine\n";
 		return code;
@@ -270,7 +282,7 @@ IO.CodeGenerator = new (function() {
 
 		code += ws+ws+"with " + sm_name + ":\n";
 
-		// smach needs to start with initial state
+		// FlexBE needs to start with initial state
 		var states = sm.getStates();
 		states.sort(compareKey(s => s.getStateName()));
 		var init_trans = sm.getTransitions().findElement(function(element) {
@@ -429,21 +441,25 @@ IO.CodeGenerator = new (function() {
 		code += "###########################################################\n";
 		code += "\n";
 
-		// imports
-		code += generateImports();
-		code += "\n\n";
-
 		// behavior head
 		code += generateBehaviorHead();
 		code += "\n\n";
 
+		// imports
+		code += generateImports();
+		code += "\n\n";
+
+		// class definition
+		code += generateClassDefinition();
+		code += "\n";
+
 		// behavior initialization
 		code += generateInitialization();
-		code += "\n\n";
+		code += "\n";
 
 		// behavior creation
 		code += generateCreation();
-		code += "\n\n";
+		code += "\n";
 
 		// private functions
 		code += generateFunctions();

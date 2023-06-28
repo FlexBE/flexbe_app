@@ -76,7 +76,7 @@ UI.Settings = new (function() {
 			'collapse_error': false,
 			'collapse_hint': false,
 			'default_package': 'flexbe_behaviors',
-			'code_indentation': 0,
+			'code_indentation': 2,  // default to 4 spaces (ROS flake8 guidelines)
 			'explicit_states': false,
 			'editor_command': 'gedit --new-window $FILE +$LINE',
 			'transition_mode': 1,

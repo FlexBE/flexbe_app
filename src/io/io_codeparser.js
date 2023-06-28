@@ -644,7 +644,7 @@ IO.CodeParser = new (function() {
 
 		var manual_init = (init_result.additional_init != "")?
 			extract_result.manual_init
-				+ "\n\t\t# Added additional init code\n\t\t"
+				+ "\n        # Added additional init code\n        "
 				+ init_result.additional_init :
 			extract_result.manual_init;
 
