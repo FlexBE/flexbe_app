@@ -97,8 +97,11 @@ IO.CodeGenerator = new (function() {
 		var code = "";
 		code += "class " + names.class_name + "(Behavior):\n";
 		code += ws+'"""\n';
-		code += ws+"Define " + Behavior.getBehaviorName() + ".\n\n";  // pep257 style single line
-		code += ws+ Behavior.getBehaviorDescription() + "\n";
+		code += ws+"Define " + Behavior.getBehaviorName() + ".\n\n";  // pep257 style single line comment
+		var lines = Behavior.getBehaviorDescription().split("\n")
+		for (var i = 0; i < lines.length; i++) {
+			code += ws + lines[i] + "\n";
+		}
 		code += ws+'"""\n';
 		return code;
 	}
