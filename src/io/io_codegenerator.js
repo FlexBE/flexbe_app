@@ -40,18 +40,25 @@ IO.CodeGenerator = new (function() {
 		// generate import lines
 		var import_list = [];
 		for (var i=0; i<imported_states.length; ++i) {
+			var s = imported_states[i];
+			var class_name = s.getStateClass();
+
 			if (imported_states[i] instanceof BehaviorState ||
-				!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(imported_states[i].getStateClass())) {
-				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass());
+				!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(class_name)) {
+				import_list.push("from " + s.getStateImport() + " import " + class_name);
 			} else {
-				import_list.push("from " + imported_states[i].getStateImport() + " import " + imported_states[i].getStateClass()
-					+ " as " + imported_states[i].getStatePackage() + "__" + imported_states[i].getStateClass());
+				// For duplicate class names, we prepend state name
+				// This is true even if not imported into given behavior defintion as 
+				// might be imported by super container later
+				class_name = s.getStatePackage() + "__" + s.getStateClass();
+				import_list.push("from " + s.getStateImport() + " import " + s.getStateClass()
+					+ " as " + class_name);
 			}
 
-			if (!imported_states[i].getStateClass().includes("SM") &&
-					!state_init_list.includes(ws + ws + imported_states[i].getStateClass() + ".initialize_ros(node)")) {
-
-					state_init_list.push(ws + ws + imported_states[i].getStateClass() + ".initialize_ros(node)")
+			var initialize_text = ws + ws + class_name + ".initialize_ros(node)";
+			if (!s.getStateClass().includes("SM") && 
+				!state_init_list.includes(initialize_text)) {
+					state_init_list.push(initialize_text)
 			}
 		}
 		// put together
