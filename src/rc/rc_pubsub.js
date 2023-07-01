@@ -100,7 +100,7 @@ RC.PubSub = new (function() {
 			}
 		} else if (msg.code == READY) {
 			RC.Controller.signalFinished();
-			UI.RuntimeControl.displayBehaviorFeedback(4, "Onboard engine just started.");
+			UI.RuntimeControl.displayBehaviorFeedback(4, "Onboard engine is ready.");
 		}
 	}
 
