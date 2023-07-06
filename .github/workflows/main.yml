@@ -3,8 +3,8 @@ name: CI
 on:
   push:
   pull_request:
-#  schedule:
-#    - cron: "0 0 * * 0" # every Sunday at midnight
+  schedule:
+    - cron: "0 0 * * 0" # every Sunday at midnight
   workflow_dispatch:
 
 jobs:
@@ -16,9 +16,8 @@ jobs:
     env:
       ADDITIONAL_DEBS: 'apt-utils dialog'
       CATKIN_LINT: pedantic
-      CATKIN_LINT_ARGS: '--ignore description_boilerplate'
-      CCACHE_DIR: /github/home/.ccache  # Directory for ccache (and how we enable ccache in industrial_ci)
       CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release
+      PARALLEL_TESTS: 1
       PYLINT_ARGS: '--output-format=parseable --errors-only --disable=method-hidden'
       PYLINT_CHECK: true
       ROS_REPO: main
@@ -30,16 +29,9 @@ jobs:
           - { ROS_DISTRO: noetic }
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           lfs: true
-          ssh-known-hosts: ''
-
-      # This step will fetch/store the directory used by ccache before/after the ci run
-      - uses: actions/cache@v2
-        with:
-          path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ matrix.ROS_DISTRO }}
 
       - uses: ros-industrial/industrial_ci@master
         with:
