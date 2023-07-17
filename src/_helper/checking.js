@@ -147,6 +147,10 @@ Checking = new (function() {
 			return "state machine " + statemachine.getStatePath() + " has no initial state";
 		}
 
+		if (statemachine.isConcurrent() && statemachine.getOutcomes().contains("preempted")) {
+			return "state machine " + statemachine.getStatePath() + " has outcome 'preempted' which is not permitted for concurrency statemachines";
+		}
+
 		for (var i = 0; i < states.length; i++) {
 			var error_string = undefined;
 			if (states[i] instanceof Statemachine) {
