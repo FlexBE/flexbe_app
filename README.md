@@ -2,7 +2,7 @@
 
 User interface (editor + runtime control) for the FlexBE behavior engine.
 
-![FlexBE CI](https://github.com/FlexBE/flexbe_app/workflows/FlexBE%20CI/badge.svg?branch=ros2-devel)
+![FlexBE CI](https://github.com/FlexBE/flexbe_app/workflows/FlexBE%20CI/badge.svg?branch=humble)
 
 Humble ![ROS Build Farm](https://build.ros2.org/job/Hdev__flexbe_app__ubuntu_jammy_amd64/badge/icon)
 
@@ -13,7 +13,7 @@ Clone the following repos into your ROS workspace:
     git clone https://github.com/FlexBE/flexbe_behavior_engine.git  # if not already present
     git clone https://github.com/FlexBE/flexbe_app.git
 
-Make sure that the branches are consistent (e.g. `git checkout ros2-devel`)
+Make sure that the branches are consistent (e.g. `git checkout humble`)
 
 Install any required dependencies.
 
