@@ -2,11 +2,13 @@
 
 User interface (editor + runtime control) for the FlexBE behavior engine.
 
+![FlexBE CI](https://github.com/FlexBE/flexbe_app/workflows/FlexBE%20CI/badge.svg?branch=noetic)
+
 ## Installation
 
 Clone the following repos into your ROS workspace:
 
-    git clone https://github.com/team-vigir/flexbe_behavior_engine.git  # if not already present
+    git clone https://github.com/FlexBE/flexbe_behavior_engine.git  # if not already present
     git clone https://github.com/FlexBE/flexbe_app.git
 
 Build you workspace:
@@ -49,15 +51,7 @@ Use the following launch file to run both of the above for local behavior execut
 
 ## Backwards Compatibility
 
-The FlexBE App in this repository replaces the previous *flexbe_chrome_app*. Please refer to the following announcement for an overview of the most important changes: [Future of the FlexBE Chrome App](https://github.com/pschillinger/flexbe_chrome_app/issues/11)
-
-If you have been using FlexBE already with the old Chrome app, you can convert the content of your repository according to the structure defined below. Besides adding the export statement to your state packages, you can automate this conversion by running the FlexBE App. If no behavior package is detected, it will suggest you to initialize one.
-
----
-
-Deprecated Chrome App branch: **deprecated/chrome_app**
-
-*Please checkout the above branch on all repos if available for a best-effort support of the deprecated Chrome app. However, please consider to update as soon as possible according to the instructions below to ensure that the system will remain working in the future and to receive all updates.*
+The FlexBE App in this repository replaces the previous *flexbe_chrome_app*. 
 
 ---
 
@@ -77,7 +71,7 @@ A package is a state package for FlexBE if its `package.xml` declares the export
     ...
     </package>
 
-It is then expected to provide Python class definitions as described in [Developing Basic States](http://wiki.ros.org/flexbe/Tutorials/Developing%20Basic%20States). Example: [flexbe_states](https://github.com/team-vigir/flexbe_behavior_engine/tree/feature/flexbe_app/flexbe_states). Adding the above export statement is the only change to previous versions.
+It is then expected to provide Python class definitions as described in [Developing Basic States](http://wiki.ros.org/flexbe/Tutorials/Developing%20Basic%20States). Example: [flexbe_states](https://github.com/FlexBE/flexbe_behavior_engine/tree/feature/flexbe_app/flexbe_states). Adding the above export statement is the only change to previous versions.
 
 ### Behavior packages
 
