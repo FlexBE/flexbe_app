@@ -614,7 +614,12 @@ IO.CodeParser = new (function() {
 		if (code_class_split.length != 4) throw "behavior class content could not be separated";
 
 		var desc_result = code_class_split[3].match(doc_block_pattern);
-		var behavior_description = (desc_result != null)? desc_result[1].trim() : "";
+		var description_raw = (desc_result != null)? desc_result[1].trim() : "";
+		var desc_lines = description_raw.split("\n");
+		var behavior_description = ""
+		for (var i = 0; i < desc_lines.length; i++) {
+			behavior_description += desc_lines[i].trim() + "\n";  // remove indentation from multiline descriptions
+		}
 
 		// split into relevant methods
 		var code_init_split = code_class_split[3].split(init_def_pattern);

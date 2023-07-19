@@ -13,8 +13,13 @@ IO.ManifestParser = new (function() {
 		) return;
 
 		var name = xml.getElementsByTagName("behavior")[0].getAttribute("name");
-		var description = (xml.getElementsByTagName("description").length > 0 && xml.getElementsByTagName("description")[0].childNodes.length > 0) ?
+		var description_raw = (xml.getElementsByTagName("description").length > 0 && xml.getElementsByTagName("description")[0].childNodes.length > 0) ?
 			xml.getElementsByTagName("description")[0].childNodes[0].nodeValue.trim().replace(/\s+/, " ") : "";
+		var desc_lines = description_raw.split("\n");
+		var description = ""
+		for (var i = 0; i < desc_lines.length; i++) {
+			description += desc_lines[i].trim() + "\n";  // remove indentation from multiline descriptions
+		}
 		var tags = (xml.getElementsByTagName("tagstring").length > 0 && xml.getElementsByTagName("tagstring")[0].childNodes.length > 0) ?
 			xml.getElementsByTagName("tagstring")[0].childNodes[0].nodeValue.trim() : "";
 		var author = (xml.getElementsByTagName("author").length > 0 && xml.getElementsByTagName("author")[0].childNodes.length > 0) ?

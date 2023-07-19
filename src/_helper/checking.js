@@ -277,12 +277,19 @@ Checking = new (function() {
 
 		var close_stack = [];
 		var dot_last = false;
-		
 		for (var i = 0; i < expr.length; i++) {
 			var c = expr[i];
-			if (dot_last && !c.match(/[a-z_0-9]/i)) return false;
+			if (dot_last && !c.match(/[A-Z,a-z_ 0-9]/i) && !closing.contains(c)) {
+				T.logError("Invalid expression <"+expr+"> : either number, letter, comma, space, underscore, or closing delimiter must follow dot.\n");
+				return false;
+			}
 			else dot_last = false;
-			if (c == "," && close_stack.length == 0) return false;
+
+			if (c == "," && close_stack.length == 0) 
+			{
+				T.logError("Invalid expression <"+expr+"> : comma encountered while not in delimiters!\n");
+				return false;
+			}
 			if (close_stack.length > 0 && c == close_stack[close_stack.length - 1]) {
 				close_stack.pop();
 				continue;
@@ -294,16 +301,25 @@ Checking = new (function() {
 				}
 				if (c == "#") {
 					if (allow_comment) break;
-					else return false;
+					else {
+						T.logError("Invalid expression <"+expr+"> : comments using # are not allowed here.\n");
+						return false;
+					}
 				}
 				if (c == '.') {
 					dot_last = true;
 					continue;
 				}
-				if (closing.contains(c)) return false;
+				if (closing.contains(c)) {
+					T.logError("Invalid expression <"+expr+"> : character '" + c + " in closing without opening.\n");
+					return false;
+				}
 			}
 		}
-		if (close_stack.length > 0) return false;
+		if (close_stack.length > 0) {
+			T.logError("Invalid expression <"+expr+"> : missing final delimiter!\n");
+			return false;
+		}
 
 		return true;
 	}

@@ -100,7 +100,7 @@ RC.PubSub = new (function() {
 			}
 		} else if (msg.code == READY) {
 			RC.Controller.signalFinished();
-			UI.RuntimeControl.displayBehaviorFeedback(4, "Onboard engine just started.");
+			UI.RuntimeControl.displayBehaviorFeedback(4, "Onboard engine is ready.");
 		}
 	}
 
@@ -460,7 +460,7 @@ RC.PubSub = new (function() {
 
 			// request start
 			behavior_start_publisher.publish({
-				behavior_name: Behavior.getBehaviorName(),
+				behavior_name: Behavior.getBehaviorPackage() + "/" + Behavior.getBehaviorName(),
 				autonomy_level: autonomy,
 				arg_keys: param_keys,
 				arg_values: param_vals,
@@ -479,7 +479,7 @@ RC.PubSub = new (function() {
 
 			// request start
 			behavior_start_publisher.publish({
-				behavior_name: Behavior.getBehaviorName(),
+				behavior_name: Behavior.getBehaviorPackage() + "/" + Behavior.getBehaviorName(),
 				autonomy_level: autonomy,
 				arg_keys: param_keys,
 				arg_values: param_vals,

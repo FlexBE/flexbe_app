@@ -11,7 +11,10 @@ IO.ManifestGenerator = new (function() {
 		content += "    <author>" + Behavior.getAuthor() + "</author>\n";
 		content += "    <date>" + Behavior.getCreationDate() + "</date>\n";
 		content += "    <description>\n";
-		content += "        " + Behavior.getBehaviorDescription() + "\n";
+		var lines = Behavior.getBehaviorDescription().split("\n")
+		for (var i = 0; i < lines.length; i++) {
+			content += "        " + lines[i] + "\n";
+		}
 		content += "    </description>\n";
 		content += "\n";
 

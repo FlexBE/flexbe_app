@@ -2,7 +2,7 @@
 
 User interface (editor + runtime control) for the FlexBE behavior engine.
 
-![FlexBE CI](https://github.com/FlexBE/flexbe_app/workflows/FlexBE%20CI/badge.svg?branch=humble)
+![FlexBE CI](https://github.com/FlexBE/flexbe_app/workflows/FlexBE%20CI/badge.svg?branch=ros2-devel)
 
 Humble ![ROS Build Farm](https://build.ros2.org/job/Hdev__flexbe_app__ubuntu_jammy_amd64/badge/icon)
 
