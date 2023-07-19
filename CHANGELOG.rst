@@ -1,6 +1,18 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package flexbe_app
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.1.1 (2023-07-19)
+------------------
+* update checking to warn of specific errors
+* modify code alignment for flake8
+* add Apache default license to SM code (to do: make license text configurable)
+* update cmake_minimum_version
+* Add ROS Build Farm badge to README
+* tweak 'is ready' message to match status, not 'just started'
+* handle new lines in description and indentation for xml and python comments
+* handle initialize_ros() call for duplicate state names
+* include package name in behavior request (requires latest flexbe_core v2.2.0+)
+
 3.1.0 (2023-06-29)
 ------------------
 * Update logos and CI badge
