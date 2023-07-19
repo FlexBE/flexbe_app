@@ -7,7 +7,7 @@ IO.CodeGenerator = new (function() {
 	var state_init_list = [];
 
 	var ws = '    ';  // flake8 does not want tabs
-
+	var wss = '   ';  // shorter for SM.add alignment
 	var autonomyMapping = function(autonomy_int) {
 		switch(parseInt(autonomy_int)) {
 			case 0: return "Autonomy.Off";
@@ -93,6 +93,24 @@ IO.CodeGenerator = new (function() {
 		return code;
 	}
 
+	var generateLicenseText = function() {
+		var code = "";
+		code += '# Copyright ' + Behavior.getCreationDate() + " " + Behavior.getAuthor() + "\n";
+		code += '#' + "\n";
+		code += '# Licensed under the Apache License, Version 2.0 (the "License");' + "\n";
+		code += '# you may not use this file except in compliance with the License.' + "\n";
+		code += '# You may obtain a copy of the License at' + "\n";
+		code += '#' + "\n";
+		code += '#     http://www.apache.org/licenses/LICENSE-2.0' + "\n";
+		code += '#' + "\n";
+		code += '# Unless required by applicable law or agreed to in writing, software' + "\n";
+		code += '# distributed under the License is distributed on an "AS IS" BASIS,' + "\n";
+		code += '# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.' + "\n";
+		code += '# See the License for the specific language governing permissions and' + "\n";
+		code += '# limitations under the License.' + "\n";
+		return code;
+	}
+
 	var generateClassDefinition = function() {
 		var code = "";
 		code += "class " + names.class_name + "(Behavior):\n";
@@ -155,7 +173,7 @@ IO.CodeGenerator = new (function() {
 		code += ws+ws+"# Additional initialization code can be added inside the following tags\n";
 		code += ws+ws+"# [MANUAL_INIT]";
 		if (Behavior.getManualCodeInit() == "") {
-			code += "\n"+ws+ws+"\n"+ws+ws;
+			code += "\n\n"+ws+ws;
 		} else {
 			code += Behavior.getManualCodeInit();
 		}
@@ -209,7 +227,7 @@ IO.CodeGenerator = new (function() {
 		code += ws+ws+"# Additional creation code can be added inside the following tags\n";
 		code += ws+ws+"# [MANUAL_CREATE]";
 		if (Behavior.getManualCodeCreate() == "") {
-			code += "\n"+ws+ws+"\n"+ws+ws;
+			code += "\n\n"+ws+ws;
 		} else {
 			code += Behavior.getManualCodeCreate();
 		}
@@ -221,7 +239,7 @@ IO.CodeGenerator = new (function() {
 		sub_sms.sort(compareKey(sm => sm.getStatePath()));
 		for (var i = sub_sms.length - 1; i >= 0; i--) {
 			code += generateStateMachine(sub_sms[i], true);
-			code += "\n";
+			code += "";  // flake8 only skip one line in main method
 		}
 
 		// generate root state machine
@@ -238,7 +256,7 @@ IO.CodeGenerator = new (function() {
 		code += ws+"# Private functions can be added inside the following tags\n";
 		code += ws+"# [MANUAL_FUNC]";
 		if (Behavior.getManualCodeFunc() == "") {
-			code += "\n"+ws+"\n"+ws;
+			code += "\n\n"+ws;
 		} else {
 			code += Behavior.getManualCodeFunc();
 		}
@@ -340,7 +358,7 @@ IO.CodeGenerator = new (function() {
 			var sm_name = sm_names.findElement(function (element) {
 				return element.sm.getStatePath() == s.getStatePath();
 			}).name;
-			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ sm_name + ",\n";
+			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+wss+ sm_name + ",\n";
 
 		} else if (s instanceof BehaviorState) {
 			var defkeys_str = "";
@@ -350,7 +368,7 @@ IO.CodeGenerator = new (function() {
 				be_defkeys_str.push("'"+s.getInputKeys()[j]+"'");
 			}
 			if (be_defkeys_str.length > 0) {
-				defkeys_str = ",\n"+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"default_keys=[" + be_defkeys_str.join(',') + "]";
+				defkeys_str = ",\n"+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+wss+"default_keys=[" + be_defkeys_str.join(',') + "]";
 			}
 			var params_str = "";
 			var be_params_str = [];
@@ -359,15 +377,15 @@ IO.CodeGenerator = new (function() {
 				be_params_str.push("'"+s.getParameters()[j]+"': "+s.getParameterValues()[j]);
 			}
 			if (be_params_str.length > 0) {
-				params_str = ",\n"+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"parameters={" + be_params_str.join(', ') + "}";
+				params_str = ",\n"+ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+wss+"parameters={" + be_params_str.join(', ') + "}";
 			}
-			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"self.use_behavior(" + s.getStateClass() + ", '" + s.getStatePath().substr(1) + "'" + defkeys_str + params_str + "),\n";
+			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+wss+"self.use_behavior(" + s.getStateClass() + ", '" + s.getStatePath().substr(1) + "'" + defkeys_str + params_str + "),\n";
 
 		} else {
 			var class_key = (!UI.Settings.isExplicitStates() && WS.Statelib.isClassUnique(s.getStateClass()))?
 				s.getStateClass() :
 				s.getStatePackage() + "__" + s.getStateClass();
-			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+ class_key + "(";
+			code += ws+ws+ws+ws+ws+ws+ws+ws+ws+wss+ class_key + "(";
 			var param_strings = [];
 			for (var j=0; j<s.getParameters().length; ++j) {
 				if (s.getParameters()[j].startsWith("?")) continue;
@@ -378,7 +396,7 @@ IO.CodeGenerator = new (function() {
 		}
 
 		// transitions
-		code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"transitions={";
+		code += ws+ws+ws+ws+ws+ws+ws+ws+ws+wss+"transitions={";
 		var transition_strings = [];
 		var state_transitions = t.filter(function (element) {
 			return element.getFrom().getStateName() == s.getStateName();
@@ -397,7 +415,7 @@ IO.CodeGenerator = new (function() {
 		code += "},\n";
 
 		// autonomy
-		code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"autonomy={";
+		code += ws+ws+ws+ws+ws+ws+ws+ws+ws+wss+"autonomy={";
 		var autonomy_strings = [];
 		for (var j=0; j<s.getOutcomes().length; ++j) {
 			autonomy_strings.push("'" + s.getOutcomes()[j] + "': " + autonomyMapping(s.getAutonomy()[j]));
@@ -418,7 +436,7 @@ IO.CodeGenerator = new (function() {
 			}
 			if (remapping_strings.length > 0) {
 				code += ",\n";
-				code += ws+ws+ws+ws+ws+ws+ws+ws+ws+ws+"remapping={";
+				code += ws+ws+ws+ws+ws+ws+ws+ws+ws+wss+"remapping={";
 				code += remapping_strings.join(", ");
 				code += "}";
 			}
@@ -438,11 +456,17 @@ IO.CodeGenerator = new (function() {
 		sm_counter = 0;
 		sm_names = [];
 		ws = UI.Settings.getCodeIndentation();
-		console.log('Using whitespace: "'+ws+'"')
+		if (ws != '    ') {
+			wss = ws;  // no specific alignment policy except for 4 spaces
+		}
+		T.logInfo('Using whitespace: "'+ws+'" and "' + wss + '"')
 
 		// prefix
 		var code = "#!/usr/bin/env python\n";
 		code += "# -*- coding: utf-8 -*-\n";
+		code += "\n";
+		code += generateLicenseText();
+		code += "\n";
 		code += "###########################################################\n";
 		code += "#               WARNING: Generated code!                  #\n";
 		code += "#              **************************                 #\n";
