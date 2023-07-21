@@ -93,21 +93,37 @@ IO.CodeGenerator = new (function() {
 		return code;
 	}
 
+	var getYearFromCreationDate = function() {
+		// Copyright only wants year
+		var date_string = Behavior.getCreationDate();
+		try {
+			var date_object = new Date(date_string);
+			var year = date_object.getFullYear();
+			if (isNaN(year)) {
+				return new Date().getFullYear();
+			}
+			return year;
+		} catch (err) {
+			return new Date().getFullYear();
+		}
+	}
+
 	var generateLicenseText = function() {
+		// @todo - make the license configurable
 		var code = "";
-		code += '# Copyright ' + Behavior.getCreationDate() + " " + Behavior.getAuthor() + "\n";
-		code += '#' + "\n";
-		code += '# Licensed under the Apache License, Version 2.0 (the "License");' + "\n";
-		code += '# you may not use this file except in compliance with the License.' + "\n";
-		code += '# You may obtain a copy of the License at' + "\n";
-		code += '#' + "\n";
-		code += '#     http://www.apache.org/licenses/LICENSE-2.0' + "\n";
-		code += '#' + "\n";
-		code += '# Unless required by applicable law or agreed to in writing, software' + "\n";
-		code += '# distributed under the License is distributed on an "AS IS" BASIS,' + "\n";
-		code += '# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.' + "\n";
-		code += '# See the License for the specific language governing permissions and' + "\n";
-		code += '# limitations under the License.' + "\n";
+		code += '# Copyright ' + getYearFromCreationDate() + " " + Behavior.getAuthor() + '\n';
+		code += '#\n';
+		code += '# Licensed under the Apache License, Version 2.0 (the "License");\n';
+		code += '# you may not use this file except in compliance with the License.\n';
+		code += '# You may obtain a copy of the License at\n';
+		code += '#\n';
+		code += '#     http://www.apache.org/licenses/LICENSE-2.0\n';
+		code += '#\n';
+		code += '# Unless required by applicable law or agreed to in writing, software\n';
+		code += '# distributed under the License is distributed on an "AS IS" BASIS,\n';
+		code += '# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n';
+		code += '# See the License for the specific language governing permissions and\n';
+		code += '# limitations under the License.\n';
 		return code;
 	}
 
@@ -118,7 +134,11 @@ IO.CodeGenerator = new (function() {
 		code += ws+"Define " + Behavior.getBehaviorName() + ".\n\n";  // pep257 style single line comment
 		var lines = Behavior.getBehaviorDescription().split("\n")
 		for (var i = 0; i < lines.length; i++) {
-			code += ws + lines[i] + "\n";
+			if (lines[i].length == 0) {
+				code += "\n";
+			} else {
+				code += ws + lines[i] + "\n";
+			}
 		}
 		code += ws+'"""\n';
 		return code;
