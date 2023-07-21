@@ -70,6 +70,10 @@ Behavior = new (function() {
 	}
 
 	this.getCreationDate = function() {
+		if (creation_date == "") {
+			date = new Date();
+			creation_date = date.toDateString();
+		}
 		return creation_date;
 	}
 	this.setCreationDate = function(_creation_date) {
