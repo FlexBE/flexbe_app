@@ -13,7 +13,11 @@ IO.ManifestGenerator = new (function() {
 		content += "    <description>\n";
 		var lines = Behavior.getBehaviorDescription().split("\n")
 		for (var i = 0; i < lines.length; i++) {
-			content += "        " + lines[i] + "\n";
+			if (lines[i].length == 0) {
+				content += "\n";
+			} else {
+				content += "        " + lines[i] + "\n";
+			}
 		}
 		content += "    </description>\n";
 		content += "\n";
