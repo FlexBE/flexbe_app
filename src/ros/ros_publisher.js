@@ -16,6 +16,7 @@ import importlib
 import json
 import yaml
 import rosidl_runtime_py.set_message
+from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 
 topic = sys.argv[1]
 msg_def = sys.argv[2].split('/')
@@ -29,7 +30,12 @@ node = rclpy.create_node('flexbe_app_pub_%s' % topic.replace('/', '_'))
 msg_module = importlib.import_module('%s.msg' % msg_pkg)
 msg_class = getattr(msg_module, msg_name)
 
-pub = node.create_publisher(msg_class, topic, 10)
+if latched:
+	print(f"Latched topic for {msg_class} {topic}!", flush=True)
+	latching_qos = QoSProfile(depth=1, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
+	pub = node.create_publisher(msg_class, topic, qos_profile=latching_qos)
+else:
+	pub = node.create_publisher(msg_class, topic, 10)
 
 while rclpy.ok():
 	json_str = sys.stdin.readline()
