@@ -352,10 +352,22 @@ Behavior = new (function() {
 	var createStateStructure = function(s, info) {
 		var result = {};
 		result.path = s.getStatePath();
+		result.state_id = -1;  // not calculated or used in UI (@TODO - later)
 		result.outcomes = s.getOutcomes();
 		result.transitions = [];
+		result.type = 0; // basic state
 		try {
 			if (s.getContainer() != undefined) {
+				if (s instanceof Statemachine) {
+					if (s.isConcurrent()) {
+						result.type = 3;  // @todo - define using enums
+					} else if (s.isPriority()) {
+						result.type = 2;
+					} else {
+						result.type = 1; // basic container
+					}
+				}
+
 				result.autonomy = s.getAutonomy();
 				var transitions = s.getContainer().getTransitions();
 				for (var i=0; i<result.outcomes.length; i++) {
@@ -368,7 +380,9 @@ Behavior = new (function() {
 					}
 					result.transitions.push(target_name);
 				}
+
 			}
+
 			result.children = [];
 			if (s instanceof BehaviorState) {
 				s = s.getBehaviorStatemachine();
