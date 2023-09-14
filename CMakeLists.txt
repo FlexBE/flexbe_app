@@ -2,13 +2,6 @@ cmake_minimum_required(VERSION 3.10.2)
 project(flexbe_app)
 
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_python REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclpy REQUIRED)
-find_package(rclcpp_action REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
 
 # use add_library() or add_executable() as required
 #add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})
