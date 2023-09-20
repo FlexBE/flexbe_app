@@ -3,7 +3,7 @@ UI.Feed = new (function() {
 
 	var requestLatestVersion = function(callback) {
 		var xhr = new XMLHttpRequest();
-		xhr.open("GET", "https://api.github.com/repos/flexbe/flexbe_app/tags", true);
+		xhr.open("GET", "https://api.github.com/repos/mojin-robotics/flexbe_app/tags", true);
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4) {
 				if (xhr.responseText != "") {
