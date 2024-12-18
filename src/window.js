@@ -1,8 +1,7 @@
 window.onload = function() {
-	var gui = require('nw.gui');
-
+	const { app } = require('electron');
 	Behavior.resetBehavior();
-
+	
 	// Initialize gui panel
 	UI.Statemachine.initialize();
 	UI.Menu.toDashboardClicked();
@@ -15,7 +14,7 @@ window.onload = function() {
 	RC.Controller.initialize();
 
 	// Initialize runtime control
-	if (!gui.App.argv.contains('--offline') && !gui.App.argv.contains('-o')) {
+	if (!process.argv.contains('--offline') && !process.argv.contains('-o')) {
 		RC.ROS.trySetupConnection();
 	} else {
 		T.logInfo("Running in offline mode: please connect to ROS manually if desired.");
@@ -26,15 +25,15 @@ window.onload = function() {
 
 	UI.Feed.initialize();
 
-	if (gui.App.argv.contains('--run-tests')) {
+	if (process.argv.contains('--run-tests')) {
 		setTimeout(() => {
-			TestReport.runAllTests(status =>  gui.App.quit());
+			TestReport.runAllTests(status =>  app.quit());
 		}, 5 * 1000);
 	}
 
-	else if (gui.App.argv.contains('--check-behaviors')) {
+	else if (process.argv.contains('--check-behaviors')) {
 		setTimeout(() => {
-			CheckBehaviorsReport.checkAllBehaviors(gui.App.quit);
+			CheckBehaviorsReport.checkAllBehaviors(app.quit);
 		}, 5 * 1000);
 	}
 }

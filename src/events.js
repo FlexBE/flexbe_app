@@ -168,29 +168,21 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-
-    nw.Window.get().on('new-win-policy', function(frame, url, policy) {
-        policy.ignore();
-        nw.Shell.openExternal(url);
+window.addEventListener('click', (event) => {
+    if (event.target.tagName === 'A' && event.target.href) {
+        event.preventDefault()
+        shell.openExternal(event.target.href)
+    }
+})
+  window.addEventListener('will-navigate', (event, url, navigationType) => {
+      if (navigationType === 'newwindow') {
+        event.preventDefault(); // Prevent default window creation
+        shell.openExternal(url); // Open the link in the default system browser
+      }
     });
 
-    process.on('exit', (code) => {
-        RC.PubSub.shutdown();
-        ROS.shutdown();
-        IO.PackageParser.stopWatching();
-		IO.StateParser.close();
-    });
 
-    nw.App.on('open', () => {
-        nw.Window.open('src/window.html', {
-            'width': 1340,
-            'height': 830,
-            'min_width': 1340,
-            'min_height': 650
-        });
-    });
-
-    nw.Window.get().on('close', function() {
+	window.addEventListener('close', function() {
         var allow_close = true;
         if (RC.Controller.isReadonly() || RC.Controller.isRunning()) {
             var txt = "Behavior "+Behavior.getBehaviorName()+" is currently running!\n";
@@ -217,6 +209,17 @@ document.addEventListener('DOMContentLoaded', function() {
             this.close(true);
         }
     });
+
+
+    process.on('exit', (code) => {
+        RC.PubSub.shutdown();
+        ROS.shutdown();
+        IO.PackageParser.stopWatching();
+		IO.StateParser.close();
+    });
+
+
+
 
     window.addEventListener('resize', function() {
         UI.Statemachine.recreateDrawingArea();

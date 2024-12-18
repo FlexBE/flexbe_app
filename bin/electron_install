@@ -1,0 +1,55 @@
+#!/bin/bash -e
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+TEMPFILE="electron.zip"
+mkdir -p ../electron
+cd ../electron
+
+VERSION="v34.0.0-beta.9" # verified working, to be incremented explicitly
+
+# check if electron is already existing and up-to-date, abort if so
+if [ -f electron  ]; then
+	if [ -f version ] && [ "$(cat version)" == "$VERSION" ]; then
+		exit 0
+	else
+		cd ..
+		mv electron electron_old
+		mkdir electron
+		cd electron
+	fi
+fi
+
+# determine correct executable version
+OS="linux"
+if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
+	OS="win"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+	OS="darwin"
+else
+	OS="linux"
+fi
+ARCH="x64"
+if [ `uname -m` == "x86_64" ]; then
+	ARCH="x64"
+elif [ `uname -m` == "aarch64" ]; then
+	ARCH="arm64"
+else
+	ARCH="ia32"
+fi
+
+# ready to go
+echo "Downloading electron..."
+URL_FILE="https://github.com/electron/electron/releases/download/$VERSION/electron-$VERSION-$OS-$ARCH.zip"
+echo $URL_FILE
+wget -q -O $TEMPFILE $URL_FILE
+
+echo "Unpacking..."
+unzip $TEMPFILE
+rm $TEMPFILE
+echo "$VERSION" > version
+
+cd ..
+if [ -f electron_old/electron ]; then
+	rm -rf electron_old
+fi
+
+echo -e "Successfully downloaded electron!"

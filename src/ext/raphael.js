@@ -1,11 +1,3 @@
-// ┌────────────────────────────────────────────────────────────────────┐ \\
-// │ Raphaël 2.1.2 - JavaScript Vector Library                          │ \\
-// ├────────────────────────────────────────────────────────────────────┤ \\
-// │ Copyright © 2008-2012 Dmitry Baranovskiy (http://raphaeljs.com)    │ \\
-// │ Copyright © 2008-2012 Sencha Labs (http://sencha.com)              │ \\
-// ├────────────────────────────────────────────────────────────────────┤ \\
-// │ Licensed under the MIT (http://raphaeljs.com/license.html) license.│ \\
-// └────────────────────────────────────────────────────────────────────┘ \\
 // Copyright (c) 2013 Adobe Systems Incorporated. All rights reserved.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,8 +16,17 @@
 // ├────────────────────────────────────────────────────────────┤ \\
 // │ Author Dmitry Baranovskiy (http://dmitry.baranovskiy.com/) │ \\
 // └────────────────────────────────────────────────────────────┘ \\
-
-(function (glob) {
+(function (glob, factory) {
+    if (typeof define === "function" && define.amd) {
+        define("eve", function() {
+            return factory();
+        });
+    } else if (typeof exports === "object") {
+        module.exports = factory();
+    } else {
+        glob.eve = factory();
+    }
+}(this, function(){
     var version = "0.4.2",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
@@ -50,9 +51,9 @@
      - varargs (...) the rest of arguments will be sent to event handlers
 
      = (object) array of returned values from the listeners
-    \*/
+     \*/
         eve = function (name, scope) {
-			name = String(name);
+            name = String(name);
             var e = events,
                 oldstop = stop,
                 args = Array.prototype.slice.call(arguments, 2),
@@ -112,8 +113,8 @@
             current_event = ce;
             return out.length ? out : null;
         };
-		// Undocumented. Debug only.
-		eve._events = events;
+    // Undocumented. Debug only.
+    eve._events = events;
     /*\
      * eve.listeners
      [ method ]
@@ -125,7 +126,7 @@
      - name (string) name of the event, dot (`.`) or slash (`/`) separated
 
      = (array) array of event handlers
-    \*/
+     \*/
     eve.listeners = function (name) {
         var names = name.split(separator),
             e = events,
@@ -157,7 +158,7 @@
         }
         return out;
     };
-    
+
     /*\
      * eve.on
      [ method ]
@@ -172,21 +173,21 @@
      - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
      **
-     = (function) returned function accepts a single numeric parameter that represents z-index of the handler. It is an optional feature and only used when you need to ensure that some subset of handlers will be invoked in a given order, despite of the order of assignment. 
+     = (function) returned function accepts a single numeric parameter that represents z-index of the handler. It is an optional feature and only used when you need to ensure that some subset of handlers will be invoked in a given order, despite of the order of assignment.
      > Example:
      | eve.on("mouse", eatIt)(2);
      | eve.on("mouse", scream);
      | eve.on("mouse", catchIt)(1);
      * This will ensure that `catchIt()` function will be called before `eatIt()`.
-	 *
+     *
      * If you want to put your handler before non-indexed handlers, specify a negative value.
      * Note: I assume most of the time you don’t need to worry about z-index, but it’s nice to have this feature “just in case”.
-    \*/
+     \*/
     eve.on = function (name, f) {
-		name = String(name);
-		if (typeof f != "function") {
-			return function () {};
-		}
+        name = String(name);
+        if (typeof f != "function") {
+            return function () {};
+        }
         var names = name.split(separator),
             e = events;
         for (var i = 0, ii = names.length; i < ii; i++) {
@@ -209,29 +210,29 @@
      [ method ]
      **
      * Returns function that will fire given event with optional arguments.
-	 * Arguments that will be passed to the result function will be also
-	 * concated to the list of final arguments.
- 	 | el.onclick = eve.f("click", 1, 2);
- 	 | eve.on("click", function (a, b, c) {
- 	 |     console.log(a, b, c); // 1, 2, [event object]
- 	 | });
+     * Arguments that will be passed to the result function will be also
+     * concated to the list of final arguments.
+     | el.onclick = eve.f("click", 1, 2);
+     | eve.on("click", function (a, b, c) {
+     |     console.log(a, b, c); // 1, 2, [event object]
+     | });
      > Arguments
-	 - event (string) event name
-	 - varargs (…) and any other arguments
-	 = (function) possible event handler function
-    \*/
-	eve.f = function (event) {
-		var attrs = [].slice.call(arguments, 1);
-		return function () {
-			eve.apply(null, [event, null].concat(attrs).concat([].slice.call(arguments, 0)));
-		};
-	};
+     - event (string) event name
+     - varargs (…) and any other arguments
+     = (function) possible event handler function
+     \*/
+    eve.f = function (event) {
+        var attrs = [].slice.call(arguments, 1);
+        return function () {
+            eve.apply(null, [event, null].concat(attrs).concat([].slice.call(arguments, 0)));
+        };
+    };
     /*\
      * eve.stop
      [ method ]
      **
      * Is used inside an event handler to stop the event, preventing any subsequent listeners from firing.
-    \*/
+     \*/
     eve.stop = function () {
         stop = 1;
     };
@@ -248,7 +249,7 @@
      = (string) name of the event, if `subname` is not specified
      * or
      = (boolean) `true`, if current event’s name contains `subname`
-    \*/
+     \*/
     eve.nt = function (subname) {
         if (subname) {
             return new RegExp("(?:\\.|\\/|^)" + subname + "(?:\\.|\\/|$)").test(current_event);
@@ -263,7 +264,7 @@
      **
      **
      = (array) names of the event
-    \*/
+     \*/
     eve.nts = function () {
         return current_event.split(separator);
     };
@@ -272,24 +273,24 @@
      [ method ]
      **
      * Removes given function from the list of event listeners assigned to given name.
-	 * If no arguments specified all the events will be cleared.
+     * If no arguments specified all the events will be cleared.
      **
      > Arguments
      **
      - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
-    \*/
+     \*/
     /*\
      * eve.unbind
      [ method ]
      **
      * See @eve.off
-    \*/
+     \*/
     eve.off = eve.unbind = function (name, f) {
-		if (!name) {
-		    eve._events = events = {n: {}};
-			return;
-		}
+        if (!name) {
+            eve._events = events = {n: {}};
+            return;
+        }
         var names = name.split(separator),
             e,
             key,
@@ -357,7 +358,7 @@
      - f (function) event handler function
      **
      = (function) same return function as @eve.on
-    \*/
+     \*/
     eve.once = function (name, f) {
         var f2 = function () {
             eve.unbind(name, f2);
@@ -370,34 +371,34 @@
      [ property (string) ]
      **
      * Current version of the library.
-    \*/
+     \*/
     eve.version = version;
     eve.toString = function () {
         return "You are running Eve " + version;
     };
-    (typeof module != "undefined" && module.exports) ? (module.exports = eve) : (typeof define != "undefined" ? (define("eve", [], function() { return eve; })) : (glob.eve = eve));
-})(this);
-// ┌─────────────────────────────────────────────────────────────────────┐ \\
-// │ "Raphaël 2.1.2" - JavaScript Vector Library                         │ \\
-// ├─────────────────────────────────────────────────────────────────────┤ \\
-// │ Copyright (c) 2008-2011 Dmitry Baranovskiy (http://raphaeljs.com)   │ \\
-// │ Copyright (c) 2008-2011 Sencha Labs (http://sencha.com)             │ \\
-// │ Licensed under the MIT (http://raphaeljs.com/license.html) license. │ \\
-// └─────────────────────────────────────────────────────────────────────┘ \\
+
+    return eve;
+}));
+
+// ┌────────────────────────────────────────────────────────────────────┐ \\
+// │ Raphaël 2.1.4 - JavaScript Vector Library                      │ \\
+// ├────────────────────────────────────────────────────────────────────┤ \\
+// │ Core Module                                                        │ \\
+// ├────────────────────────────────────────────────────────────────────┤ \\
+// │ Licensed under the MIT (http://raphaeljs.com/license.html) license.│ \\
+// └────────────────────────────────────────────────────────────────────┘ \\
 
 (function (glob, factory) {
-    // AMD support
     if (typeof define === "function" && define.amd) {
-        // Define as an anonymous module
-        define(["eve"], function( eve ) {
-            return factory(glob, eve);
+        define("raphael.core", ["eve"], function(eve) {
+            return factory(eve);
         });
+    } else if (typeof exports === "object") {
+        module.exports = factory(require("eve"));
     } else {
-        // Browser globals (glob is window)
-        // Raphael adds itself to window
-        factory(glob, glob.eve);
+        glob.Raphael = factory(glob.eve);
     }
-}(this, function (window, eve) {
+}(this, function (eve) {
     /*\
      * Raphael
      [ method ]
@@ -465,7 +466,7 @@
             }
         }
     }
-    R.version = "2.1.2";
+    R.version = "2.1.4";
     R.eve = eve;
     var loaded,
         separator = /[, ]+/,
@@ -505,7 +506,7 @@
              | var c = paper.circle(10, 10, 10).attr({hue: .45});
              | // or even like this:
              | c.animate({hue: 1}, 1e3);
-             | 
+             |
              | // You could also create custom attribute
              | // with multiple parameters:
              | paper.customAttributes.hsb = function (h, s, b) {
@@ -546,7 +547,7 @@
         objectToString = Object.prototype.toString,
         paper = {},
         push = "push",
-        ISURL = R._ISURL = /^url\(['"]?([^\)]+?)['"]?\)$/i,
+        ISURL = R._ISURL = /^url\(['"]?(.+?)['"]?\)$/i,
         colourRegExp = /^\s*((#[a-f\d]{6})|(#[a-f\d]{3})|rgba?\(\s*([\d\.]+%?\s*,\s*[\d\.]+%?\s*,\s*[\d\.]+%?(?:\s*,\s*[\d\.]+%?)?)\s*\)|hsba?\(\s*([\d\.]+(?:deg|\xb0|%)?\s*,\s*[\d\.]+%?\s*,\s*[\d\.]+(?:%?\s*,\s*[\d\.]+)?)%?\s*\)|hsla?\(\s*([\d\.]+(?:deg|\xb0|%)?\s*,\s*[\d\.]+%?\s*,\s*[\d\.]+(?:%?\s*,\s*[\d\.]+)?)%?\s*\))\s*$/i,
         isnan = {"NaN": 1, "Infinity": 1, "-Infinity": 1},
         bezierrg = /^(?:cubic-)?bezier\(([^,]+),([^,]+),([^,]+),([^\)]+)\)/,
@@ -771,7 +772,7 @@
      * Raphael.is
      [ method ]
      **
-     * Handfull replacement for `typeof` operator.
+     * Handful of replacements for `typeof` operator.
      > Parameters
      - o (…) any object or primitive
      - type (string) name of the type, i.e. “string”, “function”, “number”, etc.
@@ -847,11 +848,11 @@
      **
      * Transform angle to degrees
      > Parameters
-     - deg (number) angle in radians
+     - rad (number) angle in radians
      = (number) angle in degrees.
     \*/
     R.deg = function (rad) {
-        return rad * 180 / PI % 360;
+        return Math.round ((rad * 180 / PI% 360)* 1000) / 1000;
     };
     /*\
      * Raphael.snapTo
@@ -1070,8 +1071,8 @@
         if (this.is(h, "object") && "h" in h && "s" in h && "b" in h) {
             v = h.b;
             s = h.s;
-            h = h.h;
             o = h.o;
+            h = h.h;
         }
         h *= 360;
         var R, G, B, X, C;
@@ -1381,7 +1382,8 @@
      = (string) hex representation of the colour.
     \*/
     R.rgb = cacher(function (r, g, b) {
-        return "#" + (16777216 | b | (g << 8) | (r << 16)).toString(16).slice(1);
+        function round(x) { return (x + 0.5) | 0; }
+        return "#" + (16777216 | round(b) | (round(g) << 8) | (round(r) << 16)).toString(16).slice(1);
     });
     /*\
      * Raphael.getColor
@@ -2362,11 +2364,11 @@
                 attrs = {x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null},
                 attrs2 = {x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null},
                 processPath = function (path, d, pcom) {
-                    var nx, ny;
+                    var nx, ny, tq = {T:1, Q:1};
                     if (!path) {
                         return ["C", d.x, d.y, d.x, d.y, d.x, d.y];
                     }
-                    !(path[0] in {T:1, Q:1}) && (d.qx = d.qy = null);
+                    !(path[0] in tq) && (d.qx = d.qy = null);
                     switch (path[0]) {
                         case "M":
                             d.X = path[1];
@@ -2422,6 +2424,8 @@
                         pp[i].shift();
                         var pi = pp[i];
                         while (pi.length) {
+                            pcoms1[i]="A"; // if created multiple C:s, their original seg is saved
+                            p2 && (pcoms2[i]="A"); // the same as above
                             pp.splice(i++, 0, ["C"][concat](pi.splice(0, 6)));
                         }
                         pp.splice(i, 1);
@@ -2437,12 +2441,40 @@
                         a1.y = path1[i][2];
                         ii = mmax(p.length, p2 && p2.length || 0);
                     }
-                };
+                },
+                pcoms1 = [], // path commands of original path p
+                pcoms2 = [], // path commands of original path p2
+                pfirst = "", // temporary holder for original path command
+                pcom = ""; // holder for previous path command of original path
             for (var i = 0, ii = mmax(p.length, p2 && p2.length || 0); i < ii; i++) {
-                p[i] = processPath(p[i], attrs);
-                fixArc(p, i);
-                p2 && (p2[i] = processPath(p2[i], attrs2));
-                p2 && fixArc(p2, i);
+                p[i] && (pfirst = p[i][0]); // save current path command
+
+                if (pfirst != "C") // C is not saved yet, because it may be result of conversion
+                {
+                    pcoms1[i] = pfirst; // Save current path command
+                    i && ( pcom = pcoms1[i-1]); // Get previous path command pcom
+                }
+                p[i] = processPath(p[i], attrs, pcom); // Previous path command is inputted to processPath
+
+                if (pcoms1[i] != "A" && pfirst == "C") pcoms1[i] = "C"; // A is the only command
+                // which may produce multiple C:s
+                // so we have to make sure that C is also C in original path
+
+                fixArc(p, i); // fixArc adds also the right amount of A:s to pcoms1
+
+                if (p2) { // the same procedures is done to p2
+                    p2[i] && (pfirst = p2[i][0]);
+                    if (pfirst != "C")
+                    {
+                        pcoms2[i] = pfirst;
+                        i && (pcom = pcoms2[i-1]);
+                    }
+                    p2[i] = processPath(p2[i], attrs2, pcom);
+
+                    if (pcoms2[i]!="A" && pfirst=="C") pcoms2[i]="C";
+
+                    fixArc(p2, i);
+                }
                 fixM(p, p2, attrs, attrs2, i);
                 fixM(p2, p, attrs2, attrs, i);
                 var seg = p[i],
@@ -2472,6 +2504,7 @@
                 if (dot.color.error) {
                     return null;
                 }
+                dot.opacity = dot.color.opacity;
                 dot.color = dot.color.hex;
                 par[2] && (dot.offset = par[2] + "%");
                 dots.push(dot);
@@ -3051,26 +3084,6 @@
         };
     })(Matrix.prototype);
 
-    // WebKit rendering bug workaround method
-    var version = navigator.userAgent.match(/Version\/(.*?)\s/) || navigator.userAgent.match(/Chrome\/(\d+)/);
-    if ((navigator.vendor == "Apple Computer, Inc.") && (version && version[1] < 4 || navigator.platform.slice(0, 2) == "iP") ||
-        (navigator.vendor == "Google Inc." && version && version[1] < 8)) {
-        /*\
-         * Paper.safari
-         [ method ]
-         **
-         * There is an inconvenient rendering bug in Safari (WebKit):
-         * sometimes the rendering should be forced.
-         * This method should help with dealing with this bug.
-        \*/
-        paperproto.safari = function () {
-            var rect = this.rect(-99, -99, this.width + 99, this.height + 99).attr({stroke: "none"});
-            setTimeout(function () {rect.remove();});
-        };
-    } else {
-        paperproto.safari = fun;
-    }
-
     var preventDefault = function () {
         this.returnValue = false;
     },
@@ -3125,7 +3138,7 @@
                     obj.removeEventListener(type, f, false);
 
                     if (supportsTouch && touchMap[type])
-                        obj.removeEventListener(touchMap[type], f, false);
+                        obj.removeEventListener(touchMap[type], _f, false);
 
                     return true;
                 };
@@ -3455,7 +3468,7 @@
      [ method ]
      **
      * Adds or retrieves given value asociated with given key.
-     ** 
+     **
      * See also @Element.removeData
      > Parameters
      - key (string) key to store data
@@ -3563,8 +3576,8 @@
      - mcontext (object) #optional context for moving handler
      - scontext (object) #optional context for drag start handler
      - econtext (object) #optional context for drag end handler
-     * Additionaly following `drag` events will be triggered: `drag.start.<id>` on start, 
-     * `drag.end.<id>` on end and `drag.move.<id>` on every move. When element will be dragged over another element 
+     * Additionaly following `drag` events will be triggered: `drag.start.<id>` on start,
+     * `drag.end.<id>` on end and `drag.move.<id>` on every move. When element will be dragged over another element
      * `drag.over.<id>` will be fired as well.
      *
      * Start event and start handler will be called in specified context or in context of the element with following parameters:
@@ -3849,6 +3862,21 @@
         return out;
     };
     /*\
+     * Paper.getSize
+     [ method ]
+     **
+     * Obtains current paper actual size.
+     **
+     = (object)
+     \*/
+    paperproto.getSize = function () {
+        var container = this.canvas.parentNode;
+        return {
+            width: container.offsetWidth,
+            height: container.offsetHeight
+                };
+        };
+    /*\
      * Paper.setSize
      [ method ]
      **
@@ -3866,7 +3894,7 @@
      * Paper.setViewBox
      [ method ]
      **
-     * Sets the view box of the paper. Practically it gives you ability to zoom and pan whole paper surface by 
+     * Sets the view box of the paper. Practically it gives you ability to zoom and pan whole paper surface by
      * specifying new boundaries.
      **
      > Parameters
@@ -4157,7 +4185,7 @@
         var s = {
             width: (glow.width || 10) + (+this.attr("stroke-width") || 1),
             fill: glow.fill || false,
-            opacity: glow.opacity || .5,
+            opacity: glow.opacity == null ? .5 : glow.opacity,
             offsetx: glow.offsetx || 0,
             offsety: glow.offsety || 0,
             color: glow.color || "#000"
@@ -4339,7 +4367,7 @@
     elproto.getPath = function () {
         var path,
             getPath = R._getPath[this.type];
-        
+
         if (this.type == "text" || this.type == "set") {
             return;
         }
@@ -4582,7 +4610,6 @@
                     }
                 }
             }
-            R.svg && that && that.paper && that.paper.safari();
             animationElements.length && requestAnimFrame(animation);
         },
         upto255 = function (color) {
@@ -4625,8 +4652,8 @@
             }
         }
         return element;
-        // 
-        // 
+        //
+        //
         // var a = params ? R.animation(params, ms, easing, callback) : anim,
         //     status = element.status(anim);
         // return this.animate(a).status(a, status * anim.ms / a.ms);
@@ -4982,7 +5009,21 @@
             p[attr] = params[attr];
         }
         if (!json) {
-            return new Animation(params, ms);
+            // if percent-like syntax is used and end-of-all animation callback used
+            if(callback){
+                // find the last one
+                var lastKey = 0;
+                for(var i in params){
+                    var percent = toInt(i);
+                    if(params[has](i) && percent > lastKey){
+                        lastKey = percent;
+                    }
+                }
+                lastKey += '%';
+                // if already defined callback in the last keyframe, skip
+                !params[lastKey].callback && (params[lastKey].callback = callback);
+            }
+          return new Animation(params, ms);
         } else {
             easing && (p.easing = easing);
             callback && (p.callback = callback);
@@ -5254,7 +5295,7 @@
      * Set.clear
      [ method ]
      **
-     * Removeds all elements from the set
+     * Removes all elements from the set
     \*/
     setproto.clear = function () {
         while (this.length) {
@@ -5412,7 +5453,6 @@
         var isPointInside = false;
         this.forEach(function (el) {
             if (el.isPointInside(x, y)) {
-                console.log('runned');
                 isPointInside = true;
                 return false; // stop loop
             }
@@ -5698,7 +5738,7 @@
      [ method ]
      **
      * If you want to leave no trace of Raphaël (Well, Raphaël creates only one global variable `Raphael`, but anyway.) You can use `ninja` method.
-     * Beware, that in this case plugins could stop working, because they are depending on global variable existance.
+     * Beware, that in this case plugins could stop working, because they are depending on global variable existence.
      **
      = (object) Raphael object
      > Usage
@@ -5732,6 +5772,11 @@
      | paper.set(paper.circle(100, 100, 20), paper.circle(110, 100, 20)).red();
     \*/
     R.st = setproto;
+
+    eve.on("raphael.DOMload", function () {
+        loaded = true;
+    });
+
     // Firefox <3.6 fix: http://webreflection.blogspot.com/2009/11/195-chars-to-help-lazy-loading.html
     (function (doc, loaded, f) {
         if (doc.readyState == null && doc.addEventListener){
@@ -5747,12 +5792,11 @@
         isLoaded();
     })(document, "DOMContentLoaded");
 
-    eve.on("raphael.DOMload", function () {
-        loaded = true;
-    });
+    return R;
+}));
 
 // ┌─────────────────────────────────────────────────────────────────────┐ \\
-// │ Raphaël - JavaScript Vector Library                                 │ \\
+// │ Raphaël 2.1.4 - JavaScript Vector Library                       │ \\
 // ├─────────────────────────────────────────────────────────────────────┤ \\
 // │ SVG Module                                                          │ \\
 // ├─────────────────────────────────────────────────────────────────────┤ \\
@@ -5761,10 +5805,21 @@
 // │ Licensed under the MIT (http://raphaeljs.com/license.html) license. │ \\
 // └─────────────────────────────────────────────────────────────────────┘ \\
 
-(function(){
-    if (!R.svg) {
+(function (glob, factory) {
+    if (typeof define === "function" && define.amd) {
+        define("raphael.svg", ["raphael.core"], function(raphael) {
+            return factory(raphael);
+        });
+    } else if (typeof exports === "object") {
+        factory(require("./raphael.core"));
+    } else {
+        factory(glob.Raphael);
+    }
+}(this, function(R) {
+    if (R && !R.svg) {
         return;
     }
+
     var has = "hasOwnProperty",
         Str = String,
         toFloat = parseFloat,
@@ -5854,7 +5909,7 @@
                 return null;
             }
             id = id.replace(/[\(\)\s,\xb0#]/g, "_");
-            
+
             if (element.gradient && id != element.gradient.id) {
                 SVG.defs.removeChild(element.gradient);
                 delete element.gradient;
@@ -5877,13 +5932,14 @@
                 for (var i = 0, ii = dots.length; i < ii; i++) {
                     el.appendChild($("stop", {
                         offset: dots[i].offset ? dots[i].offset : i ? "100%" : "0%",
-                        "stop-color": dots[i].color || "#fff"
+                        "stop-color": dots[i].color || "#fff",
+                        "stop-opacity": isFinite(dots[i].opacity) ? dots[i].opacity : 1
                     }));
                 }
             }
         }
         $(o, {
-            fill: "url(#" + id + ")",
+            fill: "url('" + document.location.origin + document.location.pathname + "#" + id + "')",
             opacity: 1,
             "fill-opacity": 1
         });
@@ -6036,8 +6092,6 @@
         }
     },
     dasharray = {
-        "": [0],
-        "none": [0],
         "-": [3, 1],
         ".": [1, 1],
         "-.": [3, 1, 1, 1],
@@ -6061,6 +6115,9 @@
             }
             $(o.node, {"stroke-dasharray": dashes.join(",")});
         }
+        else {
+          $(o.node, {"stroke-dasharray": "none"});
+        }
     },
     setFillAndStroke = function (o, params) {
         var node = o.node,
@@ -6078,13 +6135,20 @@
                     case "blur":
                         o.blur(value);
                         break;
-                    case "href":
                     case "title":
-                        var hl = $("title");
-                        var val = R._g.doc.createTextNode(value);
-                        hl.appendChild(val);
-                        node.appendChild(hl);
+                        var title = node.getElementsByTagName("title");
+
+                        // Use the existing <title>.
+                        if (title.length && (title = title[0])) {
+                          title.firstChild.nodeValue = value;
+                        } else {
+                          title = $("title");
+                          var val = R._g.doc.createTextNode(value);
+                          title.appendChild(val);
+                          node.appendChild(title);
+                        }
                         break;
+                    case "href":
                     case "target":
                         var pn = node.parentNode;
                         if (pn.tagName.toLowerCase() != "a") {
@@ -6210,9 +6274,6 @@
                         if (o._.sx != 1 || o._.sy != 1) {
                             value /= mmax(abs(o._.sx), abs(o._.sy)) || 1;
                         }
-                        if (o.paper._vbSize) {
-                            value *= o.paper._vbSize;
-                        }
                         node.setAttribute(att, value);
                         if (attrs["stroke-dasharray"]) {
                             addDashes(o, attrs["stroke-dasharray"], params);
@@ -6241,7 +6302,6 @@
                                         h = this.offsetHeight;
                                     $(el, {width: w, height: h});
                                     $(ig, {width: w, height: h});
-                                    o.paper.safari();
                                 });
                             })(el);
                             o.paper.defs.appendChild(el);
@@ -6353,6 +6413,13 @@
             dif = a.y - (bb.y + bb.height / 2);
         dif && R.is(dif, "finite") && $(tspans[0], {dy: dif});
     },
+    getRealNode = function (node) {
+        if (node.parentNode && node.parentNode.tagName.toLowerCase() === "a") {
+            return node.parentNode;
+        } else {
+            return node;
+        }
+    },
     Element = function (node, svg) {
         var X = 0,
             Y = 0;
@@ -6388,7 +6455,7 @@
          * Element.id
          [ property (number) ]
          **
-         * Unique id of the element. Especially usesful when you want to listen to events of the element, 
+         * Unique id of the element. Especially useful when you want to listen to events of the element,
          * because all events are fired in format `<module>.<action>.<id>`. Also useful for @Paper.getById method.
         \*/
         this.id = R._oid++;
@@ -6593,11 +6660,14 @@
         this.clip && $(this.clip, {transform: this.matrix.invert()});
         this.pattern && updatePosition(this);
         this.node && $(this.node, {transform: this.matrix});
-    
+
         if (_.sx != 1 || _.sy != 1) {
             var sw = this.attrs[has]("stroke-width") ? this.attrs["stroke-width"] : 1;
             this.attr({"stroke-width": sw});
         }
+
+        //Reduce transform string
+        _.transform = this.matrix.toTransformString();
 
         return this;
     };
@@ -6609,7 +6679,7 @@
      = (object) @Element
     \*/
     elproto.hide = function () {
-        !this.removed && this.paper.safari(this.node.style.display = "none");
+        if(!this.removed) this.node.style.display = "none";
         return this;
     };
     /*\
@@ -6620,7 +6690,7 @@
      = (object) @Element
     \*/
     elproto.show = function () {
-        !this.removed && this.paper.safari(this.node.style.display = "");
+        if(!this.removed) this.node.style.display = "";
         return this;
     };
     /*\
@@ -6630,7 +6700,8 @@
      * Removes element from the paper.
     \*/
     elproto.remove = function () {
-        if (this.removed || !this.node.parentNode) {
+        var node = getRealNode(this.node);
+        if (this.removed || !node.parentNode) {
             return;
         }
         var paper = this.paper;
@@ -6640,11 +6711,12 @@
             paper.defs.removeChild(this.gradient);
         }
         R._tear(this, paper);
-        if (this.node.parentNode.tagName.toLowerCase() == "a") {
-            this.node.parentNode.parentNode.removeChild(this.node.parentNode);
-        } else {
-            this.node.parentNode.removeChild(this.node);
-        }
+
+        node.parentNode.removeChild(node);
+
+        // Remove custom data for element
+        this.removeData();
+
         for (var i in this) {
             this[i] = typeof this[i] == "function" ? R._removedFactory(i) : null;
         }
@@ -6655,13 +6727,35 @@
             this.show();
             var hide = true;
         }
+        var canvasHidden = false,
+            containerStyle;
+        if (this.paper.canvas.parentElement) {
+          containerStyle = this.paper.canvas.parentElement.style;
+        } //IE10+ can't find parentElement
+        else if (this.paper.canvas.parentNode) {
+          containerStyle = this.paper.canvas.parentNode.style;
+        }
+
+        if(containerStyle && containerStyle.display == "none") {
+          canvasHidden = true;
+          containerStyle.display = "";
+        }
         var bbox = {};
         try {
             bbox = this.node.getBBox();
         } catch(e) {
-            // Firefox 3.0.x plays badly here
+            // Firefox 3.0.x, 25.0.1 (probably more versions affected) play badly here - possible fix
+            bbox = {
+                x: this.node.clientLeft,
+                y: this.node.clientTop,
+                width: this.node.clientWidth,
+                height: this.node.clientHeight
+            }
         } finally {
             bbox = bbox || {};
+            if(canvasHidden){
+              containerStyle.display = "none";
+            }
         }
         hide && this.hide();
         return bbox;
@@ -6706,7 +6800,7 @@
      o ry (number) vertical radius of the ellipse
      o src (string) image URL, only works for @Element.image element
      o stroke (string) stroke colour
-     o stroke-dasharray (string) [“”, “`-`”, “`.`”, “`-.`”, “`-..`”, “`. `”, “`- `”, “`--`”, “`- .`”, “`--.`”, “`--..`”]
+     o stroke-dasharray (string) [“”, “none”, “`-`”, “`.`”, “`-.`”, “`-..`”, “`. `”, “`- `”, “`--`”, “`- .`”, “`--.`”, “`--..`”]
      o stroke-linecap (string) [“`butt`”, “`square`”, “`round`”]
      o stroke-linejoin (string) [“`bevel`”, “`round`”, “`miter`”]
      o stroke-miterlimit (number)
@@ -6818,11 +6912,8 @@
         if (this.removed) {
             return this;
         }
-        if (this.node.parentNode.tagName.toLowerCase() == "a") {
-            this.node.parentNode.parentNode.appendChild(this.node.parentNode);
-        } else {
-            this.node.parentNode.appendChild(this.node);
-        }
+        var node = getRealNode(this.node);
+        node.parentNode.appendChild(node);
         var svg = this.paper;
         svg.top != this && R._tofront(this, svg);
         return this;
@@ -6838,12 +6929,9 @@
         if (this.removed) {
             return this;
         }
-        var parent = this.node.parentNode;
-        if (parent.tagName.toLowerCase() == "a") {
-            parent.parentNode.insertBefore(this.node.parentNode, this.node.parentNode.parentNode.firstChild); 
-        } else if (parent.firstChild != this.node) {
-            parent.insertBefore(this.node, this.node.parentNode.firstChild);
-        }
+        var node = getRealNode(this.node);
+        var parentNode = node.parentNode;
+        parentNode.insertBefore(node, parentNode.firstChild);
         R._toback(this, this.paper);
         var svg = this.paper;
         return this;
@@ -6856,14 +6944,16 @@
      = (object) @Element
     \*/
     elproto.insertAfter = function (element) {
-        if (this.removed) {
+        if (this.removed || !element) {
             return this;
         }
-        var node = element.node || element[element.length - 1].node;
-        if (node.nextSibling) {
-            node.parentNode.insertBefore(this.node, node.nextSibling);
+
+        var node = getRealNode(this.node);
+        var afterNode = getRealNode(element.node || element[element.length - 1].node);
+        if (afterNode.nextSibling) {
+            afterNode.parentNode.insertBefore(node, afterNode.nextSibling);
         } else {
-            node.parentNode.appendChild(this.node);
+            afterNode.parentNode.appendChild(node);
         }
         R._insertafter(this, element, this.paper);
         return this;
@@ -6876,11 +6966,13 @@
      = (object) @Element
     \*/
     elproto.insertBefore = function (element) {
-        if (this.removed) {
+        if (this.removed || !element) {
             return this;
         }
-        var node = element.node || element[0].node;
-        node.parentNode.insertBefore(this.node, node);
+
+        var node = getRealNode(this.node);
+        var beforeNode = getRealNode(element.node || element[0].node);
+        beforeNode.parentNode.insertBefore(node, beforeNode);
         R._insertbefore(this, element, this.paper);
         return this;
     };
@@ -6920,7 +7012,7 @@
         var el = $("rect");
         svg.canvas && svg.canvas.appendChild(el);
         var res = new Element(el, svg);
-        res.attrs = {x: x, y: y, width: w, height: h, r: r || 0, rx: r || 0, ry: r || 0, fill: "none", stroke: "#000"};
+        res.attrs = {x: x, y: y, width: w, height: h, rx: r || 0, ry: r || 0, fill: "none", stroke: "#000"};
         res.type = "rect";
         $(el, res.attrs);
         return res;
@@ -6953,7 +7045,8 @@
             y: y,
             "text-anchor": "middle",
             text: text,
-            font: R._availableAttrs.font,
+            "font-family": R._availableAttrs["font-family"],
+            "font-size": R._availableAttrs["font-size"],
             stroke: "none",
             fill: "#000"
         };
@@ -6992,7 +7085,8 @@
             height: height,
             version: 1.1,
             width: width,
-            xmlns: "http://www.w3.org/2000/svg"
+            xmlns: "http://www.w3.org/2000/svg",
+            "xmlns:xlink": "http://www.w3.org/1999/xlink"
         });
         if (container == 1) {
             cnvs.style.cssText = css + "position:absolute;left:" + x + "px;top:" + y + "px";
@@ -7018,9 +7112,10 @@
     };
     R._engine.setViewBox = function (x, y, w, h, fit) {
         eve("raphael.setViewBox", this, this._viewBox, [x, y, w, h, fit]);
-        var size = mmax(w / this.width, h / this.height),
+        var paperSize = this.getSize(),
+            size = mmax(w / paperSize.width, h / paperSize.height),
             top = this.top,
-            aspectRatio = fit ? "meet" : "xMinYMin",
+            aspectRatio = fit ? "xMidYMid meet" : "xMinYMin",
             vb,
             sw;
         if (x == null) {
@@ -7120,10 +7215,10 @@
             };
         })(method);
     }
-})();
+}));
 
 // ┌─────────────────────────────────────────────────────────────────────┐ \\
-// │ Raphaël - JavaScript Vector Library                                 │ \\
+// │ Raphaël 2.1.4 - JavaScript Vector Library                       │ \\
 // ├─────────────────────────────────────────────────────────────────────┤ \\
 // │ VML Module                                                          │ \\
 // ├─────────────────────────────────────────────────────────────────────┤ \\
@@ -7132,10 +7227,21 @@
 // │ Licensed under the MIT (http://raphaeljs.com/license.html) license. │ \\
 // └─────────────────────────────────────────────────────────────────────┘ \\
 
-(function(){
-    if (!R.vml) {
+(function (glob, factory) {
+    if (typeof define === "function" && define.amd) {
+        define("raphael.vml", ["raphael.core"], function(raphael) {
+            return factory(raphael);
+        });
+    } else if (typeof exports === "object") {
+        factory(require("./raphael.core"));
+    } else {
+        factory(glob.Raphael);
+    }
+}(this, function(R) {
+    if (R && !R.vml) {
         return;
     }
+
     var has = "hasOwnProperty",
         Str = String,
         toFloat = parseFloat,
@@ -7154,7 +7260,7 @@
         bites = /([clmz]),?([^clmz]*)/gi,
         blurregexp = / progid:\S+Blur\([^\)]+\)/g,
         val = /-?[^,\s-]+/g,
-        cssDot = "position:absolute;left:0;top:0;width:1px;height:1px",
+        cssDot = "position:absolute;left:0;top:0;width:1px;height:1px;behavior:url(#default#VML)",
         zoom = 21600,
         pathTypes = {path: 1, rect: 1, image: 1},
         ovalTypes = {circle: 1, ellipse: 1},
@@ -7298,6 +7404,7 @@
         "blur" in params && o.blur(params.blur);
         if (params.path && o.type == "path" || newpath) {
             node.path = path2vml(~Str(a.path).toLowerCase().indexOf("r") ? R._pathToAbsolute(a.path) : a.path);
+            o._.dirty = 1;
             if (o.type == "image") {
                 o._.fillpos = [a.x, a.y];
                 o._.fillsize = [a.width, a.height];
@@ -7350,7 +7457,7 @@
         if ("arrow-end" in params) {
             addArrow(res, params["arrow-end"], 1);
         }
-        if (params.opacity != null || 
+        if (params.opacity != null ||
             params["stroke-width"] != null ||
             params.fill != null ||
             params.src != null ||
@@ -7429,11 +7536,11 @@
             params["stroke-width"] && (stroke.weight = width);
             width && width < 1 && (opacity *= width) && (stroke.weight = 1);
             stroke.opacity = opacity;
-        
+
             params["stroke-linejoin"] && (stroke.joinstyle = params["stroke-linejoin"] || "miter");
             stroke.miterlimit = params["stroke-miterlimit"] || 8;
             params["stroke-linecap"] && (stroke.endcap = params["stroke-linecap"] == "butt" ? "flat" : params["stroke-linecap"] == "square" ? "square" : "round");
-            if (params["stroke-dasharray"]) {
+            if ("stroke-dasharray" in params) {
                 var dasharray = {
                     "-": "shortdash",
                     ".": "shortdot",
@@ -7476,7 +7583,7 @@
                 res._.dirty = 1;
                 break;
             }
-        
+
             // text-anchor emulation
             switch (a["text-anchor"]) {
                 case "start":
@@ -7623,7 +7730,10 @@
             skew.matrix = Str(matrix);
             skew.offset = matrix.offset();
         }
-        oldt && (this._.transform = oldt);
+        if (oldt !== null) { // empty string value is true as well
+            this._.transform = oldt;
+            R._extractTransform(this, oldt);
+        }
         return this;
     };
     elproto.rotate = function (deg, cx, cy) {
@@ -7686,7 +7796,7 @@
         }
         cx = cx == null ? bbox.x + bbox.width / 2 : cx;
         cy = cy == null ? bbox.y + bbox.height / 2 : cy;
-    
+
         this.transform(this._.transform.concat([["s", sx, sy, cx, cy]]));
         this._.dirtyT = 1;
         return this;
@@ -7698,6 +7808,26 @@
     elproto.show = function () {
         !this.removed && (this.node.style.display = E);
         return this;
+    };
+    // Needed to fix the vml setViewBox issues
+    elproto.auxGetBBox = R.el.getBBox;
+    elproto.getBBox = function(){
+      var b = this.auxGetBBox();
+      if (this.paper && this.paper._viewBoxShift)
+      {
+        var c = {};
+        var z = 1/this.paper._viewBoxShift.scale;
+        c.x = b.x - this.paper._viewBoxShift.dx;
+        c.x *= z;
+        c.y = b.y - this.paper._viewBoxShift.dy;
+        c.y *= z;
+        c.width  = b.width  * z;
+        c.height = b.height * z;
+        c.x2 = c.x + c.width;
+        c.y2 = c.y + c.height;
+        return c;
+      }
+      return b;
     };
     elproto._getBBox = function () {
         if (this.removed) {
@@ -7988,9 +8118,9 @@
     };
     R._engine.setViewBox = function (x, y, w, h, fit) {
         R.eve("raphael.setViewBox", this, this._viewBox, [x, y, w, h, fit]);
-        var width = this.width,
-            height = this.height,
-            size = 1 / mmax(w / width, h / height),
+        var paperSize = this.getSize(),
+            width = paperSize.width,
+            height = paperSize.height,
             H, W;
         if (fit) {
             H = height / h;
@@ -8006,7 +8136,7 @@
         this._viewBoxShift = {
             dx: -x,
             dy: -y,
-            scale: size
+            scale: paperSize
         };
         this.forEach(function (el) {
             el.transform("...");
@@ -8016,7 +8146,13 @@
     var createNode;
     R._engine.initWin = function (win) {
             var doc = win.document;
-            doc.createStyleSheet().addRule(".rvml", "behavior:url(#default#VML)");
+            if (doc.styleSheets.length < 31) {
+                doc.createStyleSheet().addRule(".rvml", "behavior:url(#default#VML)");
+            } else {
+                // no more room, add to the existing one
+                // http://msdn.microsoft.com/en-us/library/ms531194%28VS.85%29.aspx
+                doc.styleSheets[0].addRule(".rvml", "behavior:url(#default#VML)");
+            }
             try {
                 !doc.namespaces.rvml && doc.namespaces.add("rvml", "urn:schemas-microsoft-com:vml");
                 createNode = function (tagName) {
@@ -8100,12 +8236,32 @@
             };
         })(method);
     }
-})();
+}));
 
-    // EXPOSE
-    // SVG and VML are appended just before the EXPOSE line
-    // Even with AMD, Raphael should be defined globally
-    oldRaphael.was ? (g.win.Raphael = R) : (Raphael = R);
+// ┌────────────────────────────────────────────────────────────────────┐ \\
+// │ Raphaël @VERSION - JavaScript Vector Library                       │ \\
+// ├────────────────────────────────────────────────────────────────────┤ \\
+// │ Copyright © 2008-2012 Dmitry Baranovskiy (http://raphaeljs.com)    │ \\
+// │ Copyright © 2008-2012 Sencha Labs (http://sencha.com)              │ \\
+// ├────────────────────────────────────────────────────────────────────┤ \\
+// │ Licensed under the MIT (http://raphaeljs.com/license.html) license.│ \\
+// └────────────────────────────────────────────────────────────────────┘ \\
 
-    return R;
+(function (glob, factory) {
+    if (typeof define === "function" && define.amd) {
+        define("raphael", ["raphael.core", "raphael.svg", "raphael.vml"], function(Raphael) {
+            return (glob.Raphael = factory(Raphael));
+        });
+    } else if (typeof exports === "object") {
+        var raphael = require("raphael.core");
+
+        require("raphael.svg");
+        require("raphael.vml");
+
+        module.exports = factory(raphael);
+    } else {
+        glob.Raphael = factory(glob.Raphael);
+    }
+}(this, function (Raphael) {
+    return Raphael.ninja();
 }));

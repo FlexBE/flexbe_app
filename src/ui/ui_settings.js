@@ -1,7 +1,8 @@
 UI.Settings = new (function() {
 	var that = this;
 
-	var App = require('nw.gui').App;
+	const app = require('electron')
+	var fs = require('fs');
 	var path = require('path');
 
 	var ros_pkg_cache;
@@ -33,7 +34,7 @@ UI.Settings = new (function() {
 	var synthesis_system;
 
 	var storeSettings = function() {
-		chrome.storage.local.set({
+		data = {
 			'ros_pkg_cache': ros_pkg_cache,
 			'state_pkg_cache': state_pkg_cache,
 			'behavior_pkg_cache': behavior_pkg_cache,
@@ -57,13 +58,14 @@ UI.Settings = new (function() {
 			'synthesis_topic': synthesis_topic,
 			'synthesis_type': synthesis_type,
 			'synthesis_system': synthesis_system
-		});
+		};
+		fs.writeFileSync('/tmp/data.json', JSON.stringify(data));
 		displaySettingsHints();
 	}
 
 
 	this.restoreSettings = function(restored_callback) {
-		chrome.storage.local.get({
+		var items = {
 			'ros_pkg_cache': [],
 			'state_pkg_cache': [],
 			'behavior_pkg_cache': [],
@@ -87,7 +89,15 @@ UI.Settings = new (function() {
 			'synthesis_topic': '',
 			'synthesis_type': 'flexbe_msgs/BehaviorSynthesisAction',
 			'synthesis_system': ''
-		}, function(items) {
+			}
+		try{
+			if (fs.existsSync('/tmp/data.json'))
+				{
+					items = JSON.parse(fs.readFileSync('data.json'));
+				}
+		} catch (err) {
+				T.logError('Failed to load initial configuration: ' + err);
+		}
 			ros_pkg_cache = items.ros_pkg_cache;
 			state_pkg_cache = items.state_pkg_cache;
 			behavior_pkg_cache = items.behavior_pkg_cache;
@@ -149,7 +159,6 @@ UI.Settings = new (function() {
 			IO.PackageParser.discover(ros_pkg_cache, that.packageDiscoverCallback);
 
 			that.setRosProperties('');
-		});
 	}
 
 	this.packageDiscoverCallback = function(updated_cache, discovered_state_pkgs, discovered_behavior_pkgs) {
@@ -357,7 +366,7 @@ UI.Settings = new (function() {
 				IO.Filesystem.readFile(this.value, function(content) {
 					if (content == undefined) return;  // error reported by readFile
 					var config = JSON.parse(content);
-					chrome.storage.local.set(config, function() {
+					store.set(config, function() {
 						that.restoreSettings();
 					});
 				});
@@ -376,7 +385,7 @@ UI.Settings = new (function() {
 			try {
 				var folder_path = path.dirname(this.value);
 				var file_name = path.basename(this.value);
-				chrome.storage.local.get(null, function(config) {
+				store.get(null, function(config) {
 					config.ros_pkg_cache = [];
 					config.state_pkg_cache = [];
 					config.behavior_pkg_cache = [];
@@ -392,7 +401,7 @@ UI.Settings = new (function() {
 
 
 	this.getVersion = function() {
-		return App.manifest.version;
+		return "9.9.9";
 	}
 
 

@@ -15,8 +15,8 @@ import genpy
 import yaml
 
 def callback(msg):
-	sys.stdout.write(json.dumps(yaml.load(genpy.message.strify_message(msg))))
-	sys.stdout.flush()
+    sys.stdout.write(json.dumps(yaml.load(genpy.message.strify_message(msg))))
+    sys.stdout.flush()
 
 topic = sys.argv[1]
 msg_def = sys.argv[2].split('/')

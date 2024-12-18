@@ -5,19 +5,19 @@ find_package(catkin REQUIRED)
 
 catkin_package()
 
-#add_custom_target(nwjs_inst)
-#add_custom_command(TARGET nwjs_inst POST_BUILD COMMAND bin/nwjs_install)
+#add_custom_target(electron_inst)
+#add_custom_command(TARGET electron_inst POST_BUILD COMMAND bin/electron_install)
 
-add_custom_command(OUTPUT nwjs
-  COMMAND bin/nwjs_install
+add_custom_command(OUTPUT electron
+  COMMAND bin/electron_install
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   VERBATIM
 )
 
-add_custom_target(nw_install DEPENDS nwjs)
+add_custom_target(electron_install DEPENDS electron)
 
-if(NOT ${CMAKE_CURRENT_SOURCE_DIR}/nwjs)
-  safe_execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/nwjs_install)
+if(NOT ${CMAKE_CURRENT_SOURCE_DIR}/electron)
+  safe_execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/electron_install)
 endif()
 
 #############
@@ -25,7 +25,7 @@ endif()
 #############
 
 install(PROGRAMS
-    bin/nwjs_install
+    bin/electron_install
     bin/run_app
     bin/shortcut
     bin/test_report
@@ -40,7 +40,7 @@ install(DIRECTORY
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 install(DIRECTORY
-    nwjs
+    electron
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
     USE_SOURCE_PERMISSIONS
 )

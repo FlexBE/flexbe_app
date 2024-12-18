@@ -1,16 +1,16 @@
 #!/bin/bash
 
 ROOT_PATH="$(rospack find flexbe_app)"
-NW=$ROOT_PATH/nwjs/nw
-if [ ! -f $NW ]; then
+ELECTRON=$ROOT_PATH/electron/electron
+if [ ! -f $ELECTRON ]; then
     ROOT_PATH=.
-    NW=$ROOT_PATH/nwjs/nw
+    ELECTRON=$ROOT_PATH/electron/electron
 fi
-if [ ! -x $NW ]; then
-  echo "Cannot run flexbe_app, need to download nwjs first."
+if [ ! -x $ELECTRON ]; then
+  echo "Cannot run flexbe_app, need to download electron first."
   echo "Please build flexbe_app via catkin before using it or run the following command now:"
-  echo "  rosrun flexbe_app nwjs_install"
+  echo "  rosrun flexbe_app electron_install"
   exit -1
 fi
 
-"$NW" --password-store=basic $ROOT_PATH "$@"
+"$ELECTRON" --password-store=basic $ROOT_PATH "$@"
